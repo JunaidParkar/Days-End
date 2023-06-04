@@ -1,0 +1,23 @@
+.homeContainer {
+    width: 100%;
+}
+
+.homeContainer .homeContentContainer,
+.searchContainer .searchContentContainer,
+.profileContainer .profileContentContainer .postsContainer {
+    width: 100%;
+    padding: 0 var(--padding);
+    flex-wrap: wrap;
+    gap: 20px;
+    padding-top: 120px;
+    padding-bottom: 20px;
+    overflow: hidden;
+}
+
+@media only screen and (max-width: 580px) {
+    .homeContainer .homeContentContainer,
+    .searchContainer .searchContentContainer {
+        padding-top: 20px;
+        padding-bottom: 100px;
+    }
+}

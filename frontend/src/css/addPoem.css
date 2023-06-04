@@ -1,0 +1,19 @@
+.addPoemContainer {
+    width: 100%;
+    min-height: 100vh;
+    padding: var(--padding);
+}
+
+.addPoemContainer form {
+    width: 100%;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.addPoemContainer form h3{
+    width: 100%;
+    font-size: 20px;
+    letter-spacing: 2px;
+    text-align: center;
+    text-transform: uppercase;
+}

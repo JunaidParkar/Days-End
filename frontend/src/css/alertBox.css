@@ -1,0 +1,42 @@
+.alertBoxContainer {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 599;
+    background: rgba(255, 255, 255, .2);
+    backdrop-filter: blur(10px);
+}
+
+.alertBoxContainer .mainContainer {
+    /* width: 75%; */
+    padding: var(--cardPadding);
+    background: var(--skinColor);
+    border-radius: var(--borderRadius);
+}
+
+.alertBoxContainer .mainContainer h3 {
+    font-size: 25px;
+    font-weight: 500;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+}
+
+.alertBoxContainer .mainContainer p{
+    letter-spacing: 20px;
+    letter-spacing: 2px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.alertBoxContainer .backContainer {
+    width: 100%;
+    justify-content: end;
+    margin-top: 30px;
+}
+
+.alertBoxContainer .backContainer p{
+    text-decoration: underline;
+    color: var(--redColor);
+}

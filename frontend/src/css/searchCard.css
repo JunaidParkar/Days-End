@@ -1,0 +1,243 @@
+/* .searchCard {
+    width: calc(50% - 10px);
+    aspect-ratio: 3/1;
+    position: relative;
+}
+
+.searchCard .searchCardHeader {
+    width: 100%;
+    height: 50%;
+    align-items: center;
+    justify-content: start;
+    gap: 30px;
+}
+
+.searchCard .searchCardHeader .searchCardDP {
+    height: 100%;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.searchCard .searchCardHeader .searchCardDP img{
+    height: 100%;
+    width: 100%;
+}
+
+.searchCard .searchCardHeader .searchCardInteraction {
+    width: 60%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+}
+
+.searchCard .searchCardHeader .searchCardInteraction h4,
+.searchCard .searchCardHeader .searchCardInteraction .searchCardPostCountSec,
+.searchCard .searchCardHeader .searchCardInteraction .FollowBtn {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    letter-spacing: 1px;
+}
+
+.searchCard .searchCardHeader .searchCardInteraction h4 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.searchCard .searchCardHeader .searchCardInteraction .searchCardPostCountSec h5 {
+    font-size: 18px;
+    font-weight: 300;
+}
+
+.searchCard .searchCardHeader .searchCardInteraction .followBtn h5 {
+    padding: 5px 10px;
+    border-radius: 10px;
+    background: var(--redColor);
+    width: fit-content;
+}
+
+.searchCard .searchProfileBio {
+    padding-top: 10px;
+    width: 100%;
+    height: 50%;
+    align-items: center;
+    justify-content: start;
+}
+
+.searchCard .searchProfileBio p {
+    width: 100%;
+    max-height: 100%;
+    overflow: hidden;
+    line-height: 20px;
+}
+
+.searchCard .overLay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, var(--pureWhiteColor), transparent);
+    z-index: 9;
+}
+
+@media only screen and (max-width: 1704px) {
+    .searchCard {
+        aspect-ratio: 2/1;
+    }
+}
+
+@media only screen and (max-width: 998px) {
+    .searchCard {
+        aspect-ratio: 2/1;
+    }
+    .searchCard .searchCardHeader .searchCardInteraction h4 {
+        font-size: 18px;
+        font-weight: 600;
+    }
+    .searchCard .searchCardHeader .searchCardInteraction .searchCardPostCountSec h5 {
+        font-size: 16px;
+    }
+}
+
+@media only screen and (max-width: 790px) {
+    .searchCard {
+        aspect-ratio: 1/.7;
+    }
+}
+
+@media only screen and (max-width: 580px) {
+    .searchCard {
+        aspect-ratio: 2/1;
+        width: 100%;
+    }
+    .searchCard .searchCardHeader  {
+        gap: 10px;
+    }
+}
+
+@media only screen and (max-width: 410px) {
+    .searchCard {
+        aspect-ratio: 5/3;
+    }
+}
+
+@media only screen and (max-width: 346px) {
+    .searchCard {
+        aspect-ratio: 5/4;
+    }
+    .searchCard .searchCardHeader .searchCardDP {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .searchCard .searchCardHeader .searchCardDP img{
+        width: 75%;
+        height: auto;
+        border-radius: 50%;
+    }
+} */
+
+.searchCard {
+    width: calc(50% - 10px);
+}
+
+.searchCard .searchCardHeader{
+    width: 100%;
+    height: 100px;
+    justify-content: start;
+    gap: 15px;
+    align-items: center;
+}
+
+.searchCard .searchCardHeader .searchCardDP {
+    height: 100px;
+    width: 100px;
+}
+
+.searchCard .searchCardHeader .searchCardDP img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.searchCard .searchCardHeader .searchCardInteraction {
+    flex-direction: column;
+    gap: 5px;
+    width: calc(100% - 115px);
+}
+
+.searchCard .searchCardHeader .searchCardInteraction h4 {
+    font-size: 20px;
+    font-weight: 400;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: 2px;
+}
+
+.searchCard .searchCardHeader .searchCardInteraction .interact {
+    gap: 10px;
+    align-items: center;
+}
+
+.searchCard .searchCardHeader .searchCardInteraction .interact h5 {
+    font-size: 15px;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+.searchCard .searchCardHeader .searchCardInteraction .interact .followBtn {
+    padding: 5px 20px;
+    background: var(--redColor);
+    border-radius: var(--borderRadius);
+}
+
+.searchCard .searchProfileBio {
+    padding-top: 15px;
+    width: 100%;
+    letter-spacing: 1px;
+    line-height: 25px;
+}
+
+
+@media only screen and (max-width: 750px) {
+    .searchCard {
+        width: 100%;
+    }
+}
+
+
+@media only screen and (max-width: 450px) {
+    .searchCard .searchCardHeader{
+        height: 75px;
+        gap: 10px;
+    }
+    .searchCard .searchCardHeader .searchCardDP {
+        height: 75px;
+        width: 75px;
+    }
+    .searchCard .searchCardHeader .searchCardInteraction {
+        gap: 3px;
+        width: calc(100% - 80px);
+    }
+    .searchCard .searchCardHeader .searchCardInteraction h4 {
+        font-size: 16px;
+    }
+    .searchCard .searchCardHeader .searchCardInteraction .interact {
+        gap: 5px;
+    }
+    
+    .searchCard .searchCardHeader .searchCardInteraction .interact h5 {
+        font-size: 13px;
+    }
+    .searchCard .searchCardHeader .searchCardInteraction .interact .followBtn {
+        padding: 5px 15px;
+        background: var(--redColor);
+        border-radius: var(--borderRadius);
+    }
+}
