@@ -1,6 +1,6 @@
-import { createUserWithEmailAndPassword, sendEmailVerification, signOut } from "firebase/auth"
+import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, signOut } from "firebase/auth"
 import { auth } from "../cred"
-import { addNewUserStructure, checkHandle } from "../../api/request"
+import { addNewUserStructure, checkHandle, getToken } from "../../api/request"
 
 
 export const signOutUser = async () => {
@@ -8,10 +8,8 @@ export const signOutUser = async () => {
     try {
         await signOut(auth)
         response = {status: 200, message: "Logged Out"}
-        console.log(response)
     } catch (error) {
         response = {status: 500, message: error.message}
-        console.log(response)
     }
     return response
 }
@@ -46,7 +44,7 @@ export const registerNewUser = async (email, password, handle) => {
                 let token = await addNewUserStructure(structuredData)
                 if (token.status === 200) {
                     await sendEmailVerification(respo.user)
-                    response = {status: 200, token: token.token}
+                    response = {status: 200}
                 } else {
                     response = {status: 500, message: "Unable to add Structure"}
                 }
@@ -58,6 +56,33 @@ export const registerNewUser = async (email, password, handle) => {
         }
     }).catch(err => {
         response = {stat: 500, message: err}
+    })
+    return response
+}
+
+export const loginUser = async (email, password) => {
+    let response = {status: "", message: ""}
+    await signInWithEmailAndPassword(auth, email, password).then(async user => {
+        if (!user.user.emailVerified) {
+            response = {status: 500, message: "Please verify your E-Mail. Verification link has been sent to you while registration."}
+        } else {
+            let tokenData = {
+                uid: user.user.uid,
+                email: user.user.email
+            }
+            await getToken(tokenData).then(async token => {
+                if (token.status === 200) {
+                    localStorage.setItem("AuthToken", token.token)
+                    response = {status: 200, message: "Successfully logged in"}
+                } else {
+                    response = {status: token.status, message: token.message}
+                }
+            }).catch(async err => {
+                response = {status: 500, message: err}
+            })
+        }
+    }).catch(signInError => {
+        response = {status: 500, message: signInError.code}
     })
     return response
 }

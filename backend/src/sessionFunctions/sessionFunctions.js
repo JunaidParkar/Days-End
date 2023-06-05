@@ -25,7 +25,7 @@ const createAuthToken = async (dataInJson) => {
     await submitTokens(dbStructure, dataInJson.uid).then(data => {
         response =  {...data, token: token}
     }).catch(err => {
-        response =  err
+        response =  {status: 500, message: err}
     })
     return response
 }

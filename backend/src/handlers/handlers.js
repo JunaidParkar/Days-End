@@ -23,8 +23,7 @@ const registerUserSetup = async (req, res) => {
         uid: req.body.uid
     }
     await firestoreAdmin.collection("users").doc(structureToSet.userHandle).set(structureToSet).then( async () => {
-        let authToken = await createAuthToken(tokenData)
-        res.json({status: 200, message: "User registration structure created successfully", token: authToken.token})
+        res.json({status: 200, message: "User registration structure created successfully"})
     }).catch(err => {
         res.json({status: 12, message: err})
     })
@@ -113,10 +112,23 @@ const deletePost = async (req, res) => {
     })
 }
 
+const createTokenForAuthentication = async (req, res) => {
+    let requiredFields = ['tokenData'];
+
+    for (let field of requiredFields) {
+        if (!req.body[field]) {
+            return res.json({ status: 500, message: `${field.charAt(0).toUpperCase() + field.slice(1)} not provided` });
+        }
+    }
+    let resp = await createAuthToken(req.body.tokenData)
+    res.json(resp)
+}
+
 module.exports = {
     registerUserSetup,
     deleteUserSetup,
     createPost,
     deletePost,
-    checkHandle
+    checkHandle,
+    createTokenForAuthentication
 }

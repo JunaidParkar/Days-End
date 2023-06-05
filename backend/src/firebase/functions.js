@@ -5,9 +5,9 @@ const submitTokens = async (tokens, uid) => {
     let response
     let tokenData = {token1: tokens[0], token2: tokens[1], token3: tokens[2], token4: tokens[3]}
     await realtimeAdmin.ref(`tokens/${uid}`).set(tokenData).then(() => {
-        response =  {stat: 200}
-    }).catch(() => {
-        response =  {stat: 500}
+        response =  {status: 200, message: "success"}
+    }).catch(err => {
+        response =  {status: 500, message: err}
     })
     return response
 }

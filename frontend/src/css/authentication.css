@@ -52,6 +52,12 @@
     text-transform: uppercase;
 }
 
+.authContainer form input[type = submit]:disabled,
+.authContainer form .handlers input[type = submit]:disabled,
+.addPoemContainer form input[type = submit]:disabled {
+    cursor: no-drop;
+}
+
 .authContainer form a,
 .authContainer form .handlers a {
     letter-spacing: 2px;

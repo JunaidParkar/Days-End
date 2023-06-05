@@ -1,6 +1,6 @@
 const express = require('express');
 const { firestoreAdmin } = require('./src/firebase/config');
-const { registerUserSetup, deleteUserSetup, createPost, checkHandle } = require('./src/handlers/handlers');
+const { registerUserSetup, deleteUserSetup, createPost, checkHandle, createTokenForAuthentication } = require('./src/handlers/handlers');
 const { verifyToken, createAuthToken, generateUniqueId } = require('./src/sessionFunctions/sessionFunctions');
 const cors = require('cors');
 
@@ -15,6 +15,7 @@ const corsOptions = {
 app.use(express.json())
 app.use(cors(corsOptions));
 
+app.post("/createToken", createTokenForAuthentication)
 app.post("/checkHandle", checkHandle)
 app.post("/userRegisterSetup", registerUserSetup)
 app.post("/userSetupDelete", deleteUserSetup)
