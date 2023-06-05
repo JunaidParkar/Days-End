@@ -14,7 +14,8 @@ const registerUserSetup = async (req, res) => {
         followers: 0,
         following: 0,
         posts: 0,
-        userHandle: req.body.handle
+        userHandle: req.body.handle,
+        uid: req.body.uid
     }
     let tokenData = {
         handle: req.body.handle,

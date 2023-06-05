@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AlertBox from '../../component/alertBox'
-import { registerNewUser } from '../../firebase/authentication/auth'
+import { registerNewUser, signOutUser } from '../../firebase/authentication/auth'
+import useAlert from '../../hooks/useAlert'
 
 const Register = () => {
+
+    const [isAlert, toggleAlert, alertLog, addAlertLog] = useAlert(false);
+    
 
     const [registerData, setRegisterData] = useState({
         handle: "",
@@ -12,8 +16,6 @@ const Register = () => {
         confPassword: ""
     })
     const [disableBtn, setDisableBtn] = useState(true)
-    const [disableLoginBtn, setdisableLoginBtn] = useState(false)
-    const [alertBox, setAlertBox] = useState([false])
     const [loader, setLoader] = useState(false)
 
     useEffect(() => {
@@ -27,6 +29,10 @@ const Register = () => {
         updateBtn()
     }, [registerData])
     
+    const setAlert = (stat, log) => {
+        toggleAlert(stat)
+        addAlertLog(log)
+    }
 
     const handleRegisterData = (e) => {
         setRegisterData({...registerData, [e.target.name] : e.target.value})
@@ -37,28 +43,29 @@ const Register = () => {
         setDisableBtn(true)
         setLoader(true)
         if (registerData.confPassword === registerData.password) {
-            if (registerData.password.length < 6 || registerData.password.length > 12) {
-                setAlertBox([true, "Password should be between 6 to 12 character"])
+            if (registerData.password.trim().length < 6 || registerData.password.trim().length > 12) {
+                setAlert(true, "Password should be between 6 to 12 character. Password should not contain any white spaces.")
             } else {
                 let reg = await registerNewUser(registerData.email, registerData.password, registerData.handle)
                 if (reg.status === 401) {
-                    setAlertBox([true, reg.message])
+                    setAlert(true, reg.message)
                 } else if (reg.status === 500) {
-                    setAlertBox([true, reg.message || "Internal server error. Kindly try again later!!"])
+                    setAlert(true, reg.message)
                 } else if (reg.status === 200) {
                     console.log(reg)
-                    setAlertBox([true, "Check your E-Mail inbox for E-Mail verification"])
+                    await signOutUser()
+                    setAlert(true, "Check your E-Mail inbox for E-Mail verification")
                 }
             }
         } else {
-            setAlertBox([true, "Password didn't match"])
+            setAlert(true, "Password didn't match")
         }
         setDisableBtn(false)
         setLoader(false)
     }
 
     const closeAlert = () => {
-        setAlertBox(false)
+        setAlert(false, "")
     }
 
     return (
@@ -71,15 +78,15 @@ const Register = () => {
                     <input type="password" name="password" placeholder='Enter your password' onChange={(e) => handleRegisterData(e)} required />
                     <input type="password" name="confPassword" placeholder='Re-type your password' onChange={(e) => handleRegisterData(e)} required />
                     <div className="flex handlers" >
-                        <input type="submit" disabled={disableBtn} value="Create account" style={{width: '100%'}} />
+                        <input type="submit" disabled={disableBtn} value={loader ? "Registering your account" : "Create your account"} style={{width: '100%'}} />
                     </div>
                 </form>
             </div>
             <Link to="/login" className={loader ? "none redirectAuthPage" : "redirectAuthPage"} >
-                <p>Login</p>
+                <p>login</p>
             </Link>
 
-            {alertBox[0] ? <AlertBox message={alertBox[1]} closeError={closeAlert} /> : ""}
+            {isAlert ? <AlertBox message={alertLog} closeError={closeAlert} /> : ""}
         </>
     )
 }

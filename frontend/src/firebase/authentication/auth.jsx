@@ -8,8 +8,10 @@ export const signOutUser = async () => {
     try {
         await signOut(auth)
         response = {status: 200, message: "Logged Out"}
+        console.log(response)
     } catch (error) {
         response = {status: 500, message: error.message}
+        console.log(response)
     }
     return response
 }
@@ -31,47 +33,11 @@ export const deleteUserAccount = async (email, password, uid) => {
     return response
 }
 
-// export const register = async (email, password, handle) => {
-//     let response = {status: "" , message: ""}
-//     try {
-//         await createUserWithEmailAndPassword(auth, email, password).then(async data => {
-//             const structuredData = {
-//                 email: email,
-//                 uid: data.user.uid,
-//                 handle: handle
-//             }
-//             await addNewUserStructure(structuredData).then(async resp => {
-//                 if (resp.status === 200) {
-//                     await sendEmailVerification(data.user).then(() => {
-//                         response = {status: 200, message: `Account created and Email verification link has been sent to your Email. Kindly verify to access your account. Check in "Spam" if you didn't see any email`}
-//                     }).catch((e) => {
-//                         response = {status: 200, message: "Account created but unable to send Email verification link at moment. Kindly De-register your email and register again later."}
-//                     })
-//                 } else if (resp.status === 401 && resp.message === "User handle already taken") {
-//                     await signOutUser()
-//                     response = {status: 401, message: resp.message}
-//                 }
-//             }).catch(async err => {
-//                 await signOutUser()
-//                 response = {status: 500, message: err}
-//             })
-//         }).catch(e => {
-//             response = {status: 500, message: e}
-//         })
-//     } catch (error) {
-//         response = {status: 500, message: error}
-//     }
-//     return response
-
-// }
-
 export const registerNewUser = async (email, password, handle) => {
     let response = {status: "", message: "", token: ""}
     await checkHandle(handle).then(async data => {
-        console.log(data)
         if (data.status === 200) {
             await createUserWithEmailAndPassword(auth, email, password).then(async respo => {
-                console.log("created")
                 let structuredData = {
                     email: email,
                     uid: respo.user.uid,
@@ -93,6 +59,5 @@ export const registerNewUser = async (email, password, handle) => {
     }).catch(err => {
         response = {stat: 500, message: err}
     })
-    console.log(response)
     return response
 }
