@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import useAlert from '../../hooks/useAlert';
 import { loginUser, signOutUser } from '../../firebase/authentication/auth';
 import AlertBox from '../../component/alertBox';
@@ -7,7 +7,7 @@ import AlertBox from '../../component/alertBox';
 
 const Login = () => {
 
-    const [isAlert, toggleAlert, alertLog, addAlertLog] = useAlert(false);
+    const [isAlert, showAlert, closeAlert] = useAlert(false, "");
 
     const [loginData, setLoginData] = useState({
         email: "",
@@ -18,7 +18,7 @@ const Login = () => {
 
     useEffect(() => {
         const updateBtn = () => {
-            if (loginData.email != "" && loginData.password != "") {
+            if (loginData.email.trim() != "" && loginData.password.trim() != "") {
                 setDisableBtn(false)
             } else {
                 setDisableBtn(true)
@@ -31,27 +31,20 @@ const Login = () => {
         setLoginData({...loginData, [e.target.name]: e.target.value})
     }
 
-    const setAlert = (stat, log) => {
-        toggleAlert(stat)
-        addAlertLog(log)
-    }
-
-    const closeAlert = () => {
-        setAlert(false, "")
-    }
+    let navigate = useNavigate()
 
     const loginUserAccount = async e => {
         e.preventDefault()
         setDisableBtn(true)
         setLoader(true)
         if (loginData.email.trim() == "" || loginData.password.trim() == "") {
-            setAlert(true, "E-Mail or passwords cannot be invalid")
+            showAlert("E-Mail or passwords cannot be invalid")
         } else {
             await loginUser(loginData.email.trim(), loginData.password.trim()).then(async data => {
                 if (data.status === 200) {
-                    console.log(localStorage.getItem("AuthToken"))
+                    navigate('/')
                 } else {
-                    setAlert(true, data.message)
+                    showAlert(data.message)
                     await signOutUser()
                 }
             })
@@ -79,7 +72,7 @@ const Login = () => {
             </Link>
 
 
-            {isAlert ? <AlertBox message={alertLog} closeError={closeAlert} /> : ""}
+            {isAlert.state ? <AlertBox message={isAlert.log} closeError={closeAlert} /> : ""}
         </>
     )
 }

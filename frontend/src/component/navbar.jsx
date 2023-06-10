@@ -5,13 +5,16 @@ import search from "../assets/search.png"
 import searchActive from "../assets/searchActive.png"
 import notification from "../assets/notification.png"
 import notificationFilled from "../assets/notificationFilled.png"
-import user from "../assets/user.png"
+import userOutline from "../assets/user.png"
 import userFilled from "../assets/userFilled.png"
 import logout from "../assets/logout.png"
 import { useNavigate } from 'react-router-dom'
+import { signOutUser } from '../firebase/authentication/auth'
+import useAuth from '../hooks/useAuth'
 
 const Navbar = (props) => {
 
+    const [user] = useAuth()
     const [status, setStatus] = useState({
         house: false,
         search: false,
@@ -27,12 +30,9 @@ const Navbar = (props) => {
       use()
     }, [])
 
-
-    const navigate = useNavigate()
-
-
-    const redirect = (path) => {
-        navigate(`/${path}`)
+    const logOut = async () => {
+        await signOutUser().then(data => {
+        })
     }
     
 
@@ -50,9 +50,9 @@ const Navbar = (props) => {
                         <img src={notificationFilled} className={status.notification ? '' : 'displayNone'} alt="Notification" />
                         <p className='flexCenter notCount' >2+</p>
                     </div>
-                    <img src={user} onClick={() => navigate("/profile")} className={status.profile ? 'displayNone' : ''} alt="Your profile" />
+                    <img src={userOutline} onClick={() => navigate("/profile")} className={status.profile ? 'displayNone' : ''} alt="Your profile" />
                     <img src={userFilled} className={status.profile ? '' : 'displayNone'} alt="Your profile" />
-                    <div className="flex logout">
+                    <div className="flex logout" onClick={() => logOut()} >
                         <img src={logout} alt="" />
                         <p>logout</p>
                     </div>

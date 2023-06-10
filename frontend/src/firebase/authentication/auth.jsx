@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, signOut } from "firebase/auth"
+import { createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from "firebase/auth"
 import { auth } from "../cred"
 import { addNewUserStructure, checkHandle, getToken } from "../../api/request"
 
@@ -83,6 +83,35 @@ export const loginUser = async (email, password) => {
         }
     }).catch(signInError => {
         response = {status: 500, message: signInError.code}
+    })
+    return response
+}
+
+export const verifyEmailLink = async (email, password) => {
+    let response = {status: "", message: ""}
+    await signInWithEmailAndPassword(auth, email, password).then(async user => {
+        if (user.user.emailVerified) {
+            response = {status: 500, message: "E-Mail already verified."}
+        } else {
+            await sendEmailVerification(user.user).then(() => {
+                response = {status: 200, message: "E-Mail verification link has been sent to your E-Mail inbox."}
+            }).catch(err => {
+                response = {status: 500, message: err.code}
+            })
+        }
+        await signOutUser()
+    }).catch(signInError => {
+        response = {status: 500, message: signInError.code}
+    })
+    return response
+}
+
+export const resetPassword = async (email) => {
+    let response = {status: "", message: ""}
+    await sendPasswordResetEmail(auth, email).then(resp => {
+        response = {status: 200, message: resp ? resp : "Password reset E-Mail has been sent to your E-Mail."}
+    }).catch(error => {
+        response = {status: 500, message: error.code}
     })
     return response
 }

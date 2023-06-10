@@ -15,6 +15,7 @@ const corsOptions = {
 app.use(express.json())
 app.use(cors(corsOptions));
 
+
 app.post("/createToken", createTokenForAuthentication)
 app.post("/checkHandle", checkHandle)
 app.post("/userRegisterSetup", registerUserSetup)

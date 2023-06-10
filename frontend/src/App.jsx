@@ -9,6 +9,8 @@ import Search from './screen/search';
 import Notify from './screen/notification';
 import Profile from './screen/profile';
 import AddPoem from './screen/addPoem';
+import VerifyEmail from './screen/authentication/verifyEmail';
+import useAuth from './hooks/useAuth';
 import "./css/authentication.css"
 import "./css/navbar.css"
 import "./css/home.css"
@@ -19,8 +21,24 @@ import "./css/preloader.css"
 import "./css/userPost.css"
 import "./css/searchCard.css"
 import "./css/addPoem.css"
+import Preloader from './component/preloader';
+import useAlert from './hooks/useAlert';
 
 const App = () => {
+
+  const [isAlert, showAlert, closeAlert] = useAlert(false, "");
+  const [user] = useAuth()
+
+
+  // document.addEventListener('contextmenu', (e) => {
+  //   e.preventDefault();
+  // });
+  
+  // document.addEventListener('keydown', (e) => {
+  //   if (e.keyCode === 123) {
+  //     e.preventDefault();
+  //   }
+  // });
 
 
   if (window.innerWidth < 300) {
@@ -36,33 +54,53 @@ const App = () => {
     )
   }
 
-  // document.addEventListener('contextmenu', (e) => {
-  //   e.preventDefault();
-  // });
-  
-  // document.addEventListener('keydown', (e) => {
-  //   if (e.keyCode === 123) {
-  //     e.preventDefault();
-  //   }
-  // });
-  
-  // if (!isLoading) {
+  if (user.loading) {
+    return <Preloader />;
+  }
+
+  if (user.error) {
+    showAlert(user.error);
     return (
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/notifications" element={<Notify />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/addPoem" element={<AddPoem />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path='/resetPassword' element={<ResetPassword />} />
-          <Route path='/*' element={<PageNotFound />} />
-        </Routes>
-      </BrowserRouter>
-    );
-  // }
+      <>
+        {isAlert.state ? <AlertBox message={isAlert.log} closeError={closeAlert} /> : ""}
+      </>
+    )
+  }
+
+  if (!user.loading) {
+    if (!user.loggedIn) {
+      return (
+        <>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element ={<Login />} />
+              <Route path="/login" element ={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path='/resetPassword' element={<ResetPassword />} />
+              <Route path='/verifyEmail' element={<VerifyEmail />} />
+              <Route path='/*' element={<PageNotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </>
+      )
+    } else {
+      return (
+        <>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/search" element={<Search />} />
+              <Route path="/notifications" element={<Notify />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/addPoem" element={<AddPoem />} />
+              <Route path='/*' element={<PageNotFound />} />
+            </Routes>
+          </BrowserRouter>
+          {isAlert.state ? <AlertBox message={isAlert.log} closeError={closeAlert} /> : ""}
+        </>
+      );
+    }
+  }
 }
   
 export default App

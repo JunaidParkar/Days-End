@@ -1,18 +1,26 @@
 import { useState } from 'react';
 
-const useAlert = (initialState) => {
-  const [isAlert, setIsAlert] = useState(initialState);
-  const [alertLog, setAlertLog] = useState('');
+const useAlert = (initialState, alertLog) => {
+  const [isAlert, setIsAlert] = useState({
+    state: initialState,
+    log: alertLog
+  });
 
-  const toggleAlert = (alert) => {
-    setIsAlert(alert);
+  const showAlert = (log) => {
+    setIsAlert({
+      state: true,
+      log: log
+    });
   };
 
-  const addAlertLog = (msg) => {
-    setAlertLog(msg);
-  };
+  const closeAlert = () => {
+    setIsAlert({
+      state: false,
+      log: ""
+    })
+  }
 
-  return [isAlert, toggleAlert, alertLog, addAlertLog];
+  return [isAlert, showAlert, closeAlert];
 };
 
 export default useAlert;

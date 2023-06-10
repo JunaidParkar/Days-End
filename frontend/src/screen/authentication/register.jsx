@@ -6,7 +6,7 @@ import useAlert from '../../hooks/useAlert'
 
 const Register = () => {
 
-    const [isAlert, toggleAlert, alertLog, addAlertLog] = useAlert(false);
+    const [isAlert, showAlert, closeAlert] = useAlert(false, "");
     
 
     const [registerData, setRegisterData] = useState({
@@ -18,9 +18,10 @@ const Register = () => {
     const [disableBtn, setDisableBtn] = useState(true)
     const [loader, setLoader] = useState(false)
 
+    
     useEffect(() => {
         const updateBtn = () => {
-            if (registerData.email != "" && registerData.password != "" && registerData.confPassword != "" && registerData.handle != "") {
+            if (registerData.email.trim() != "" && registerData.password.trim() != "" && registerData.confPassword.trim() != "" && registerData.handle.trim() != "") {
                 setDisableBtn(false)
             } else {
                 setDisableBtn(true)
@@ -29,14 +30,11 @@ const Register = () => {
         updateBtn()
     }, [registerData])
     
-    const setAlert = (stat, log) => {
-        toggleAlert(stat)
-        addAlertLog(log)
-    }
 
     const handleRegisterData = (e) => {
         setRegisterData({...registerData, [e.target.name] : e.target.value})
     }
+
 
     const registerUser = async (e) => {
         e.preventDefault()
@@ -44,29 +42,26 @@ const Register = () => {
         setLoader(true)
         if (registerData.confPassword === registerData.password) {
             if (registerData.password.trim().length < 6 || registerData.password.trim().length > 12) {
-                setAlert(true, "Password should be between 6 to 12 character. Password should not contain any white spaces.")
+                showAlert("Password should be between 6 to 12 character. Password should not contain any white spaces.")
             } else {
                 let reg = await registerNewUser(registerData.email, registerData.password, registerData.handle)
                 if (reg.status === 401) {
-                    setAlert(true, reg.message)
+                    showAlert(reg.message)
                 } else if (reg.status === 500) {
-                    setAlert(true, reg.message)
+                    showAlert(reg.message)
                 } else if (reg.status === 200) {
                     console.log(reg)
                     await signOutUser()
-                    setAlert(true, "Check your E-Mail inbox for E-Mail verification")
+                    showAlert("Check your E-Mail inbox for E-Mail verification")
                 }
             }
         } else {
-            setAlert(true, "Password didn't match")
+            showAlert("Password didn't match")
         }
         setDisableBtn(false)
         setLoader(false)
     }
 
-    const closeAlert = () => {
-        setAlert(false, "")
-    }
 
     return (
         <>
@@ -77,8 +72,9 @@ const Register = () => {
                     <input type="text" name="email" placeholder='Enter your E-Mail' onChange={(e) => handleRegisterData(e)} required />
                     <input type="password" name="password" placeholder='Enter your password' onChange={(e) => handleRegisterData(e)} required />
                     <input type="password" name="confPassword" placeholder='Re-type your password' onChange={(e) => handleRegisterData(e)} required />
-                    <div className="flex handlers" >
-                        <input type="submit" disabled={disableBtn} value={loader ? "Registering your account" : "Create your account"} style={{width: '100%'}} />
+                    <div className="flex handlers">
+                        <input disabled={disableBtn} type="submit" value="Login" />
+                        <Link to="/verifyEmail" className={loader ? "none" : ""}>Verify E-Email??</Link>
                     </div>
                 </form>
             </div>
@@ -86,7 +82,7 @@ const Register = () => {
                 <p>login</p>
             </Link>
 
-            {isAlert ? <AlertBox message={alertLog} closeError={closeAlert} /> : ""}
+            {isAlert.state ? <AlertBox message={isAlert.log} closeError={closeAlert} /> : ""}
         </>
     )
 }
