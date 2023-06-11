@@ -71,19 +71,20 @@ const createPost =  async (req, res) => {
         createdAt: new Date().toISOString(),
         postId: generateUniqueId()
     }
-    await firestoreAdmin.collection(`posts`).doc().set(postData).then( async () => {
-        await firestoreAdmin.doc(`users/${req.body.handle}`).get().then(async data => {
-            await firestoreAdmin.doc(`users/${req.body.handle}`).update({posts: data.data().posts + 1}).then(() => {
-                res.json({stat: 200, message: "Post uploaded"})
-            }).catch(err => {
-                res.json({stat: 12, message: err})
-            })
-        }).catch(err => {
-            res.json({stat: 12, message: err})
-        })
-    }).catch(error => {
-        res.json({stat: 12, message: error})
-    })
+    try {
+        const postRef = await firestoreAdmin.collection('posts').doc();
+        const userRef = await firestoreAdmin.doc(`users/${req.body.handle}`).get();
+
+        if (!userRef.exists) {
+            res.json({ status: 401, message: 'Handle is incorrect. Please log in again.' });
+        } else {
+            await firestoreAdmin.collection('posts').doc(postRef.id).set(postData);
+            await firestoreAdmin.doc(`users/${req.body.handle}`).update({ posts: userRef.data().posts + 1 });
+            res.json({ status: 200, message: 'Post uploaded' });
+        }
+    } catch (error) {
+        res.json({ status: 500, message: 'An error occurred while creating the post.' });
+    }
 }
 
 const deletePost = async (req, res) => {
@@ -98,12 +99,12 @@ const deletePost = async (req, res) => {
             doc.ref.delete().then( async e => {
                 await firestoreAdmin.doc(`users/${req.body.handle}`).get().then(async data => {
                     await firestoreAdmin.doc(`users/${req.body.handle}`).update({posts: data.data().posts - 1}).then(() => {
-                        res.json({stat: 200, message: "Post deleted"})
+                        res.json({status: 200, message: "Post deleted"})
                     }).catch(err => {
-                        res.json({stat: 12, message: err})
+                        res.json({status: 12, message: err})
                     })
                 }).catch(err => {
-                    res.json({stat: 12, message: err})
+                    res.json({status: 12, message: err})
                 })
             }).catch(error => {
                 res.json({statu: 12, message: error})
@@ -124,11 +125,42 @@ const createTokenForAuthentication = async (req, res) => {
     res.json(resp)
 }
 
+const fetchAllPost = async (req, res) => {
+    let requiredFields = ['lastId'];
+        for (let field of requiredFields) {
+            if (!req.body[field]) {
+                return res.json({ status: 500, message: `${field.charAt(0).toUpperCase() + field.slice(1)} not provided`, posts: "", lastPost: "" });
+            }
+        }
+      try {
+        let lastFetchedId
+        let query = firestoreAdmin.collection('posts').orderBy('createdAt', 'desc').limit(10);
+        if (req.body.lastId !== "no") {
+            let lastFetchedPost = await firestoreAdmin.collection('posts').doc(req.body.lastId).get();
+            query = query.startAfter(lastFetchedPost);
+        }
+        let snapshot = await query.get();
+        let posts = {};
+        snapshot.forEach(doc => {
+            let post = doc.data();
+            posts[doc.id] = post;
+        });
+        if (Object.keys(posts).length > 0) {
+            lastFetchedId = snapshot.docs[snapshot.docs.length - 1].id;
+        }
+        res.json({ status: 200, message: "", posts: Object.keys(posts).length === 0 ? "no more data" : posts, lastPost: lastFetchedId });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ status: 500, message: 'An error occurred while fetching posts.', posts: "", lastPost: "" });
+    }
+}
+
 module.exports = {
     registerUserSetup,
     deleteUserSetup,
     createPost,
     deletePost,
     checkHandle,
-    createTokenForAuthentication
+    createTokenForAuthentication,
+    fetchAllPost
 }

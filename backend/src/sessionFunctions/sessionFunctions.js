@@ -42,18 +42,20 @@ const verifyToken = async (token, uid) => {
         let tokenPart4 = tokenList[4];
         let tokenPart5 = tokenList[5];
         let tokenPart6 = tokenList[6];
+        console.log(tokenList)
+        console.log(data.stat.token1)
         if (tokenPart1 === data.stat.token1 && tokenPart2 === data.stat.token2 && tokenPart4 === data.stat.token3 && tokenPart6 === data.stat.token4) {
             try {
-                const decoded = jwt.verify(`${tokenPart0}.${tokenPart5}.${tokenPart3}`,process.env.SECRET_KEY_TOKEN);
+                const decoded = await jwt.verify(`${tokenPart0}.${tokenPart5}.${tokenPart3}`,process.env.SECRET_KEY_TOKEN);
                 return { stat: 200, message: decoded };
             } catch (err) {
-                return { stat: 19, message: err };
+                return { stat: 700, message: err };
             }
         } else {
-            return { stat: 12, message: "Invalid token" };
+            return { stat: 700, message: "Invalid token" };
         }
     } catch (error) {
-        return { stat: 500, msg: error };
+        return { stat: 700, message: error };
     }
 };
 
