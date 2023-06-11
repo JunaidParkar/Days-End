@@ -1,6 +1,7 @@
 .postCard {
-    width: calc((100% / 3) - 40px);
+    width: calc((100% / 3) - 13.3333px);
     aspect-ratio: 1/1;
+    cursor: pointer;
 }
 
 .postCard,
@@ -146,7 +147,7 @@
 
 @media only screen and (max-width: 920px) {
     .postCard {
-        width: calc(100% / 2.1);
+        width: calc((100% / 2) - 10px);
     }
 }
 

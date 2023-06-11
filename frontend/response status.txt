@@ -12,3 +12,6 @@ registerUser (src/firebase/authentication/auth.jsx)
     200: success
     401: User handle not available
     500: catch block error
+
+
+700 login again

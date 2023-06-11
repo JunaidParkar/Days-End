@@ -13,8 +13,7 @@ import { signOutUser } from '../firebase/authentication/auth'
 import useAuth from '../hooks/useAuth'
 
 const Navbar = (props) => {
-
-    const [user] = useAuth()
+    
     const [status, setStatus] = useState({
         house: false,
         search: false,
@@ -24,7 +23,6 @@ const Navbar = (props) => {
 
     useEffect(() => {
       const use = () => {
-        console.log(props.page)
         setStatus({[props.page]: true})
       }
       use()
@@ -34,6 +32,8 @@ const Navbar = (props) => {
         await signOutUser().then(data => {
         })
     }
+
+    const navigate = useNavigate()
     
 
 

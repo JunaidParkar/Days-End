@@ -11,6 +11,8 @@ import Profile from './screen/profile';
 import AddPoem from './screen/addPoem';
 import VerifyEmail from './screen/authentication/verifyEmail';
 import useAuth from './hooks/useAuth';
+import Preloader from './component/preloader';
+import useAlert from './hooks/useAlert';
 import "./css/authentication.css"
 import "./css/navbar.css"
 import "./css/home.css"
@@ -21,8 +23,8 @@ import "./css/preloader.css"
 import "./css/userPost.css"
 import "./css/searchCard.css"
 import "./css/addPoem.css"
-import Preloader from './component/preloader';
-import useAlert from './hooks/useAlert';
+import "./css/userPostSkeleton.css"
+import { signOutUser } from './firebase/authentication/auth';
 
 const App = () => {
 
@@ -39,6 +41,10 @@ const App = () => {
   //     e.preventDefault();
   //   }
   // });
+
+  // if (!localStorage.getItem("AuthToken")) {
+  //   signOutUser()
+  // }
 
 
   if (window.innerWidth < 300) {

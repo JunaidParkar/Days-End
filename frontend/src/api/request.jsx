@@ -26,12 +26,27 @@ export const getToken = async (data) => {
         if (resp.data.status === 500) {
             response = {status: 500, message: resp.data.message}
         } else if (resp.data.status === 200) {
+            localStorage.clear()
             response = {status: 200, message: resp.data.message, token: resp.data.token}
         } else {
             response = {status: 500, message: "Unable to process your request at the moment."}
         }
     }).catch(error => {
         response = {status: 500, message: error}
+    })
+    return response
+}
+
+export const getAllPosts = async (lastId, uid) => {
+    let response = {status: "", message: "", data: "", lastPostId: ""}
+    await api.post("/getAllPost", {uid: uid,lastId: lastId}).then(resp => {
+        if (resp.data.status === 700) {
+            response = {status: 700, message: resp.data.message, data: "", lastPostId: ""}
+        } else {
+            response = {status: resp.data.status, message: resp.data.message, data: resp.data.posts, lastPostId: resp.data.lastPost}
+        }
+    }).catch(error => {
+        response = {status: 500, message: error.code, data: "", lastPostId: ""}
     })
     return response
 }
