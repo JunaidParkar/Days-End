@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import PageNotFound from './screen/pageNotFound'
 import Login from './screen/authentication/login';
@@ -25,12 +25,25 @@ import "./css/searchCard.css"
 import "./css/addPoem.css"
 import "./css/userPostSkeleton.css"
 import { signOutUser } from './firebase/authentication/auth';
+import store from './redux/store';
+import { Provider } from 'react-redux';
 
 const App = () => {
 
   const [isAlert, showAlert, closeAlert] = useAlert(false, "");
   const [user] = useAuth()
 
+  useEffect(() => {
+    const initializeApp = async () => {
+      // Any asynchronous initialization logic can go here
+      if (user.error) {
+        showAlert(user.error);
+        await signOutUser();
+      }
+    };
+
+    initializeApp();
+  }, [user]);
 
   // document.addEventListener('contextmenu', (e) => {
   //   e.preventDefault();
@@ -64,45 +77,42 @@ const App = () => {
     return <Preloader />;
   }
 
-  if (user.error) {
-    showAlert(user.error);
-    return (
-      <>
-        {isAlert.state ? <AlertBox message={isAlert.log} closeError={closeAlert} /> : ""}
-      </>
-    )
-  }
+  
 
   if (!user.loading) {
     if (!user.loggedIn) {
       return (
         <>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element ={<Login />} />
-              <Route path="/login" element ={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path='/resetPassword' element={<ResetPassword />} />
-              <Route path='/verifyEmail' element={<VerifyEmail />} />
-              <Route path='/*' element={<PageNotFound />} />
-            </Routes>
-          </BrowserRouter>
+          <Provider store={store} >
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element ={<Login />} />
+                <Route path="/login" element ={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path='/resetPassword' element={<ResetPassword />} />
+                <Route path='/verifyEmail' element={<VerifyEmail />} />
+                <Route path='/*' element={<PageNotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </Provider>
         </>
       )
     } else {
       return (
         <>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/search" element={<Search />} />
-              <Route path="/notifications" element={<Notify />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/addPoem" element={<AddPoem />} />
-              <Route path='/*' element={<PageNotFound />} />
-            </Routes>
-          </BrowserRouter>
-          {isAlert.state ? <AlertBox message={isAlert.log} closeError={closeAlert} /> : ""}
+          <Provider store={store} >
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/search" element={<Search />} />
+                <Route path="/notifications" element={<Notify />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/addPoem" element={<AddPoem />} />
+                <Route path='/*' element={<PageNotFound />} />
+              </Routes>
+            </BrowserRouter>
+            {isAlert.state ? <AlertBox message={isAlert.log} closeError={closeAlert} /> : ""}
+          </Provider>
         </>
       );
     }

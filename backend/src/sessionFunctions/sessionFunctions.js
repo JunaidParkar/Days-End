@@ -12,7 +12,7 @@ const generateToken = (length) => {
     return token;
 }
 
-const createAuthToken = async (dataInJson) => {
+const createAuthToken = async(dataInJson) => {
     let response
     let randomToken1 = generateToken(100)
     let randomToken2 = generateToken(100)
@@ -23,15 +23,15 @@ const createAuthToken = async (dataInJson) => {
     let dbStructure = [randomToken1, randomToken2, randomToken3, randomToken4]
     let token = `${tokenArry[0]}.${randomToken1}.${randomToken2}.${tokenArry[2]}.${randomToken3}.${tokenArry[1]}.${randomToken4}`
     await submitTokens(dbStructure, dataInJson.uid).then(data => {
-        response =  {...data, token: token}
+        response = {...data, token: token }
     }).catch(err => {
-        response =  {status: 500, message: err}
+        response = { status: 500, message: err }
     })
     return response
 }
 
 
-const verifyToken = async (token, uid) => {
+const verifyToken = async(token, uid) => {
     try {
         const data = await getTokens(uid);
         let tokenList = token.split(".");
@@ -42,11 +42,9 @@ const verifyToken = async (token, uid) => {
         let tokenPart4 = tokenList[4];
         let tokenPart5 = tokenList[5];
         let tokenPart6 = tokenList[6];
-        console.log(tokenList)
-        console.log(data.stat.token1)
         if (tokenPart1 === data.stat.token1 && tokenPart2 === data.stat.token2 && tokenPart4 === data.stat.token3 && tokenPart6 === data.stat.token4) {
             try {
-                const decoded = await jwt.verify(`${tokenPart0}.${tokenPart5}.${tokenPart3}`,process.env.SECRET_KEY_TOKEN);
+                const decoded = await jwt.verify(`${tokenPart0}.${tokenPart5}.${tokenPart3}`, process.env.SECRET_KEY_TOKEN);
                 return { stat: 200, message: decoded };
             } catch (err) {
                 return { stat: 700, message: err };

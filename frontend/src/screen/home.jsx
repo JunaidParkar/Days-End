@@ -6,20 +6,27 @@ import UserPostSkeleton from '../component/userPostSkeleton'
 import Preloader from '../component/preloader'
 import useAlert from '../hooks/useAlert'
 import { getAllPosts } from '../api/request'
+import { useDispatch, useSelector } from 'react-redux';
+import { storeAllPosts } from '../redux/actions/homePageAction'
+import store from '../redux/store';
 
 
 const Home = () => {
 
     const [user] = useAuth()
     const [isAlert, showAlert, closeAlert] = useAlert(false, "");
-    const [posts, setPosts] = useState({})
     const [lastPostId, setlastPostId] = useState("no")
     const [hasMore, setHasMore] = useState(true)
     const [postLoading, setPostLoading] = useState(true)
+    const dispatch = useDispatch();
+    const allPosts = useSelector((state) => state.allHomePosts);
+
 
     useEffect(() => {
         getPosts()
     }, [user])
+
+    console.log(allPosts)
 
     const getPosts = async () => {
         if (!user.loading && !user.error) {
@@ -30,9 +37,13 @@ const Home = () => {
                     if (resp.data === "no more data") {
                         setHasMore(false)
                     } else {
-                        setPosts({...posts, ...resp.data})
-                        setlastPostId(resp.lastPostId)
-                        setHasMore(true)
+                        // setPosts({...posts, ...resp.data})
+                        // setlastPostId(resp.lastPostId)
+                        // setHasMore(true)
+                        // console.log(resp.data)
+                        dispatch(storeAllPosts(resp.data));
+                        setlastPostId(resp.lastPostId);
+                        setHasMore(true);
                     }
                 }
             })
@@ -78,8 +89,8 @@ const Home = () => {
                         <Navbar page="house" />
                         <div className="flex homeContentContainer">
                             {
-                                Object.keys(posts).map((key) => (
-                                    <UserPost key={key} data={posts[key]} />
+                                Object.keys(allPosts).map((key) => (
+                                    <UserPost key={key} data={allPosts[key]} />
                                     ))
                                 }
                             {postLoading ? <UserPostSkeleton /> : ""}

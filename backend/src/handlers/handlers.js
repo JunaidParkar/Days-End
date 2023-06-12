@@ -1,7 +1,7 @@
 const { firestoreAdmin } = require("../firebase/config")
 const { createAuthToken, generateUniqueId } = require("../sessionFunctions/sessionFunctions")
 
-const registerUserSetup = async (req, res) => {
+const registerUserSetup = async(req, res) => {
     let requiredFields = ['handle', 'uid', 'email'];
 
     for (let field of requiredFields) {
@@ -22,38 +22,37 @@ const registerUserSetup = async (req, res) => {
         email: req.body.email,
         uid: req.body.uid
     }
-    await firestoreAdmin.collection("users").doc(structureToSet.userHandle).set(structureToSet).then( async () => {
-        res.json({status: 200, message: "User registration structure created successfully"})
+    await firestoreAdmin.collection("users").doc(structureToSet.userHandle).set(structureToSet).then(async() => {
+        res.json({ status: 200, message: "User registration structure created successfully" })
     }).catch(err => {
-        res.json({status: 12, message: err})
+        res.json({ status: 12, message: err })
     })
 }
 
-const checkHandle = async (req, res) => {
+const checkHandle = async(req, res) => {
     await firestoreAdmin.collection(`users`).doc(req.body.handle).get().then(doc => {
         if (doc.exists) {
-            res.json({status: 401, message: "User handle already taken"})
+            res.json({ status: 401, message: "User handle already taken" })
         } else {
-            res.json({status: 200})
+            res.json({ status: 200 })
         }
     }).catch(err => {
-        res.json({status: 500, message: err})
+        res.json({ status: 500, message: err })
     })
 }
 
-const deleteUserSetup = async (req, res) => {
+const deleteUserSetup = async(req, res) => {
     if (!req.body.handle) {
-        res.json({status: 500, message: "Handle not provided"})
+        res.json({ status: 500, message: "Handle not provided" })
     }
-    await firestoreAdmin.collection(`users`).doc(req.body.handle).delete().then( async data => {
-        res.json({status: 200, message: "User setup deleted"})
+    await firestoreAdmin.collection(`users`).doc(req.body.handle).delete().then(async data => {
+        res.json({ status: 200, message: "User setup deleted" })
     }).catch(error => {
-        res.json({status: 12, message: error})
-        console.log("g")
+        res.json({ status: 12, message: error })
     })
 }
 
-const createPost =  async (req, res) => {
+const createPost = async(req, res) => {
     let requiredFields = ['uid', 'email', 'handle', 'poem', 'heading', 'img'];
 
     for (let field of requiredFields) {
@@ -87,7 +86,7 @@ const createPost =  async (req, res) => {
     }
 }
 
-const deletePost = async (req, res) => {
+const deletePost = async(req, res) => {
     let requiredFields = ['postId', 'handle'];
     for (let field of requiredFields) {
         if (!req.body[field]) {
@@ -96,24 +95,24 @@ const deletePost = async (req, res) => {
     }
     await firestoreAdmin.collection("posts").where("postId", "==", req.body.postId).where("handle", "==", req.body.handle).get().then(snapShot => {
         snapShot.forEach(doc => {
-            doc.ref.delete().then( async e => {
+            doc.ref.delete().then(async e => {
                 await firestoreAdmin.doc(`users/${req.body.handle}`).get().then(async data => {
-                    await firestoreAdmin.doc(`users/${req.body.handle}`).update({posts: data.data().posts - 1}).then(() => {
-                        res.json({status: 200, message: "Post deleted"})
+                    await firestoreAdmin.doc(`users/${req.body.handle}`).update({ posts: data.data().posts - 1 }).then(() => {
+                        res.json({ status: 200, message: "Post deleted" })
                     }).catch(err => {
-                        res.json({status: 12, message: err})
+                        res.json({ status: 12, message: err })
                     })
                 }).catch(err => {
-                    res.json({status: 12, message: err})
+                    res.json({ status: 12, message: err })
                 })
             }).catch(error => {
-                res.json({statu: 12, message: error})
+                res.json({ statu: 12, message: error })
             })
         })
     })
 }
 
-const createTokenForAuthentication = async (req, res) => {
+const createTokenForAuthentication = async(req, res) => {
     let requiredFields = ['tokenData'];
 
     for (let field of requiredFields) {
@@ -125,14 +124,14 @@ const createTokenForAuthentication = async (req, res) => {
     res.json(resp)
 }
 
-const fetchAllPost = async (req, res) => {
+const fetchAllPost = async(req, res) => {
     let requiredFields = ['lastId'];
-        for (let field of requiredFields) {
-            if (!req.body[field]) {
-                return res.json({ status: 500, message: `${field.charAt(0).toUpperCase() + field.slice(1)} not provided`, posts: "", lastPost: "" });
-            }
+    for (let field of requiredFields) {
+        if (!req.body[field]) {
+            return res.json({ status: 500, message: `${field.charAt(0).toUpperCase() + field.slice(1)} not provided`, posts: "", lastPost: "" });
         }
-      try {
+    }
+    try {
         let lastFetchedId
         let query = firestoreAdmin.collection('posts').orderBy('createdAt', 'desc').limit(10);
         if (req.body.lastId !== "no") {
@@ -150,7 +149,6 @@ const fetchAllPost = async (req, res) => {
         }
         res.json({ status: 200, message: "", posts: Object.keys(posts).length === 0 ? "no more data" : posts, lastPost: lastFetchedId });
     } catch (error) {
-        console.log(error);
         res.status(500).json({ status: 500, message: 'An error occurred while fetching posts.', posts: "", lastPost: "" });
     }
 }

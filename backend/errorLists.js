@@ -1,5 +1,4 @@
-let jwt = [
-    {
+let jwt = [{
         "data": {
             "stat": 19,
             "message": {
@@ -10,8 +9,8 @@ let jwt = [
         }
     },
     {
-        "data": { 
-            "stat": 12, 
+        "data": {
+            "stat": 12,
             "message": "Invalid token"
         }
     },
@@ -20,5 +19,19 @@ let jwt = [
             "stat": 500,
             "msg": error
         }
+    }
+]
+
+let getMyData = [{
+        "status": 500,
+        "message": "UID Incorrect"
+    },
+    {
+        "status": 200,
+        "data": {}
+    },
+    {
+        "status": 300,
+        "message": ""
     }
 ]

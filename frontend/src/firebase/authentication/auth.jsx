@@ -74,6 +74,7 @@ export const loginUser = async (email, password) => {
                 if (token.status === 200) {
                     localStorage.setItem("AuthToken", token.token)
                     response = {status: 200, message: "Successfully logged in"}
+                    // await 
                 } else {
                     response = {status: token.status, message: token.message}
                 }
