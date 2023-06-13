@@ -50,3 +50,17 @@ export const getAllPosts = async (lastId, uid) => {
     })
     return response
 }
+
+export const getAllOfMyDatas = async (uid) => {
+    let response = {status: "", message: "", data: ""}
+    await api.post("/getMyData", {uid: uid}).then(respo => {
+        if (respo.data.status === 200) {
+            response = {status: 200, message: "", data: respo.data.data}
+        } else {
+            response = {status: respo.status, message: respo.data.message, data: respo.data.data}
+        }
+    }).catch(error => {
+        response = {status: 500, message: error.code, data: ""}
+    })
+    return response
+}

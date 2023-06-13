@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AlertBox from '../../component/alertBox'
-import { registerNewUser, signOutUser } from '../../firebase/authentication/auth'
+import { registerNewUser, signOutUser } from '../../firebaseFunctions/authentication/auth'
 import useAlert from '../../hooks/useAlert'
 
 const Register = () => {
@@ -46,13 +46,9 @@ const Register = () => {
             } else {
                 let reg = await registerNewUser(registerData.email, registerData.password, registerData.handle)
                 if (reg.status === 401) {
-                    showAlert(reg.message)
+                    await showAlert(reg.message, false)
                 } else if (reg.status === 500) {
-                    showAlert(reg.message)
-                } else if (reg.status === 200) {
-                    console.log(reg)
-                    await signOutUser()
-                    showAlert("Check your E-Mail inbox for E-Mail verification")
+                    await showAlert(reg.message, false)
                 }
             }
         } else {
@@ -73,7 +69,7 @@ const Register = () => {
                     <input type="password" name="password" placeholder='Enter your password' onChange={(e) => handleRegisterData(e)} required />
                     <input type="password" name="confPassword" placeholder='Re-type your password' onChange={(e) => handleRegisterData(e)} required />
                     <div className="flex handlers">
-                        <input disabled={disableBtn} type="submit" value="Login" />
+                        <input disabled={disableBtn} type="submit" value="Register" />
                         <Link to="/verifyEmail" className={loader ? "none" : ""}>Verify E-Email??</Link>
                     </div>
                 </form>
@@ -82,7 +78,7 @@ const Register = () => {
                 <p>login</p>
             </Link>
 
-            {isAlert.state ? <AlertBox message={isAlert.log} closeError={closeAlert} /> : ""}
+            {isAlert.state ? <AlertBox message={isAlert.log} closeAlert={closeAlert} /> : ""}
         </>
     )
 }

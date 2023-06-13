@@ -9,6 +9,7 @@ import { getAllPosts } from '../api/request'
 import { useDispatch, useSelector } from 'react-redux';
 import { storeAllPosts } from '../redux/actions/homePageAction'
 import store from '../redux/store';
+import { signOutUser } from '../firebaseFunctions/authentication/auth'
 
 
 const Home = () => {
@@ -19,14 +20,18 @@ const Home = () => {
     const [hasMore, setHasMore] = useState(true)
     const [postLoading, setPostLoading] = useState(true)
     const dispatch = useDispatch();
-    const allPosts = useSelector((state) => state.allHomePosts);
+    const allPosts = useSelector((state) => state.appPost);
 
 
     useEffect(() => {
-        getPosts()
-    }, [user])
+        if (user.loggedIn) {
+            getPosts()
+        }
+    }, [user.loggedIn])
 
-    console.log(allPosts)
+    console.log(user.loggedIn)
+
+    // console.log(allPosts)
 
     const getPosts = async () => {
         if (!user.loading && !user.error) {
@@ -40,11 +45,13 @@ const Home = () => {
                         // setPosts({...posts, ...resp.data})
                         // setlastPostId(resp.lastPostId)
                         // setHasMore(true)
-                        // console.log(resp.data)
                         dispatch(storeAllPosts(resp.data));
                         setlastPostId(resp.lastPostId);
                         setHasMore(true);
                     }
+                } else if (resp.status === 700) {
+                    signOutUser()
+                    console.log(resp.message)
                 }
             })
             setPostLoading(false)
@@ -79,7 +86,7 @@ const Home = () => {
             showAlert("Encountering some error please login again")
             return (
                 <>
-                    {isAlert.state ? <AlertBox message={isAlert.log} closeError={closeAlert} /> : ""}
+                    {isAlert.state ? <AlertBox message={isAlert.log} closeAlert={closeAlert} /> : ""}
                 </>
             )
         } else {
@@ -89,10 +96,13 @@ const Home = () => {
                         <Navbar page="house" />
                         <div className="flex homeContentContainer">
                             {
-                                Object.keys(allPosts).map((key) => (
+                                allPosts != {} ? Object.keys(allPosts).map((key) => (
                                     <UserPost key={key} data={allPosts[key]} />
-                                    ))
-                                }
+                                    )) : ""
+                            }
+                            {
+                                console.log(allPosts)
+                            }
                             {postLoading ? <UserPostSkeleton /> : ""}
                             {postLoading ? <UserPostSkeleton /> : ""}
                             {postLoading ? <UserPostSkeleton /> : ""}

@@ -1,6 +1,10 @@
-import React, { useEffect } from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import PageNotFound from './screen/pageNotFound'
+import React, { useEffect } from 'react';
+import { BrowserRouter , Route, Routes } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './redux/store';
+import useAuth from './hooks/useAuth';
+import Preloader from './component/preloader';
+import AlertBox from './component/alertBox';
 import Login from './screen/authentication/login';
 import Register from './screen/authentication/register';
 import ResetPassword from './screen/authentication/forgotPassword';
@@ -10,8 +14,8 @@ import Notify from './screen/notification';
 import Profile from './screen/profile';
 import AddPoem from './screen/addPoem';
 import VerifyEmail from './screen/authentication/verifyEmail';
-import useAuth from './hooks/useAuth';
-import Preloader from './component/preloader';
+import PageNotFound from './screen/pageNotFound';
+import { signOutUser } from './firebaseFunctions/authentication/auth';
 import useAlert from './hooks/useAlert';
 import "./css/authentication.css"
 import "./css/navbar.css"
@@ -24,99 +28,88 @@ import "./css/userPost.css"
 import "./css/searchCard.css"
 import "./css/addPoem.css"
 import "./css/userPostSkeleton.css"
-import { signOutUser } from './firebase/authentication/auth';
-import store from './redux/store';
-import { Provider } from 'react-redux';
 
 const App = () => {
-
   const [isAlert, showAlert, closeAlert] = useAlert(false, "");
-  const [user] = useAuth()
+  const [user, setUser] = useAuth();
 
   useEffect(() => {
-    const initializeApp = async () => {
-      // Any asynchronous initialization logic can go here
-      if (user.error) {
-        showAlert(user.error);
-        await signOutUser();
-      }
-    };
-
-    initializeApp();
-  }, [user]);
-
-  // document.addEventListener('contextmenu', (e) => {
-  //   e.preventDefault();
-  // });
-  
-  // document.addEventListener('keydown', (e) => {
-  //   if (e.keyCode === 123) {
-  //     e.preventDefault();
-  //   }
-  // });
-
-  // if (!localStorage.getItem("AuthToken")) {
-  //   signOutUser()
-  // }
-
+    if (!user.loading && user.error) {
+      signOutUser().then(() => {
+        setUser({
+          loggedIn: false,
+          loading: false,
+          error: null
+        });
+      });
+    }
+  }, [user, setUser]);
 
   if (window.innerWidth < 300) {
-    alert("Not supported with device of this size")
     return (
-      <>
-        <div className='flexCenter' style={{width: '100vw', height: '100vh', flexDirection: 'column'}}>
-          <h1>Use</h1>
-          <h1>other</h1>
-          <h1>device</h1>
-        </div>
-      </>
-    )
+      <div className='flexCenter' style={{ width: '100vw', height: '100vh', flexDirection: 'column' }}>
+        <h1>Use</h1>
+        <h1>other</h1>
+        <h1>device</h1>
+      </div>
+    );
   }
 
   if (user.loading) {
     return <Preloader />;
   }
 
-  
-
-  if (!user.loading) {
-    if (!user.loggedIn) {
-      return (
-        <>
-          <Provider store={store} >
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element ={<Login />} />
-                <Route path="/login" element ={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path='/resetPassword' element={<ResetPassword />} />
-                <Route path='/verifyEmail' element={<VerifyEmail />} />
-                <Route path='/*' element={<PageNotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </Provider>
-        </>
-      )
-    } else {
-      return (
-        <>
-          <Provider store={store} >
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/search" element={<Search />} />
-                <Route path="/notifications" element={<Notify />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/addPoem" element={<AddPoem />} />
-                <Route path='/*' element={<PageNotFound />} />
-              </Routes>
-            </BrowserRouter>
-            {isAlert.state ? <AlertBox message={isAlert.log} closeError={closeAlert} /> : ""}
-          </Provider>
-        </>
-      );
-    }
+  if (!user.loggedIn) {
+    return (
+      <Provider store={store}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/resetPassword" element={<ResetPassword />} />
+            <Route path="/verifyEmail" element={<VerifyEmail />} />
+            <Route path="/*" element={<PageNotFound />} />
+          </Routes>
+        </BrowserRouter>
+        {isAlert.state ? <AlertBox message={isAlert.log} closeAlert={closeAlert} logout={true} /> : ""}
+      </Provider>
+    );
   }
-}
-  
-export default App
+
+  if (user.loggedIn.emailVerified) {
+    return (
+      <Provider store={store}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/notifications" element={<Notify />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/addPoem" element={<AddPoem />} />
+            <Route path="/*" element={<PageNotFound />} />
+          </Routes>
+        </BrowserRouter>
+        {isAlert.state ? <AlertBox message={isAlert.log} closeAlert={closeAlert} logout={true} /> : ""}
+      </Provider>
+    );
+  }
+
+  return (
+    <Provider store={store}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/resetPassword" element={<ResetPassword />} />
+          <Route path="/verifyEmail" element={<VerifyEmail />} />
+          <Route path="/*" element={<PageNotFound />} />
+        </Routes>
+      </BrowserRouter>
+      {isAlert.state ? <AlertBox message={isAlert.log} closeAlert={closeAlert} logout={true} /> : ""}
+    </Provider>
+  );
+};
+
+export default App;

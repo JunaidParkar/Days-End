@@ -1,6 +1,15 @@
 import React from 'react'
+import { signOutUser } from '../firebaseFunctions/authentication/auth'
 
-const AlertBox = ({message, closeError}) => {
+const AlertBox = ({message, closeAlert, logout}) => {
+  const handleLogout = async () => {
+    if (logout) {
+      await signOutUser()
+      closeAlert()
+    } else {
+      closeAlert()
+    }
+  }
   return (
     <>
         <div className="flexCenter alertBoxContainer">
@@ -8,7 +17,7 @@ const AlertBox = ({message, closeError}) => {
                 <h3>alert</h3>
                 <p>{message}</p>
                 <div className="flex backContainer">
-                    <p onClick={() => closeError(true)} >close</p>
+                    <p onClick={async () => handleLogout()} >close</p>
                 </div>
             </div>
         </div>

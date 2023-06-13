@@ -1,6 +1,6 @@
 const express = require('express');
 const { firestoreAdmin } = require('./src/firebase/config');
-const { registerUserSetup, deleteUserSetup, createPost, checkHandle, createTokenForAuthentication, fetchAllPost } = require('./src/handlers/handlers');
+const { registerUserSetup, deleteUserSetup, createPost, checkHandle, createTokenForAuthentication, fetchAllPost, getMyAllData } = require('./src/handlers/handlers');
 const { verifyToken, createAuthToken, generateUniqueId } = require('./src/sessionFunctions/sessionFunctions');
 const cors = require('cors');
 const { reqAuth } = require('./src/middleware/auth');
@@ -24,29 +24,7 @@ app.post("/userSetupDelete", deleteUserSetup)
 
 
 app.post("/getAllPost", reqAuth, fetchAllPost)
-app.post("/getMyData", async(req, res) => {
-    let requiredFields = ['uid'];
-
-    for (let field of requiredFields) {
-        if (!req.body[field]) {
-            return res.json({ status: 500, message: `${field.charAt(0).toUpperCase() + field.slice(1)} not provided` });
-        }
-    }
-
-    try {
-        let userQuerySnapshot = await firestoreAdmin.collection('users').where('uid', '==', req.body.uid).get();
-
-        if (userQuerySnapshot.empty) {
-            return res.json({ status: 500, message: "UID Incorrect" });
-        }
-
-        let userData = userQuerySnapshot.docs[0].data();
-        return res.json({ status: 200, data: userData });
-    } catch (error) {
-        console.error('Error fetching user:', error);
-        return res.json({ status: 300, message: error.code });
-    }
-})
+app.post("/getMyData", reqAuth, getMyAllData)
 
 
 app.post("/uploadPost", createPost)

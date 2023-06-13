@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { signOutUser } from '../firebase/authentication/auth';
+import { signOutUser } from '../firebaseFunctions/authentication/auth';
 
 export const api = axios.create({
   baseURL: 'http://localhost:3000',

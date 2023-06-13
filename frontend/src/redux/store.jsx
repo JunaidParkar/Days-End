@@ -1,12 +1,12 @@
 import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import { allPostsReducer } from './reducers/homePostReducer';
-import { myAllPosts } from './reducers/myDataReducer';
+import { myAllDataReducer } from './reducers/myDataReducer';
 
 // Combine multiple reducers using combineReducers
 const rootReducer = combineReducers({
-  allHomePosts: allPostsReducer,
-  myAllPosts: myAllPosts
+  appPost: allPostsReducer,
+  myData: myAllDataReducer
   // Add other reducers here if you have any
 });
 

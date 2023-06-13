@@ -68,7 +68,8 @@ const createPost = async(req, res) => {
         like: 0,
         comment: 0,
         createdAt: new Date().toISOString(),
-        postId: generateUniqueId()
+        postId: generateUniqueId(),
+        uid: req.body.uid
     }
     try {
         const postRef = await firestoreAdmin.collection('posts').doc();
@@ -153,6 +154,42 @@ const fetchAllPost = async(req, res) => {
     }
 }
 
+const getMyAllData = async(req, res) => {
+    let requiredFields = ['uid'];
+    for (let field of requiredFields) {
+        if (!req.body[field]) {
+            return res.json({ status: 500, message: `${field.charAt(0).toUpperCase() + field.slice(1)} not provided` });
+        }
+    }
+
+    try {
+        let userBasicData
+        let postData = {
+            myPosts: {}
+        }
+        let userQuerySnapshot = await firestoreAdmin.collection('users').where('uid', '==', req.body.uid).get();
+        if (userQuerySnapshot.empty) {
+            return res.json({ status: 500, message: "UID Incorrect" });
+        } else {
+            userBasicData = userQuerySnapshot.docs[0].data();
+            let postQuerySnapshot = await firestoreAdmin.collection("posts").where("handle", "==", userBasicData.userHandle).where("uid", "==", userBasicData.uid).orderBy("createdAt", "desc").get()
+            if (postQuerySnapshot.empty) {
+                postData = {
+                    myPosts: {}
+                }
+            } else {
+                postQuerySnapshot.forEach((doc) => {
+                    postData.myPosts[doc.id] = doc.data();
+                })
+            }
+        }
+        res.json({ status: 200, data: {...userBasicData, ...postData } });
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        return res.json({ status: 300, message: error.code });
+    }
+}
+
 module.exports = {
     registerUserSetup,
     deleteUserSetup,
@@ -160,5 +197,6 @@ module.exports = {
     deletePost,
     checkHandle,
     createTokenForAuthentication,
-    fetchAllPost
+    fetchAllPost,
+    getMyAllData
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AlertBox from '../../component/alertBox';
 import useAlert from '../../hooks/useAlert';
-import { resetPassword } from '../../firebase/authentication/auth';
+import { resetPassword } from '../../firebaseFunctions/authentication/auth';
 
 const ResetPassword = () => {
 
@@ -56,7 +56,7 @@ const ResetPassword = () => {
                 <p>login</p>
             </Link>
 
-            {isAlert.state ? <AlertBox message={isAlert.log} closeError={closeAlert} /> : ""}
+            {isAlert.state ? <AlertBox message={isAlert.log} closeAlert={closeAlert} /> : ""}
         </>
     )
 }

@@ -9,7 +9,7 @@ import userOutline from "../assets/user.png"
 import userFilled from "../assets/userFilled.png"
 import logout from "../assets/logout.png"
 import { useNavigate } from 'react-router-dom'
-import { signOutUser } from '../firebase/authentication/auth'
+import { signOutUser } from '../firebaseFunctions/authentication/auth'
 import useAuth from '../hooks/useAuth'
 
 const Navbar = (props) => {

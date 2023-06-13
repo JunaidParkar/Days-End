@@ -1,6 +1,6 @@
-export const getMyPosts = (posts) => ({
-    type: 'MY_ALL_POSTS',
-    payload: posts,
+export const getMyData = (data) => ({
+    type: 'MY_ALL_DATA',
+    payload: data,
 });
 
 // export const logOutUser = (posts) => ({

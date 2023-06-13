@@ -1,12 +1,13 @@
 import { createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from "firebase/auth"
 import { auth } from "../cred"
-import { addNewUserStructure, checkHandle, getToken } from "../../api/request"
+import { addNewUserStructure, checkHandle, getAllOfMyDatas, getToken } from "../../api/request"
 
 
 export const signOutUser = async () => {
     let response = {status: "", message: ""}
     try {
         await signOut(auth)
+        localStorage.clear()
         response = {status: 200, message: "Logged Out"}
     } catch (error) {
         response = {status: 500, message: error.message}
@@ -61,29 +62,29 @@ export const registerNewUser = async (email, password, handle) => {
 }
 
 export const loginUser = async (email, password) => {
-    let response = {status: "", message: ""}
+    let response = {status: "", message: "", data: "", logInData: ""}
     await signInWithEmailAndPassword(auth, email, password).then(async user => {
-        if (!user.user.emailVerified) {
-            response = {status: 500, message: "Please verify your E-Mail. Verification link has been sent to you while registration."}
-        } else {
-            let tokenData = {
-                uid: user.user.uid,
-                email: user.user.email
-            }
-            await getToken(tokenData).then(async token => {
-                if (token.status === 200) {
-                    localStorage.setItem("AuthToken", token.token)
-                    response = {status: 200, message: "Successfully logged in"}
-                    // await 
-                } else {
-                    response = {status: token.status, message: token.message}
-                }
-            }).catch(async err => {
-                response = {status: 500, message: err}
-            })
+        let tokenData = {
+            uid: user.user.uid,
+            email: user.user.email
         }
+        await getToken(tokenData).then(async token => {
+            if (token.status === 200) {
+                localStorage.setItem("AuthToken", token.token)
+                response = {status: 200, message: "Successfully logged in", data: "", logInData: ""}
+                await getAllOfMyDatas(user.user.uid).then(resp => {
+                    response = { status: resp.status, message: resp.message, data: resp.data, logInData: user.user}
+                }).catch(erro => {
+                    response = {status: 500, message: erro.code, data: "", logInData: ""}
+                })
+            } else {
+                response = {status: token.status, message: token.message, data: "", logInData: ""}
+            }
+        }).catch(async err => {
+            response = {status: 500, message: err, data: "", logInData: ""}
+        })
     }).catch(signInError => {
-        response = {status: 500, message: signInError.code}
+        response = {status: 500, message: signInError.code, data: "", logInData: ""}
     })
     return response
 }
@@ -91,16 +92,14 @@ export const loginUser = async (email, password) => {
 export const verifyEmailLink = async (email, password) => {
     let response = {status: "", message: ""}
     await signInWithEmailAndPassword(auth, email, password).then(async user => {
-        if (user.user.emailVerified) {
-            response = {status: 500, message: "E-Mail already verified."}
-        } else {
+        if (!user.user.emailVerified) {
             await sendEmailVerification(user.user).then(() => {
                 response = {status: 200, message: "E-Mail verification link has been sent to your E-Mail inbox."}
             }).catch(err => {
                 response = {status: 500, message: err.code}
+                console.log(err.code)
             })
         }
-        await signOutUser()
     }).catch(signInError => {
         response = {status: 500, message: signInError.code}
     })

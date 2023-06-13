@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import useAlert from '../../hooks/useAlert';
-import { loginUser, signOutUser } from '../../firebase/authentication/auth';
+import { loginUser, signOutUser } from '../../firebaseFunctions/authentication/auth';
 import AlertBox from '../../component/alertBox';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../../firebaseFunctions/cred';
+import { useDispatch } from 'react-redux';
+import { getMyData } from '../../redux/actions/myDataAction';
 
 
 const Login = () => {
@@ -15,6 +19,7 @@ const Login = () => {
     })
     const [disableBtn, setDisableBtn] = useState(true)
     const [loader, setLoader] = useState(false)
+    const dispatch = useDispatch()
 
     useEffect(() => {
         const updateBtn = () => {
@@ -38,14 +43,19 @@ const Login = () => {
         setDisableBtn(true)
         setLoader(true)
         if (loginData.email.trim() == "" || loginData.password.trim() == "") {
-            showAlert("E-Mail or passwords cannot be invalid")
+            showAlert("E-Mail or passwords cannot be invalid", false)
         } else {
             await loginUser(loginData.email.trim(), loginData.password.trim()).then(async data => {
                 if (data.status === 200) {
-                    navigate('/')
+                    // let loggingIn = {
+                    //     loggedIn: true,
+                    //     user: {...data.logInData},
+                    //     ...data.data
+                    // }
+                    // dispatch(getMyData(loggingIn))
+                    navigate("/")
                 } else {
-                    showAlert(data.message)
-                    await signOutUser()
+                    showAlert(data.message, true)
                 }
             })
         }
@@ -72,7 +82,7 @@ const Login = () => {
             </Link>
 
 
-            {isAlert.state ? <AlertBox message={isAlert.log} closeError={closeAlert} /> : ""}
+            {isAlert.state ? <AlertBox message={isAlert.log} closeAlert={closeAlert} /> : ""}
         </>
     )
 }

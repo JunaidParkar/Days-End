@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import useAlert from '../../hooks/useAlert';
-import { verifyEmailLink } from '../../firebase/authentication/auth';
+import { verifyEmailLink } from '../../firebaseFunctions/authentication/auth';
 import AlertBox from '../../component/alertBox';
 
 const VerifyEmail = () => {
@@ -62,7 +62,7 @@ const VerifyEmail = () => {
                 <p>login</p>
             </Link>
 
-            {isAlert.state ? <AlertBox message={isAlert.log} closeError={closeAlert} /> : ""}
+            {isAlert.state ? <AlertBox message={isAlert.log} closeAlert={closeAlert} /> : ""}
         </>
     )
 }
