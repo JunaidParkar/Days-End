@@ -5,11 +5,11 @@ import useAuth from '../hooks/useAuth'
 import UserPostSkeleton from '../component/userPostSkeleton'
 import Preloader from '../component/preloader'
 import useAlert from '../hooks/useAlert'
-import { getAllPosts } from '../api/request'
+// import { getAllPosts } from '../api/request'
 import { useDispatch, useSelector } from 'react-redux';
 import { storeAllPosts } from '../redux/actions/homePageAction'
 import store from '../redux/store';
-import { signOutUser } from '../firebaseFunctions/authentication/auth'
+// import { signOutUser } from '../firebaseFunctions/authentication/auth'
 
 
 const Home = () => {
@@ -20,45 +20,41 @@ const Home = () => {
     const [hasMore, setHasMore] = useState(true)
     const [postLoading, setPostLoading] = useState(true)
     const dispatch = useDispatch();
+    const userData = useSelector(state => state.authData)
     const allPosts = useSelector((state) => state.appPost);
 
 
     useEffect(() => {
-        if (user.loggedIn) {
+        if (userData.loggedIn) {
             getPosts()
         }
-    }, [user.loggedIn])
-
-    console.log(user.loggedIn)
+    }, [userData.loggedIn])
 
     // console.log(allPosts)
 
     const getPosts = async () => {
         if (!user.loading && !user.error) {
             setPostLoading(true)
-            await getAllPosts(lastPostId, user.loggedIn.uid).then(resp => {
-                if (resp.status === 200) {
+            // await getAllPosts(lastPostId, userData.uid).then(resp => {
+            //     if (resp.status === 200) {
                     
-                    if (resp.data === "no more data") {
-                        setHasMore(false)
-                    } else {
-                        // setPosts({...posts, ...resp.data})
-                        // setlastPostId(resp.lastPostId)
-                        // setHasMore(true)
-                        dispatch(storeAllPosts(resp.data));
-                        setlastPostId(resp.lastPostId);
-                        setHasMore(true);
-                    }
-                } else if (resp.status === 700) {
-                    signOutUser()
-                    console.log(resp.message)
-                }
-            })
+            //         if (resp.data === "no more data") {
+            //             setHasMore(false)
+            //         } else {
+            //             // setPosts({...posts, ...resp.data})
+            //             // setlastPostId(resp.lastPostId)
+            //             // setHasMore(true)
+            //             dispatch(storeAllPosts(resp.data));
+            //             setlastPostId(resp.lastPostId);
+            //             setHasMore(true);
+            //         }
+            //     } else if (resp.status === 700) {
+            //         signOutUser()
+            //     }
+            // })
             setPostLoading(false)
         }
     }
-
-    console.log(hasMore)
 
     const scroller = async () => {
         if (hasMore) {
@@ -71,25 +67,29 @@ const Home = () => {
           }
     }
 
-    window.onscroll = scroller
+    if (userData.loggedIn) {
+        if (!(document.body.scrollHeight <= window.innerHeight)) {
+            window.onscroll = scroller
+        }
+    }
     // console.log(posts)
       
 
-    if (user.loading) {
-        return <Preloader />
-    }
+    // if (user.loading) {
+    //     return <Preloader />
+    // }
 
     // console.log(lastPostId)
 
-    if (!user.loading) {
-        if (user.error) {
-            showAlert("Encountering some error please login again")
-            return (
-                <>
-                    {isAlert.state ? <AlertBox message={isAlert.log} closeAlert={closeAlert} /> : ""}
-                </>
-            )
-        } else {
+    // if (!user.loading) {
+        // if (user.error) {
+        //     showAlert("Encountering some error please login again")
+        //     return (
+        //         <>
+        //             {isAlert.state ? <AlertBox message={isAlert.log} closeAlert={closeAlert} /> : ""}
+        //         </>
+        //     )
+        // } else {
             return (
                 <>
                     <div className="homeContainer">
@@ -100,9 +100,9 @@ const Home = () => {
                                     <UserPost key={key} data={allPosts[key]} />
                                     )) : ""
                             }
-                            {
+                            {/* {
                                 console.log(allPosts)
-                            }
+                            } */}
                             {postLoading ? <UserPostSkeleton /> : ""}
                             {postLoading ? <UserPostSkeleton /> : ""}
                             {postLoading ? <UserPostSkeleton /> : ""}
@@ -114,8 +114,8 @@ const Home = () => {
                     </div>
                 </>
             )
-        }
-    }
+        // }
+    // }
 }
 
 export default Home

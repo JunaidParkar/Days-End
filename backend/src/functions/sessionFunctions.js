@@ -52,8 +52,8 @@ const verifyToken = async(token, uid) => {
         } else {
             return { stat: 700, message: "Invalid token" };
         }
-    } catch (error) {
-        return { stat: 700, message: error };
+    } catch (errors) {
+        return { stat: 700, message: errors };
     }
 };
 

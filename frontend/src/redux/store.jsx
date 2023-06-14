@@ -1,14 +1,7 @@
-import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
-import { allPostsReducer } from './reducers/homePostReducer';
-import { myAllDataReducer } from './reducers/myDataReducer';
+import { rootReducer } from './reducers/rootReduces';
 
-// Combine multiple reducers using combineReducers
-const rootReducer = combineReducers({
-  appPost: allPostsReducer,
-  myData: myAllDataReducer
-  // Add other reducers here if you have any
-});
 
 // Apply middleware and compose enhancers
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

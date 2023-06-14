@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../firebaseFunctions/cred';
+import { auth } from '../cred/cred';
 import { useSelector } from 'react-redux';
 
 const useAuth = () => {
@@ -14,7 +14,7 @@ const useAuth = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, currUser => {
-      console.log(currUser)
+      // console.log(currUser)
       if (currUser) {
         setUser({
           loggedIn: currUser,

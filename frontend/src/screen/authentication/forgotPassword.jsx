@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AlertBox from '../../component/alertBox';
 import useAlert from '../../hooks/useAlert';
-import { resetPassword } from '../../firebaseFunctions/authentication/auth';
+// import { resetPassword } from '../../firebaseFunctions/authentication/auth';
 
 const ResetPassword = () => {
 
@@ -31,11 +31,11 @@ const ResetPassword = () => {
         if (passwordResetData.email.trim() === "") {
             showAlert("E-Mail cannot be empty")
         } else {
-            await resetPassword(passwordResetData.email).then(resp => {
-                showAlert(resp.message)
-            }).catch(error => {
-                showAlert(error)
-            })
+            // await resetPassword(passwordResetData.email).then(resp => {
+            //     showAlert(resp.message)
+            // }).catch(error => {
+            //     showAlert(error)
+            // })
         }
         setLoader(false)
         setDisableBtn(false)

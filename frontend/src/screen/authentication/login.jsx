@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import useAlert from '../../hooks/useAlert';
-import { loginUser, signOutUser } from '../../firebaseFunctions/authentication/auth';
+// import { loginUser, signOutUser } from '../../firebaseFunctions/authentication/auth';
 import AlertBox from '../../component/alertBox';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../../firebaseFunctions/cred';
+import { browserSessionPersistence, onAuthStateChanged, setPersistence } from 'firebase/auth';
+import { auth } from '../../cred/cred';
 import { useDispatch } from 'react-redux';
 import { getMyData } from '../../redux/actions/myDataAction';
+import { loginUserDataInRedux } from '../../redux/actions/authAction';
+import Preloader from '../../component/preloader';
 
 
 const Login = () => {
@@ -19,6 +21,7 @@ const Login = () => {
     })
     const [disableBtn, setDisableBtn] = useState(true)
     const [loader, setLoader] = useState(false)
+    const [preloader, setPreloader] = useState(false)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -40,44 +43,61 @@ const Login = () => {
 
     const loginUserAccount = async e => {
         e.preventDefault()
-        setDisableBtn(true)
-        setLoader(true)
+        setPreloader(true)
         if (loginData.email.trim() == "" || loginData.password.trim() == "") {
             showAlert("E-Mail or passwords cannot be invalid", false)
         } else {
-            await loginUser(loginData.email.trim(), loginData.password.trim()).then(async data => {
-                if (data.status === 200) {
+            // await setPersistence(auth, browserSessionPersistence);
+            // await loginUser(loginData.email.trim(), loginData.password.trim()).then(async data => {
+            //     if (data.status === 200) {
+            //         // if (data.logInData.emailVerified) {
+            //             let loggingIn = {
+            //                 loggedIn: true,
+            //                 uid: data.logInData.uid,
+            //                 email: data.logInData.email,
+            //                 photo: data.logInData.photoURL,
+            //                 emailVerified: data.logInData.emailVerified,
+            //                 handle: data.logInData.displayName
+            //               }
+            //               dispatch(loginUserDataInRedux(loggingIn))
+                    // }
                     // let loggingIn = {
                     //     loggedIn: true,
-                    //     user: {...data.logInData},
-                    //     ...data.data
+                    //     uid: data.logInData.uid,
+                    //     email: data.logInData.email,
+                    //     photo: data.logInData.photoURL,
+                    //     emailVerified: false,
+                    //     handle: data.logInData.displayName
                     // }
-                    // dispatch(getMyData(loggingIn))
-                    navigate("/")
-                } else {
-                    showAlert(data.message, true)
-                }
-            })
+                    // let myPostsData = {}
+                    // dispatch(loginUserDataInRedux(loggingIn))
+                    // console.log(loggingIn)
+                    // console.log(data)
+                //     navigate("/")
+                // } else {
+                //     showAlert(data.message, true)
+                // }
+            // })
         }
-        setDisableBtn(false)
-        setLoader(false)
+        setPreloader(false)
     }
 
 
     return (
         <>
+            {preloader ? <Preloader /> : ""}
             <div className="flexCenter authContainer">
                 <form method="post" className='flex' onSubmit={(e) => loginUserAccount(e)} >
                     <h3>Login</h3>
                     <input type="text" name="email" placeholder='Enter your E-Mail' onChange={(e) => handleLoginData(e)} required />
                     <input type="password" name="password" placeholder='Enter your password' onChange={(e) => handleLoginData(e)} required />
                     <div className="flex handlers">
-                        <input disabled={disableBtn} type="submit" value="Login" />
-                        <Link to="/resetPassword" className={loader ? "none" : ""}>Forgot password??</Link>
+                        <input type="submit" value="Login" />
+                        <Link to="/resetPassword">Forgot password??</Link>
                     </div>
                 </form>
             </div>
-            <Link to="/register" className={loader ? "none" : "redirectAuthPage"}>
+            <Link to="/register" className="redirectAuthPage" >
                 <p>Create account</p>
             </Link>
 

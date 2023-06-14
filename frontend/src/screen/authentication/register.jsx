@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AlertBox from '../../component/alertBox'
-import { registerNewUser, signOutUser } from '../../firebaseFunctions/authentication/auth'
+// import { registerNewUser, signOutUser } from '../../firebaseFunctions/authentication/auth'
 import useAlert from '../../hooks/useAlert'
 
 const Register = () => {
@@ -44,12 +44,13 @@ const Register = () => {
             if (registerData.password.trim().length < 6 || registerData.password.trim().length > 12) {
                 showAlert("Password should be between 6 to 12 character. Password should not contain any white spaces.")
             } else {
-                let reg = await registerNewUser(registerData.email, registerData.password, registerData.handle)
-                if (reg.status === 401) {
-                    await showAlert(reg.message, false)
-                } else if (reg.status === 500) {
-                    await showAlert(reg.message, false)
-                }
+                // let reg = await registerNewUser(registerData.email, registerData.password, registerData.handle)
+                // if (reg.status === 401) {
+                //     await showAlert(reg.message, false)
+                // } else if (reg.status === 500) {
+                //     await showAlert(reg.message, false)
+                // }
+                // signOutUser()
             }
         } else {
             showAlert("Password didn't match")

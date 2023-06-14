@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import useAlert from '../../hooks/useAlert';
-import { verifyEmailLink } from '../../firebaseFunctions/authentication/auth';
+// import { verifyEmailLink } from '../../firebaseFunctions/authentication/auth';
 import AlertBox from '../../component/alertBox';
 
 const VerifyEmail = () => {
@@ -37,11 +37,11 @@ const VerifyEmail = () => {
         if (verifyData.email.trim() === "" || verifyData.password.trim() === "") {
             showAlert("E-Mail or password cannot be empty")
         } else {
-            await verifyEmailLink(verifyData.email.trim(), verifyData.password.trim()).then(resp => {
-                showAlert(resp.message)
-            }).catch(error => {
-                showAlert(error)
-            })
+            // await verifyEmailLink(verifyData.email.trim(), verifyData.password.trim()).then(resp => {
+            //     showAlert(resp.message)
+            // }).catch(error => {
+            //     showAlert(error)
+            // })
         }
         setDisableBtn(false)
         setLoader(false)

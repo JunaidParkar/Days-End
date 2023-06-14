@@ -1,7 +1,7 @@
 const express = require('express');
 const { firestoreAdmin } = require('./src/firebase/config');
 const { registerUserSetup, deleteUserSetup, createPost, checkHandle, createTokenForAuthentication, fetchAllPost, getMyAllData } = require('./src/handlers/handlers');
-const { verifyToken, createAuthToken, generateUniqueId } = require('./src/sessionFunctions/sessionFunctions');
+const { verifyToken, createAuthToken, generateUniqueId } = require('./src/functions/sessionFunctions');
 const cors = require('cors');
 const { reqAuth } = require('./src/middleware/auth');
 
@@ -19,6 +19,8 @@ app.use(cors(corsOptions));
 
 app.post("/createToken", createTokenForAuthentication)
 app.post("/checkHandle", checkHandle)
+
+
 app.post("/userRegisterSetup", registerUserSetup)
 app.post("/userSetupDelete", deleteUserSetup)
 
@@ -29,6 +31,8 @@ app.post("/getMyData", reqAuth, getMyAllData)
 
 app.post("/uploadPost", createPost)
 app.post("/deletePost", )
+
+
 app.post("/jwt", async(req, res) => {
     let token = await createAuthToken(req.body)
     res.json(token)

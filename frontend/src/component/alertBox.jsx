@@ -1,11 +1,10 @@
 import React from 'react'
-import { signOutUser } from '../firebaseFunctions/authentication/auth'
 
 const AlertBox = ({message, closeAlert, logout}) => {
   const handleLogout = async () => {
     if (logout) {
-      await signOutUser()
       closeAlert()
+      // await signOutUser()
     } else {
       closeAlert()
     }

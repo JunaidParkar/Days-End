@@ -9,8 +9,10 @@ import userOutline from "../assets/user.png"
 import userFilled from "../assets/userFilled.png"
 import logout from "../assets/logout.png"
 import { useNavigate } from 'react-router-dom'
-import { signOutUser } from '../firebaseFunctions/authentication/auth'
+// import { signOutUser } from '../firebaseFunctions/authentication/auth'
 import useAuth from '../hooks/useAuth'
+import { useDispatch } from 'react-redux'
+import { logoutUserDataInRedux } from '../redux/actions/authAction'
 
 const Navbar = (props) => {
     
@@ -20,6 +22,7 @@ const Navbar = (props) => {
         notification: false,
         profile: false
     })
+    const dispatch = useDispatch()
 
     useEffect(() => {
       const use = () => {
@@ -28,12 +31,16 @@ const Navbar = (props) => {
       use()
     }, [])
 
+    const navigate = useNavigate()
+
     const logOut = async () => {
-        await signOutUser().then(data => {
-        })
+        // console.log("he")
+        // await signOutUser().then(data => {
+        //     dispatch(logoutUserDataInRedux())
+        //     navigate("/")
+        // })
     }
 
-    const navigate = useNavigate()
     
 
 

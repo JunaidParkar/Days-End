@@ -1,9 +1,8 @@
 const { firestoreAdmin } = require("../firebase/config")
-const { createAuthToken, generateUniqueId } = require("../sessionFunctions/sessionFunctions")
+const { createAuthToken, generateUniqueId } = require("../functions/sessionFunctions")
 
 const registerUserSetup = async(req, res) => {
     let requiredFields = ['handle', 'uid', 'email'];
-
     for (let field of requiredFields) {
         if (!req.body[field]) {
             return res.json({ status: 500, message: `${field.charAt(0).toUpperCase() + field.slice(1)} not provided` });
@@ -17,12 +16,7 @@ const registerUserSetup = async(req, res) => {
         userHandle: req.body.handle,
         uid: req.body.uid
     }
-    let tokenData = {
-        handle: req.body.handle,
-        email: req.body.email,
-        uid: req.body.uid
-    }
-    await firestoreAdmin.collection("users").doc(structureToSet.userHandle).set(structureToSet).then(async() => {
+    await firestoreAdmin.collection("users").doc(structureToSet.uid).set(structureToSet).then(async() => {
         res.json({ status: 200, message: "User registration structure created successfully" })
     }).catch(err => {
         res.json({ status: 12, message: err })
@@ -30,11 +24,17 @@ const registerUserSetup = async(req, res) => {
 }
 
 const checkHandle = async(req, res) => {
+    let requiredFields = ['handle'];
+    for (let field of requiredFields) {
+        if (!req.body[field]) {
+            return res.json({ status: 500, message: `${field.charAt(0).toUpperCase() + field.slice(1)} not provided` });
+        }
+    }
     await firestoreAdmin.collection(`users`).doc(req.body.handle).get().then(doc => {
         if (doc.exists) {
             res.json({ status: 401, message: "User handle already taken" })
         } else {
-            res.json({ status: 200 })
+            res.json({ status: 200, message: "User handle available" })
         }
     }).catch(err => {
         res.json({ status: 500, message: err })
