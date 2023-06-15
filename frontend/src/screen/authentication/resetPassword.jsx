@@ -52,7 +52,7 @@ const ResetPassword = () => {
                     </div>
                 </form>
             </div>
-            <Link to="/login" className={loader ? "none" : "redirectAuthPage"}>
+            <Link to="/auth/login" className={loader ? "none" : "redirectAuthPage"}>
                 <p>login</p>
             </Link>
 

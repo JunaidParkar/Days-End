@@ -93,11 +93,11 @@ const Login = () => {
                     <input type="password" name="password" placeholder='Enter your password' onChange={(e) => handleLoginData(e)} required />
                     <div className="flex handlers">
                         <input type="submit" value="Login" />
-                        <Link to="/resetPassword">Forgot password??</Link>
+                        <Link to="/auth/resetPassword">Forgot password??</Link>
                     </div>
                 </form>
             </div>
-            <Link to="/register" className="redirectAuthPage" >
+            <Link to="/auth/register" className="redirectAuthPage" >
                 <p>Create account</p>
             </Link>
 

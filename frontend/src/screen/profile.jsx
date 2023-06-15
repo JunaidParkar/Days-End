@@ -48,6 +48,7 @@ const Profile = () => {
           
           <div className="flex postsContainer">
 
+            {/* <UserPost />
             <UserPost />
             <UserPost />
             <UserPost />
@@ -55,8 +56,7 @@ const Profile = () => {
             <UserPost />
             <UserPost />
             <UserPost />
-            <UserPost />
-            <UserPost />
+            <UserPost /> */}
             
           </div>
         </div>

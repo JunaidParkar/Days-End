@@ -1,39 +1,25 @@
-import { useState, useEffect } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../cred/cred';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../cred/cred";
 
 const useAuth = () => {
-  const [user, setUser] = useState({
-    loggedIn: false,
-    loading: false,
-    error: null
-  });
-  // const [user, setUser] = useState(null)
-  
+  const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, currUser => {
-      // console.log(currUser)
-      if (currUser) {
-        setUser({
-          loggedIn: currUser,
-          loading: false,
-          error: null
-        });
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+        setIsLoggedIn(true);
+        setIsEmailVerified(user.emailVerified);
       } else {
-        setUser({
-          loggedIn: false,
-          loading: false,
-          error: null
-        });
+        setUser(null);
+        setIsLoggedIn(false);
+        setIsEmailVerified(false);
       }
-    }, error => {
-      setUser({
-        loggedIn: false,
-        loading: false,
-        error: error.message
-      });
+      setIsLoading(false);
     });
 
     return () => {
@@ -41,19 +27,7 @@ const useAuth = () => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   const unsubscribe = () => {
-  //     let data = useSelector(state => state.myData)
-  //     console.log(data)
-  //     setUser(data)
-  //   }
-  //   // return () => {
-  //     unsubscribe()
-  //   // }
-  // }, [])
-  
-
-  return [user];
+  return { user, isLoggedIn, isEmailVerified, isLoading };
 };
 
 export default useAuth;
