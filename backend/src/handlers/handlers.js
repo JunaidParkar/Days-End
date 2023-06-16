@@ -2,7 +2,7 @@ const { firestoreAdmin } = require("../firebase/config")
 const { createAuthToken, generateUniqueId } = require("../functions/sessionFunctions")
 
 const registerUserSetup = async(req, res) => {
-    let requiredFields = ['handle', 'uid', 'email'];
+    let requiredFields = ['uid', 'email', 'bio'];
     for (let field of requiredFields) {
         if (!req.body[field]) {
             return res.json({ status: 500, message: `${field.charAt(0).toUpperCase() + field.slice(1)} not provided` });
@@ -13,8 +13,8 @@ const registerUserSetup = async(req, res) => {
         followers: 0,
         following: 0,
         posts: 0,
-        userHandle: req.body.handle,
-        uid: req.body.uid
+        uid: req.body.uid,
+        bio: req.body.bio
     }
     await firestoreAdmin.collection("users").doc(structureToSet.uid).set(structureToSet).then(async() => {
         res.json({ status: 200, message: "User registration structure created successfully" })

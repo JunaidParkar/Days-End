@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import noUser from "../assets/noUser.jpg"
 import useAuth from '../hooks/useAuth'
-import { updateProfileData } from '../functions/updateProfile/updateProfile'
+import { updateProfileData } from '../functions/updateProfile/updateUserProfile'
 import imageCompressor from '../functions/updateProfile/imageCompresser'
+import { getBlob, ref } from 'firebase/storage'
+import { storage } from '../cred/cred'
 
 const UpdateProfile = () => {
 
@@ -14,6 +16,30 @@ const UpdateProfile = () => {
     const [disableBtn, setDisableBtn] = useState(true)
     const { user, isLoggedIn, isEmailVerified, isLoading } = useAuth();
     const [loader, setLoader] = useState(false)
+    const [userAvailablePic, setUserAvailablePic] = useState(null)
+
+    let data = {
+        displayName: "",
+        photoURL: ""
+    }
+
+    useEffect(() => {
+      const setPic = async () => {
+        if (!isLoading) {
+            if (user) {
+                setLoader(true)
+                if (user.photoURL) {
+                    let picRef = ref(storage, user.photoURL)
+                    let blobImage = await getBlob(picRef)
+                    setUserData({ ...userData, ["profilePic"]: blobImage })
+                }
+                setLoader(false)
+            }
+        }
+      }
+      setPic()
+    }, [user])
+    
 
     useEffect(() => {
         const updateBtn = () => {
@@ -35,32 +61,28 @@ const UpdateProfile = () => {
       
 
     const handleUserdata = (e) => {
-        if (e.target.name === "profilePic") {
-            setUserData({...userData, [e.target.name]: e.target.files[0]})
-        } else {
-            setUserData({...userData, [e.target.name]: e.target.value})
-        }
+        setUserData({...userData, [e.target.name]: e.target.value})
     }
 
     const uploadProfile = async (e) => {
         e.preventDefault()
         setLoader(true)
-        updateProfileData(user, userData)
+        await updateProfileData(user, userData).then(resp => {console.log(resp)}).catch(err => console.log(err))
         setLoader(false)
     }
 
-    let uu = !user ? "" : user.photoURL
+    // let uu = !user ? "" : user.photoURL
 
-    let aa = uu ? true : false
+    // let aa = uu ? true : false
 
-    if (aa) {
+    // if (aa) {
         // if (photoURL) {
-            const profilePicBlob = fetch(uu).then((response) => {console.log(response); return (response.blob())});
+            // const profilePicBlob = fetch(uu).then((response) => {console.log(response); return (response.blob())});
             // const profilePicObjectURL = URL.createObjectURL(profilePicBlob);
             // setProfilePicURL(profilePicObjectURL);
             // console.log(profilePicObjectURL)
         //   }
-    }
+    // }
 
     // console.log(aa)
 
@@ -70,7 +92,7 @@ const UpdateProfile = () => {
     <>
         <div className="updateProfileContainer">
             <div className="flexCenter profilePicContainer">
-                {/* <img src={!isLoading ? !user.photoURL ? !userData.profilePic ? noUser : URL.createObjectURL(userData.profilePic) : URL.createObjectURL(user.photoURL) : ""} onClick={() => document.getElementById("profilePicInput").click()} alt="Profile picture" /> */}
+                <img src={!isLoading ? userData.profilePic ? URL.createObjectURL(userData.profilePic) : noUser : ""} onClick={() => document.getElementById("profilePicInput").click()} id='imagePic' alt="Profile picture" />
             </div>
             <form className='flex' method='post' onSubmit={e => uploadProfile(e)}>
                 <input type="text" disabled value={!isLoading ? user.email : ""} />
