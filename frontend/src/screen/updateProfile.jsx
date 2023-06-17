@@ -5,9 +5,14 @@ import { updateProfileData } from '../functions/updateProfile/updateUserProfile'
 import imageCompressor from '../functions/updateProfile/imageCompresser'
 import { getBlob, ref } from 'firebase/storage'
 import { storage } from '../cred/cred'
+import EmptyNavbar from '../component/emptyNavBar'
+import Preloader from '../component/preloader'
+import AlertBox from '../component/alertBox'
+import useAlert from '../hooks/useAlert'
 
 const UpdateProfile = () => {
 
+    const [isAlert, showAlert, closeAlert] = useAlert(false, "");
     const [userData, setUserData] = useState({
         displayName: "",
         bio: "",
@@ -16,7 +21,6 @@ const UpdateProfile = () => {
     const [disableBtn, setDisableBtn] = useState(true)
     const { user, isLoggedIn, isEmailVerified, isLoading } = useAuth();
     const [loader, setLoader] = useState(false)
-    const [userAvailablePic, setUserAvailablePic] = useState(null)
 
     let data = {
         displayName: "",
@@ -67,7 +71,11 @@ const UpdateProfile = () => {
     const uploadProfile = async (e) => {
         e.preventDefault()
         setLoader(true)
-        await updateProfileData(user, userData).then(resp => {console.log(resp)}).catch(err => console.log(err))
+        await updateProfileData(user, userData).then(resp => {
+            console.log(resp)
+            showAlert(resp.message, false)
+            location.reload()
+        }).catch(err => console.log(err))
         setLoader(false)
     }
 
@@ -90,6 +98,8 @@ const UpdateProfile = () => {
 
   return (
     <>
+        {loader ? <Preloader /> : ""}
+        <EmptyNavbar page="house" />
         <div className="updateProfileContainer">
             <div className="flexCenter profilePicContainer">
                 <img src={!isLoading ? userData.profilePic ? URL.createObjectURL(userData.profilePic) : noUser : ""} onClick={() => document.getElementById("profilePicInput").click()} id='imagePic' alt="Profile picture" />
@@ -102,6 +112,7 @@ const UpdateProfile = () => {
             </form>
         </div>
         <input type="file" name="profilePic" hidden id="profilePicInput" multiple={false} accept="image/*" onChange={(e) => handleImage(e)} />
+        {isAlert.state ? <AlertBox message={isAlert.log} closeAlert={closeAlert} /> : ""}
     </>
   )
 }

@@ -1,121 +1,126 @@
-import React, { useEffect, useState } from 'react'
-import Navbar from '../component/navbar'
-import UserPost from '../component/userPost'
-import useAuth from '../hooks/useAuth'
-import UserPostSkeleton from '../component/userPostSkeleton'
-import Preloader from '../component/preloader'
-import useAlert from '../hooks/useAlert'
+import React, { useEffect, useState } from "react";
+import Navbar from "../component/navbar";
+import UserPost from "../component/userPost";
+import useAuth from "../hooks/useAuth";
+import UserPostSkeleton from "../component/userPostSkeleton";
+import Preloader from "../component/preloader";
+import useAlert from "../hooks/useAlert";
 // import { getAllPosts } from '../api/request'
-import { useDispatch, useSelector } from 'react-redux';
-import { storeAllPosts } from '../redux/actions/homePageAction'
-import store from '../redux/store';
+import { useDispatch, useSelector } from "react-redux";
+import { storeAllPosts } from "../redux/actions/homePageAction";
+import store from "../redux/store";
+import { getAllPost } from "../api/endPoints";
 // import { signOutUser } from '../firebaseFunctions/authentication/auth'
 
-
 const Home = () => {
+  const { user, isLoggedIn, isLoading } = useAuth();
+  const [isAlert, showAlert, closeAlert] = useAlert(false, "");
+  const [lastPostId, setlastPostId] = useState("no");
+  const [hasMore, setHasMore] = useState(true);
+  const [posts, setPosts] = useState({});
+  const [postLoading, setPostLoading] = useState(true);
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => state.authData);
+  const allPosts = useSelector((state) => state.appPost);
 
-    const [user] = useAuth()
-    const [isAlert, showAlert, closeAlert] = useAlert(false, "");
-    const [lastPostId, setlastPostId] = useState("no")
-    const [hasMore, setHasMore] = useState(true)
-    const [postLoading, setPostLoading] = useState(true)
-    const dispatch = useDispatch();
-    const userData = useSelector(state => state.authData)
-    const allPosts = useSelector((state) => state.appPost);
-
-
-    useEffect(() => {
-        if (userData.loggedIn) {
-            getPosts()
-        }
-    }, [userData.loggedIn])
-
-    // console.log(allPosts)
-
-    const getPosts = async () => {
-        if (!user.loading && !user.error) {
-            setPostLoading(true)
-            // await getAllPosts(lastPostId, userData.uid).then(resp => {
-            //     if (resp.status === 200) {
-                    
-            //         if (resp.data === "no more data") {
-            //             setHasMore(false)
-            //         } else {
-            //             // setPosts({...posts, ...resp.data})
-            //             // setlastPostId(resp.lastPostId)
-            //             // setHasMore(true)
-            //             dispatch(storeAllPosts(resp.data));
-            //             setlastPostId(resp.lastPostId);
-            //             setHasMore(true);
-            //         }
-            //     } else if (resp.status === 700) {
-            //         signOutUser()
-            //     }
-            // })
-            setPostLoading(false)
-        }
+  useEffect(() => {
+    if (isLoggedIn) {
+      getPosts().then();
     }
+  }, [isLoggedIn]);
 
-    const scroller = async () => {
-        if (hasMore) {
-            if (
-                window.innerHeight + document.documentElement.scrollTop + 1 >=
-                document.documentElement.scrollHeight
-              ) {
-                await getPosts()
-              }
+  // console.log(allPosts)
+  console.log(posts);
+  const getPosts = async () => {
+    if (!isLoading) {
+      if (hasMore) {
+        setPostLoading(true);
+        console.log(postLoading, "load");
+        console.log(hasMore);
+        await getAllPost(lastPostId).then((respo) => {
+          console.log(respo, "p");
+          if (respo.status === 200) {
+            if (respo.posts === "no more data") {
+              setHasMore(false);
+            } else {
+              setPosts((prevPosts) => {
+                return { ...prevPosts, ...respo.posts };
+              });
+              setlastPostId(respo.lastPost);
+              setHasMore(true);
+            }
+          } else {
+            showAlert(respo.message, respo.status === 700 ? true : false);
           }
+        });
+        console.log(`${posts} posts`);
+        console.log(`${hasMore} more`);
+        console.log(`${postLoading} load`);
+        setPostLoading(false);
+      }
     }
+  };
 
-    if (userData.loggedIn) {
-        if (!(document.body.scrollHeight <= window.innerHeight)) {
-            window.onscroll = scroller
-        }
+  const scroller = async () => {
+    if (hasMore) {
+      if (
+        window.innerHeight + document.documentElement.scrollTop + 1 >=
+        document.documentElement.scrollHeight
+      ) {
+        await getPosts();
+      }
     }
-    // console.log(posts)
-      
+  };
 
-    // if (user.loading) {
-    //     return <Preloader />
-    // }
+  // if (isLoggedIn) {
+  // if (!(document.body.scrollHeight <= window.innerHeight)) {
+  window.onscroll = scroller;
+  // }
+  // }
+  // console.log(posts)
 
-    // console.log(lastPostId)
+  // if (user.loading) {
+  //     return <Preloader />
+  // }
 
-    // if (!user.loading) {
-        // if (user.error) {
-        //     showAlert("Encountering some error please login again")
-        //     return (
-        //         <>
-        //             {isAlert.state ? <AlertBox message={isAlert.log} closeAlert={closeAlert} /> : ""}
-        //         </>
-        //     )
-        // } else {
-            return (
-                <>
-                    <div className="homeContainer">
-                        <Navbar page="house" />
-                        <div className="flex homeContentContainer">
-                            {
-                                allPosts != {} ? Object.keys(allPosts).map((key) => (
-                                    <UserPost key={key} data={allPosts[key]} />
-                                    )) : ""
-                            }
-                            {/* {
+  // console.log(lastPostId)
+
+  // if (!user.loading) {
+  // if (user.error) {
+  //     showAlert("Encountering some error please login again")
+  //     return (
+  //         <>
+  //             {isAlert.state ? <AlertBox message={isAlert.log} closeAlert={closeAlert} /> : ""}
+  //         </>
+  //     )
+  // } else {
+  console.log(posts);
+  return (
+    <>
+      <div className="homeContainer">
+        <Navbar page="house" />
+        <div className="flex homeContentContainer">
+          {Object.keys(posts).length > 0
+            ? Object.keys(posts).map((key) => (
+                <UserPost key={key} data={posts[key]} />
+              ))
+            : ""}
+          {/* {
                                 console.log(allPosts)
                             } */}
-                            {postLoading ? <UserPostSkeleton /> : ""}
-                            {postLoading ? <UserPostSkeleton /> : ""}
-                            {postLoading ? <UserPostSkeleton /> : ""}
-                            {postLoading ? <UserPostSkeleton /> : ""}
-                            {postLoading ? <UserPostSkeleton /> : ""}
-                            {postLoading ? <UserPostSkeleton /> : ""}
-                                {/* <UserPost key={key} data={posts[key]} /> */}
-                        </div>
-                    </div>
-                </>
-            )
-        // }
-    // }
-}
+          {postLoading ? <UserPostSkeleton /> : ""}
+          {postLoading ? <UserPostSkeleton /> : ""}
+          {postLoading ? <UserPostSkeleton /> : ""}
+          {postLoading ? <UserPostSkeleton /> : ""}
+          {postLoading ? <UserPostSkeleton /> : ""}
+          {postLoading ? <UserPostSkeleton /> : ""}
+          {/* <UserPost key={key} data={posts[key]} /> */}
+        </div>
+      </div>
+    </>
+  );
+  // }
+  // }
+};
 
-export default Home
+export default Home;

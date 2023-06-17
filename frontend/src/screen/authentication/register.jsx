@@ -46,11 +46,16 @@ const Register = () => {
                 showAlert("Password should be between 6 to 12 character. Password should not contain any white spaces.", false)
             } else {
                 await createUser(registerData.email.trim(), registerData.password.trim()).then(resp => {
-                    showAlert(resp.message, false)
-                    navigate("/")
+                    console.log(resp)
+                    if (resp.status !== 200) {
+                        showAlert(resp.message, false)
+                    }
+                    if (resp.status === 200) {
+                        navigate("/")
+                    }
 
                 }).catch(error => {
-                    showAlert(error.code, false)
+                    showAlert(error, false)
                 })
             }
         } else {

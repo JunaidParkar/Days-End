@@ -4,10 +4,20 @@
     position: relative;
 }
 
+.updateProfileContainer .navContainer .navList img {
+    display: none;
+}
+
+.updateProfileContainer .navContainer .navList img:first-child,
+.updateProfileContainer .navContainer .navList img:last-child {
+    display: flex;
+}
+
 .updateProfileContainer .profilePicContainer {
     height: 300px;
     width: 100%;
     margin-top: 35px;
+    margin-top: 100px;
 }
 
 .updateProfileContainer .profilePicContainer img {
@@ -22,4 +32,11 @@
     flex-direction: column;
     gap: 30px;
     margin-top: 35px;
+}
+
+@media only screen and (max-width: 580px) {
+    .updateProfileContainer .profilePicContainer {
+        margin-top: 0px;
+        margin-bottom: 100px;
+    }
 }

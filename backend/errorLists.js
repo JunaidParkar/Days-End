@@ -62,3 +62,5 @@ let checkHandle = [{
     status: 401,
     message: "User handle already taken"
 }]
+
+let getAllPost = []

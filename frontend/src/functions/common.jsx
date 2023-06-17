@@ -1,3 +1,5 @@
+import { logOut } from "./authentication/authentication";
+
 export const getRandomNumberString = (digits) => {
     let result = '';
     const characters = '0123456789';
@@ -7,3 +9,13 @@ export const getRandomNumberString = (digits) => {
     }
     return result;
 }
+
+export const validateUser = (status, by) => {
+    return new Promise((resolve, reject) => {
+      if (status === 700) {
+        logOut(by).then(() => {resolve();}).catch((error) => {reject(error);});
+      } else {
+        resolve();
+      }
+    });
+  };

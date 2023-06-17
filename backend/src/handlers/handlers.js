@@ -2,7 +2,8 @@ const { firestoreAdmin } = require("../firebase/config")
 const { createAuthToken, generateUniqueId } = require("../functions/sessionFunctions")
 
 const registerUserSetup = async(req, res) => {
-    let requiredFields = ['uid', 'email', 'bio'];
+    console.log(req.body)
+    let requiredFields = ['uid', 'email', 'bio', 'handle'];
     for (let field of requiredFields) {
         if (!req.body[field]) {
             return res.json({ status: 500, message: `${field.charAt(0).toUpperCase() + field.slice(1)} not provided` });
@@ -14,7 +15,8 @@ const registerUserSetup = async(req, res) => {
         following: 0,
         posts: 0,
         uid: req.body.uid,
-        bio: req.body.bio
+        bio: req.body.bio,
+        handle: req.body.handle
     }
     await firestoreAdmin.collection("users").doc(structureToSet.uid).set(structureToSet).then(async() => {
         res.json({ status: 200, message: "User registration structure created successfully" })
@@ -30,14 +32,14 @@ const checkHandle = async(req, res) => {
             return res.json({ status: 500, message: `${field.charAt(0).toUpperCase() + field.slice(1)} not provided` });
         }
     }
-    await firestoreAdmin.collection(`users`).doc(req.body.handle).get().then(doc => {
-        if (doc.exists) {
+    await firestoreAdmin.collection(`users`).where("handle", "==", req.body.handle).get().then(doc => {
+        if (doc.size > 0) {
             res.json({ status: 401, message: "User handle already taken" })
         } else {
             res.json({ status: 200, message: "User handle available" })
         }
     }).catch(err => {
-        res.json({ status: 500, message: err })
+        res.json({ status: 12, message: err })
     })
 }
 
@@ -73,7 +75,7 @@ const createPost = async(req, res) => {
     }
     try {
         const postRef = await firestoreAdmin.collection('posts').doc();
-        const userRef = await firestoreAdmin.doc(`users/${req.body.handle}`).get();
+        const userRef = await firestoreAdmin.doc(`users/${req.body.uid}`).get();
 
         if (!userRef.exists) {
             res.json({ status: 401, message: 'Handle is incorrect. Please log in again.' });
@@ -83,7 +85,7 @@ const createPost = async(req, res) => {
             res.json({ status: 200, message: 'Post uploaded' });
         }
     } catch (error) {
-        res.json({ status: 500, message: 'An error occurred while creating the post.' });
+        res.json({ status: 12, message: 'An error occurred while creating the post.' });
     }
 }
 
@@ -122,6 +124,7 @@ const createTokenForAuthentication = async(req, res) => {
         }
     }
     let resp = await createAuthToken(req.body.tokenData)
+    console.log(resp)
     res.json(resp)
 }
 
@@ -150,7 +153,7 @@ const fetchAllPost = async(req, res) => {
         }
         res.json({ status: 200, message: "", posts: Object.keys(posts).length === 0 ? "no more data" : posts, lastPost: lastFetchedId });
     } catch (error) {
-        res.status(500).json({ status: 500, message: 'An error occurred while fetching posts.', posts: "", lastPost: "" });
+        res.json({ status: 12, message: 'An error occurred while fetching posts.', posts: "", lastPost: "" });
     }
 }
 
@@ -185,8 +188,7 @@ const getMyAllData = async(req, res) => {
         }
         res.json({ status: 200, data: {...userBasicData, ...postData } });
     } catch (error) {
-        console.error('Error fetching user:', error);
-        return res.json({ status: 300, message: error.code });
+        return res.json({ status: 12, message: error.code });
     }
 }
 

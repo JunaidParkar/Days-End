@@ -49,9 +49,10 @@ import "./css/updateProfile.css"
 
 const App = () => {
 
-  const { user, isLoggedIn, isEmailVerified, isLoading } = useAuth();
+  const { user, isLoggedIn, isLoading } = useAuth();
 
   console.log(user)
+  console.log(isLoggedIn)
 
   // if (user === null) {
   //   return (
@@ -71,8 +72,39 @@ const App = () => {
         <Preloader />
       </>
     )
-  } else {
-    if (user === null) {
+  }
+    if (isLoggedIn) {
+      if (user.displayName == null || user.displayName == "") {
+        return (
+          <>
+            <BrowserRouter>
+              <Routes>
+                <Route path='/' element={<UpdateProfile />} />
+                <Route path='/auth/login' element={<Navigate to="/" />} />
+                <Route path='/auth/register' element={<Navigate to="/" />} />
+                <Route path="/*" element={<PageNotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </>
+        )
+      } else {
+        return (
+          <>
+            <BrowserRouter>
+              <Routes>
+                <Route path='/' element={<Home />} />
+                <Route path='/search' element={<Search />} />
+                <Route path='/notification' element={<Notify />} />
+                <Route path='/profile' element={<Profile />} />
+                <Route path='/udateProfile' element={<UpdateProfile />} />
+                <Route path='/auth/login' element={<Navigate to="/" />} />
+                <Route path="/*" element={<PageNotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </>
+        )
+      }
+    } else {
       return (
         <>
           <BrowserRouter>
@@ -87,68 +119,7 @@ const App = () => {
           </BrowserRouter>
         </>
       )
-    } else {
-      if (user) {
-        if (user.displayName == null || user.displayName == "") {
-          return (
-            <>
-              <BrowserRouter>
-                <Routes>
-                  <Route path='/' element={<UpdateProfile />} />
-                  <Route path="/*" element={<PageNotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </>
-          )
-        } else {
-          return (
-            <>
-              <BrowserRouter>
-                <Routes>
-                  <Route path='/' element={<Home />} />
-                  <Route path='/search' element={<Search />} />
-                  <Route path='/notification' element={<Notify />} />
-                  <Route path='/profile' element={<Profile />} />
-                  <Route path='/udateProfile' element={<UpdateProfile />} />
-                  <Route path="/*" element={<PageNotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </>
-          )
-        }
-      }
-      <BrowserRouter>
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/search' element={<Search />} />
-          <Route path='/notification' element={<Notify />} />
-          <Route path='/profile' element={<Profile />} />
-        </Routes>
-      </BrowserRouter>
     }
-  }
-
-  // document.addEventListener('contextmenu', (e) => {
-  //   e.preventDefault();
-  // });
-  
-  // document.addEventListener('keydown', (e) => {
-  //   if (e.keyCode === 123) {
-  //     e.preventDefault();
-  //   }
-  // });
-  
-  // if (!isLoading) {
-  //   return (
-  //     <BrowserRouter>
-  //       <Routes>
-  //         <Route path="/" element={isLoading ? <Loader /> : isEmailVerified ? <UserDashboard /> : <Login />} />
-  //         <Route path='/resetPassword' element={isLoading ? <Loader /> : <ResetPassword />} />
-  //         {/* <Route path='/url/:urlID' element={<UrlRedirect />} /> */}
-  //         <Route path='/*' element={<PageNotFound />} />
-  //       </Routes>
-  //     </BrowserRouter>
-  //   );
   // }
 }
 

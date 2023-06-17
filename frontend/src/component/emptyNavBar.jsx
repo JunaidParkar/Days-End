@@ -10,12 +10,9 @@ import userFilled from "../assets/userFilled.png"
 import logoutIcon from "../assets/logout.png"
 import { useNavigate } from 'react-router-dom'
 // import { signOutUser } from '../firebaseFunctions/authentication/auth'
-import useAuth from '../hooks/useAuth'
-import { useDispatch } from 'react-redux'
-import { logoutUserDataInRedux } from '../redux/actions/authAction'
 import { logOut } from '../functions/authentication/authentication'
 
-const Navbar = (props) => {
+const EmptyNavbar = (props) => {
     
     const [status, setStatus] = useState({
         house: false,
@@ -23,7 +20,6 @@ const Navbar = (props) => {
         notification: false,
         profile: false
     })
-    const dispatch = useDispatch()
 
     useEffect(() => {
       const use = () => {
@@ -40,18 +36,9 @@ const Navbar = (props) => {
     return (
         <>
             <div className="flex navContainer">
-                <div className='flex navList' >
+                <div className='flex navList' style={{width: "100%"}} >
                     <img src={house} onClick={() => navigate("/")} className={status.house ? 'displayNone' : ''} alt="Home" />
                     <img src={houseFilled} className={status.house ? '' : 'displayNone'} alt="Home" />
-                    <img src={search} onClick={() => navigate("/search")} className={status.search ? 'displayNone' : ''} alt="Search" />
-                    <img src={searchActive} className={status.search ? '' : 'displayNone'} alt="Search" />
-                    <div className="not">
-                        <img src={notification} onClick={() => navigate("/notifications")} className={status.notification ? 'displayNone' : ''} alt="Notification" />
-                        <img src={notificationFilled} className={status.notification ? '' : 'displayNone'} alt="Notification" />
-                        <p className='flexCenter notCount' >2+</p>
-                    </div>
-                    <img src={userOutline} onClick={() => navigate("/profile")} className={status.profile ? 'displayNone' : ''} alt="Your profile" />
-                    <img src={userFilled} className={status.profile ? '' : 'displayNone'} alt="Your profile" />
                     <div className="flex logout" onClick={() => logOut()} >
                         <img src={logoutIcon} alt="" />
                         <p>logout</p>
@@ -62,4 +49,4 @@ const Navbar = (props) => {
     )
 }
 
-export default Navbar
+export default EmptyNavbar

@@ -18,10 +18,10 @@ app.use(cors(corsOptions));
 
 
 app.post("/createToken", createTokenForAuthentication)
-app.post("/checkHandle", checkHandle)
+app.post("/checkHandle", reqAuth, checkHandle)
 
 
-app.post("/userRegisterSetup", registerUserSetup)
+app.post("/userRegisterSetup", reqAuth, registerUserSetup)
 app.post("/userSetupDelete", deleteUserSetup)
 
 

@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { getMyData } from '../../redux/actions/myDataAction';
 import { loginUserDataInRedux } from '../../redux/actions/authAction';
 import Preloader from '../../component/preloader';
+import { loginUser } from '../../functions/authentication/authentication';
 
 
 const Login = () => {
@@ -20,9 +21,7 @@ const Login = () => {
         password: ""
     })
     const [disableBtn, setDisableBtn] = useState(true)
-    const [loader, setLoader] = useState(false)
-    const [preloader, setPreloader] = useState(false)
-    const dispatch = useDispatch()
+    const [preloaderShow, setPreloaderShow] = useState(false)
 
     useEffect(() => {
         const updateBtn = () => {
@@ -39,53 +38,25 @@ const Login = () => {
         setLoginData({...loginData, [e.target.name]: e.target.value})
     }
 
-    let navigate = useNavigate()
-
     const loginUserAccount = async e => {
         e.preventDefault()
-        setPreloader(true)
+        setPreloaderShow(true)
         if (loginData.email.trim() == "" || loginData.password.trim() == "") {
             showAlert("E-Mail or passwords cannot be invalid", false)
         } else {
-            // await setPersistence(auth, browserSessionPersistence);
-            // await loginUser(loginData.email.trim(), loginData.password.trim()).then(async data => {
-            //     if (data.status === 200) {
-            //         // if (data.logInData.emailVerified) {
-            //             let loggingIn = {
-            //                 loggedIn: true,
-            //                 uid: data.logInData.uid,
-            //                 email: data.logInData.email,
-            //                 photo: data.logInData.photoURL,
-            //                 emailVerified: data.logInData.emailVerified,
-            //                 handle: data.logInData.displayName
-            //               }
-            //               dispatch(loginUserDataInRedux(loggingIn))
-                    // }
-                    // let loggingIn = {
-                    //     loggedIn: true,
-                    //     uid: data.logInData.uid,
-                    //     email: data.logInData.email,
-                    //     photo: data.logInData.photoURL,
-                    //     emailVerified: false,
-                    //     handle: data.logInData.displayName
-                    // }
-                    // let myPostsData = {}
-                    // dispatch(loginUserDataInRedux(loggingIn))
-                    // console.log(loggingIn)
-                    // console.log(data)
-                //     navigate("/")
-                // } else {
-                //     showAlert(data.message, true)
-                // }
-            // })
+            await loginUser(loginData.email.trim(), loginData.password.trim()).then(response => {
+                if (response.status !== 200) {
+                    showAlert(response.message, false)
+                }
+            })
         }
-        setPreloader(false)
+        setPreloaderShow(false)
     }
 
 
     return (
         <>
-            {preloader ? <Preloader /> : ""}
+            {preloaderShow ? <Preloader /> : ""}
             <div className="flexCenter authContainer">
                 <form method="post" className='flex' onSubmit={(e) => loginUserAccount(e)} >
                     <h3>Login</h3>
