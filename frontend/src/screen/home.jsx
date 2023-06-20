@@ -102,21 +102,22 @@ const Home = () => {
         <div className="flex homeContentContainer">
           {Object.keys(posts).length > 0
             ? Object.keys(posts).map((key) => (
-                <UserPost key={key} data={posts[key]} />
+                <UserPost key={key} postDatas={posts[key]} />
               ))
             : ""}
-          {/* {
-                                console.log(allPosts)
-                            } */}
           {postLoading ? <UserPostSkeleton /> : ""}
           {postLoading ? <UserPostSkeleton /> : ""}
           {postLoading ? <UserPostSkeleton /> : ""}
           {postLoading ? <UserPostSkeleton /> : ""}
           {postLoading ? <UserPostSkeleton /> : ""}
           {postLoading ? <UserPostSkeleton /> : ""}
-          {/* <UserPost key={key} data={posts[key]} /> */}
         </div>
       </div>
+      {isAlert.state ? (
+        <AlertBox message={isAlert.log} closeAlert={closeAlert} />
+      ) : (
+        ""
+      )}
     </>
   );
   // }

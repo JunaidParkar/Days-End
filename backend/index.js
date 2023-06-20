@@ -1,6 +1,6 @@
 const express = require('express');
 const { firestoreAdmin } = require('./src/firebase/config');
-const { registerUserSetup, deleteUserSetup, createPost, checkHandle, createTokenForAuthentication, fetchAllPost, getMyAllData } = require('./src/handlers/handlers');
+const { registerUserSetup, deleteUserSetup, createPost, checkHandle, createTokenForAuthentication, fetchAllPost, getMyAllData, getUsers } = require('./src/handlers/handlers');
 const { verifyToken, createAuthToken, generateUniqueId } = require('./src/functions/sessionFunctions');
 const cors = require('cors');
 const { reqAuth } = require('./src/middleware/auth');
@@ -25,6 +25,7 @@ app.post("/userRegisterSetup", reqAuth, registerUserSetup)
 app.post("/userSetupDelete", deleteUserSetup)
 
 
+app.post("/getUsers", reqAuth, getUsers)
 app.post("/getAllPost", reqAuth, fetchAllPost)
 app.post("/getMyData", reqAuth, getMyAllData)
 

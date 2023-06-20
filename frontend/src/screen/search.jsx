@@ -1,33 +1,50 @@
-import React from 'react'
-import Navbar from '../component/navbar'
-import noUser from '../assets/noUser.jpg'
-import SearchCard from '../component/searchCard'
+import React, { useEffect, useState } from "react";
+import Navbar from "../component/navbar";
+import noUser from "../assets/noUser.jpg";
+import SearchCard from "../component/searchCard";
+import { getAllUsers } from "../api/endPoints";
+import useAlert from "../hooks/useAlert";
+import AlertBox from "../component/alertBox";
 
 const Search = () => {
+  const [searchUsers, setSearchUsers] = useState([]);
+  const [isAlert, showAlert, closeAlert] = useAlert(false, "");
+
+  useEffect(() => {
+    fetchAllUsers();
+  }, []);
+
+  const fetchAllUsers = async () => {
+    await getAllUsers().then((resp) => {
+      if (resp.status === 200) {
+        setSearchUsers([...resp.data]);
+      } else {
+        showAlert(resp.message, false);
+      }
+    });
+  };
+
+  console.log(searchUsers);
+
   return (
     <>
       <div className="searchContainer">
         <Navbar page="search" />
         <div className="flex searchContentContainer">
-          <SearchCard />
-          <SearchCard />
-          <SearchCard />
-          <SearchCard />
-          <SearchCard />
-          <SearchCard />
-          <SearchCard />
-          <SearchCard />
-          <SearchCard />
-          <SearchCard />
-          <SearchCard />
-          <SearchCard />
-          <SearchCard />
-          <SearchCard />
-          <SearchCard />
+          {searchUsers.length > 0
+            ? searchUsers.map((user) => (
+                <SearchCard key={user.uid} data={user} />
+              ))
+            : ""}
         </div>
       </div>
+      {isAlert.state ? (
+        <AlertBox message={isAlert.log} closeAlert={closeAlert} />
+      ) : (
+        ""
+      )}
     </>
-  )
-}
+  );
+};
 
-export default Search
+export default Search;

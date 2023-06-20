@@ -1,30 +1,52 @@
-import React from 'react'
-import noUser from '../assets/noUser.jpg'
+import React, { useEffect, useState } from "react";
+import { getBlob, ref } from "firebase/storage";
+import { storage } from "../cred/cred";
+import Preloader from "./preloader";
 
-const SearchCard = () => {
-    return (
-        <>
-            <div className="searchCard skinColor">
-                <div className="flex searchCardHeader">
-                    <div className="searchCardDP">
-                        <img src={noUser} alt="User Profile Picture" />
-                    </div>
-                    <div className="flex searchCardInteraction">
-                        <h4>Junaid Parkar</h4>
-                        <div className="flex interact">
-                            <h5>Posts: <span>90</span></h5>
-                            <div className="followBtn">
-                            <h5>Follow</h5>
-                        </div> 
-                        </div>
-                    </div>
-                </div>
-                <div className="flex searchProfileBio">
-                    <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
-                </div>
+const SearchCard = (data) => {
+  const [image, setImage] = useState(
+    "https://firebasestorage.googleapis.com/v0/b/days-end1.appspot.com/o/account.png?alt=media&token=5ae448ba-f0e2-4a6a-b180-c15f6ca5a96c"
+  );
+  const [loader, setLoader] = useState(true);
+
+  useEffect(() => {
+    getImage();
+  }, []);
+
+  const getImage = async () => {
+    setLoader(true);
+    let imageRef = ref(storage, data.data.pic);
+    let blob = await getBlob(imageRef);
+    setImage(URL.createObjectURL(blob));
+    setLoader(false);
+  };
+
+  return (
+    <>
+      {loader ? <Preloader /> : ""}
+      <div className="searchCard skinColor">
+        <div className="flex searchCardHeader">
+          <div className="searchCardDP">
+            <img src={image} alt="User Profile Picture" />
+          </div>
+          <div className="flex searchCardInteraction">
+            <h4>{data.data.handle}</h4>
+            <div className="flex interact">
+              <h5>
+                Posts: <span>{data.data.posts}</span>
+              </h5>
+              <div className="followBtn">
+                <h5>Follow</h5>
+              </div>
             </div>
-        </>
-    )
-}
+          </div>
+        </div>
+        <div className="flex searchProfileBio">
+          <p>{data.data.bio}</p>
+        </div>
+      </div>
+    </>
+  );
+};
 
-export default SearchCard
+export default SearchCard;

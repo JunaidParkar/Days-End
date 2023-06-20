@@ -3,7 +3,7 @@ const { createAuthToken, generateUniqueId } = require("../functions/sessionFunct
 
 const registerUserSetup = async(req, res) => {
     console.log(req.body)
-    let requiredFields = ['uid', 'email', 'bio', 'handle'];
+    let requiredFields = ['uid', 'email', 'bio', 'handle', 'link'];
     for (let field of requiredFields) {
         if (!req.body[field]) {
             return res.json({ status: 500, message: `${field.charAt(0).toUpperCase() + field.slice(1)} not provided` });
@@ -16,7 +16,8 @@ const registerUserSetup = async(req, res) => {
         posts: 0,
         uid: req.body.uid,
         bio: req.body.bio,
-        handle: req.body.handle
+        handle: req.body.handle,
+        pic: req.body.link
     }
     await firestoreAdmin.collection("users").doc(structureToSet.uid).set(structureToSet).then(async() => {
         res.json({ status: 200, message: "User registration structure created successfully" })
@@ -81,11 +82,11 @@ const createPost = async(req, res) => {
             res.json({ status: 401, message: 'Handle is incorrect. Please log in again.' });
         } else {
             await firestoreAdmin.collection('posts').doc(postRef.id).set(postData);
-            await firestoreAdmin.doc(`users/${req.body.handle}`).update({ posts: userRef.data().posts + 1 });
+            await firestoreAdmin.doc(`users/${req.body.uid}`).update({ posts: userRef.data().posts + 1 });
             res.json({ status: 200, message: 'Post uploaded' });
         }
     } catch (error) {
-        res.json({ status: 12, message: 'An error occurred while creating the post.' });
+        res.json({ status: 12, message: 'An error occurred while creating the post.', cd: error.message || error });
     }
 }
 
@@ -158,37 +159,50 @@ const fetchAllPost = async(req, res) => {
 }
 
 const getMyAllData = async(req, res) => {
-    let requiredFields = ['uid'];
-    for (let field of requiredFields) {
+    const requiredFields = ['uid'];
+    for (const field of requiredFields) {
         if (!req.body[field]) {
             return res.json({ status: 500, message: `${field.charAt(0).toUpperCase() + field.slice(1)} not provided` });
         }
     }
 
     try {
-        let userBasicData
+        let userBasicData;
         let postData = {
             myPosts: {}
-        }
-        let userQuerySnapshot = await firestoreAdmin.collection('users').where('uid', '==', req.body.uid).get();
+        };
+
+        const userQuerySnapshot = await firestoreAdmin.collection('users').where('uid', '==', req.body.uid).get();
         if (userQuerySnapshot.empty) {
-            return res.json({ status: 500, message: "UID Incorrect" });
+            return res.json({ status: 500, message: 'UID Incorrect', data: "" });
         } else {
             userBasicData = userQuerySnapshot.docs[0].data();
-            let postQuerySnapshot = await firestoreAdmin.collection("posts").where("handle", "==", userBasicData.userHandle).where("uid", "==", userBasicData.uid).orderBy("createdAt", "desc").get()
-            if (postQuerySnapshot.empty) {
-                postData = {
-                    myPosts: {}
-                }
-            } else {
+            console.log(userBasicData)
+            const postQuerySnapshot = await firestoreAdmin.collection('posts').where('handle', '==', userBasicData.handle).where('uid', '==', userBasicData.uid).orderBy('createdAt', 'desc').get();
+            if (!postQuerySnapshot.empty) {
                 postQuerySnapshot.forEach((doc) => {
                     postData.myPosts[doc.id] = doc.data();
-                })
+                });
             }
         }
-        res.json({ status: 200, data: {...userBasicData, ...postData } });
+
+        res.json({ status: 200, message: "", data: {...userBasicData, ...postData } });
     } catch (error) {
-        return res.json({ status: 12, message: error.code });
+        return res.json({ status: 12, message: error.message, data: "" });
+    }
+};
+
+
+let getUsers = async(req, res) => {
+    try {
+        let userDatas = await firestoreAdmin.collection("users").get()
+        let dataSets = []
+        userDatas.forEach(doc => {
+            dataSets.push({...doc.data() })
+        })
+        res.json({ status: 200, message: "success", data: dataSets })
+    } catch (error) {
+        res.json({ status: 12, message: error.message || error.code, data: "" })
     }
 }
 
@@ -200,5 +214,6 @@ module.exports = {
     checkHandle,
     createTokenForAuthentication,
     fetchAllPost,
-    getMyAllData
+    getMyAllData,
+    getUsers
 }
