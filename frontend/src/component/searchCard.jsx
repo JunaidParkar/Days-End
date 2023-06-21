@@ -8,8 +8,10 @@ const SearchCard = (data) => {
     "https://firebasestorage.googleapis.com/v0/b/days-end1.appspot.com/o/account.png?alt=media&token=5ae448ba-f0e2-4a6a-b180-c15f6ca5a96c"
   );
   const [loader, setLoader] = useState(true);
+  const [color, setColor] = useState();
 
   useEffect(() => {
+    generateColor();
     getImage();
   }, []);
 
@@ -21,10 +23,21 @@ const SearchCard = (data) => {
     setLoader(false);
   };
 
+  const generateColor = () => {
+    let colors = [
+      "lightGreenColor",
+      "skinColor",
+      "purpleColor",
+      "paleGreenColor",
+    ];
+    const randomIndex = Math.floor(Math.random() * colors.length);
+    setColor(colors[randomIndex]);
+  };
+
   return (
     <>
       {loader ? <Preloader /> : ""}
-      <div className="searchCard skinColor">
+      <div className={`searchCard ${color}`}>
         <div className="flex searchCardHeader">
           <div className="searchCardDP">
             <img src={image} alt="User Profile Picture" />

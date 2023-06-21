@@ -14,7 +14,7 @@ export const registerUserStructure = async (email, bio, handle, link) => {
   await api
     .post("/userRegisterSetup", structuredData)
     .then(async (data) => {
-      await validateUser(data.data.status, "userStructure validator")
+      await validateUser(data.data, "userStructure validator")
         .then(() => {
           response = { status: data.data.status, message: data.data.message };
         })
@@ -33,7 +33,7 @@ export const checkUserHandle = async (handle) => {
   await api
     .post("/checkHandle", { handle: handle })
     .then(async (data) => {
-      await validateUser(data.data.status, "checkHandle validator")
+      await validateUser(data.data, "checkHandle validator")
         .then(() => {
           response = { status: data.data.status, message: data.data.message };
         })
@@ -72,7 +72,7 @@ export const getAllPost = async (id) => {
   await api
     .post("/getAllPost", { lastId: id })
     .then(async (respo) => {
-      await validateUser(respo.data.status)
+      await validateUser(respo.data)
         .then(() => {
           response = {
             status: respo.data.status,
@@ -97,7 +97,7 @@ export const getAllUsers = async () => {
   await api
     .post("/getUsers")
     .then(async (resp) => {
-      await validateUser(resp.data.status).then(() => {
+      await validateUser(resp.data).then(() => {
         response = { ...resp.data };
       });
     })
@@ -115,6 +115,36 @@ export const getAllOfMyDatas = async () => {
   let response = { status: "", message: "", data: "" };
   await api
     .post("/getMyData")
+    .then(async (respo) => {
+      await validateUser(respo.data).then(() => {
+        response = { ...respo.data };
+      });
+    })
+    .catch((err) => {
+      response = { status: 999, message: err.message || err, data: "" };
+    });
+  return response;
+};
+
+export const uploadPost = async (data) => {
+  let response = { status: "", message: "" };
+  await api
+    .post("/uploadPost", data)
+    .then(async (respo) => {
+      await validateUser(respo.data).then(() => {
+        response = { ...respo.data };
+      });
+    })
+    .catch((err) => {
+      response = { status: 999, message: err.message || err };
+    });
+  return response;
+};
+
+export const getSpecificPost = async (id) => {
+  let response = { status: "", message: "", data: "" };
+  await api
+    .post("/getSpecificPost", { postID: id })
     .then((respo) => {
       response = { ...respo.data };
     })

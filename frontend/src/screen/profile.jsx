@@ -78,7 +78,7 @@ const Profile = () => {
                   </div>
                   <div
                     className="addPoem editProfile"
-                    onClick={() => navigate("/addPoem")}
+                    onClick={() => navigate("/uploadPost")}
                   >
                     <p>Add Poem</p>
                   </div>

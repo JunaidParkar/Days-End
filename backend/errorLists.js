@@ -1,22 +1,24 @@
 // GLOBAL RESPONSE
 
-let response = [{
-        status: 500,
-        meaning: "Data is missing while post request is made"
-    },
-    {
-        status: 12,
-        meaning: "Firebase error"
-    },
-    {
-        status: 700,
-        meaning: "Server client authentication failed. Reason will be send via message key in response"
-    },
-    {
-        status: 200,
-        meaning: "Request fulfilled succesfully"
-    }
-]
+let response = [
+  {
+    status: 500,
+    meaning: "Data is missing while post request is made",
+  },
+  {
+    status: 12,
+    meaning: "Firebase error",
+  },
+  {
+    status: 700,
+    meaning:
+      "Server client authentication failed. Reason will be send via message key in response",
+  },
+  {
+    status: 200,
+    meaning: "Request fulfilled succesfully",
+  },
+];
 
 // let jwt = [{
 //         "data": {
@@ -56,11 +58,20 @@ let response = [{
 //     }
 // ]
 
-let userRegisterSetup = []
+let userRegisterSetup = [];
 
-let checkHandle = [{
+let checkHandle = [
+  {
     status: 401,
-    message: "User handle already taken"
-}]
+    message: "User handle already taken",
+  },
+];
 
-let getAllPost = []
+let getAllPost = [];
+
+let getSpecificPost = [
+  {
+    status: 41,
+    message: "Post not available",
+  },
+];

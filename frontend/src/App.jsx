@@ -21,6 +21,7 @@ import AddPoem from "./screen/addPoem";
 import VerifyEmail from "./screen/authentication/verifyEmail";
 import PageNotFound from "./screen/pageNotFound";
 import UpdateProfile from "./screen/updateProfile";
+import Poem from "./screen/poem";
 
 // import custom hooks
 
@@ -46,12 +47,37 @@ import "./css/searchCard.css";
 import "./css/addPoem.css";
 import "./css/userPostSkeleton.css";
 import "./css/updateProfile.css";
+import "./css/poem.css";
 
 const App = () => {
   const { user, isLoggedIn, isLoading } = useAuth();
 
   console.log(user);
   console.log(isLoggedIn);
+
+  if (window.innerWidth < 280) {
+    return (
+      <>
+        <div
+          className="flexCenter"
+          style={{
+            height: "100vh",
+            flexDirection: "column",
+            textTransform: "uppercase",
+            fontWeight: 500,
+            fontSize: "23px",
+          }}
+        >
+          <p>Use</p>
+          <p>other</p>
+          <p>device</p>
+        </div>
+      </>
+    );
+  } else {
+    // Code to execute if window width is greater than or equal to 280 pixels
+    console.log("Window width is greater than or equal to 280 pixels");
+  }
 
   if (isLoading) {
     return (
@@ -84,6 +110,8 @@ const App = () => {
               <Route path="/notification" element={<Notify />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/udateProfile" element={<UpdateProfile />} />
+              <Route path="/uploadPost" element={<AddPoem />} />
+              <Route path="/post/:postID" element={<Poem />} />
               <Route path="/auth/login" element={<Navigate to="/" />} />
               <Route path="/*" element={<PageNotFound />} />
             </Routes>
