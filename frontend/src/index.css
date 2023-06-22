@@ -1,36 +1,35 @@
 * {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    box-sizing: border-box;
-    user-select: none;
-    text-decoration: none;
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
-    font-family: var(--josefinFontFamily);
-    user-select: none;
-    /* scrollbar-gutter: stable; */
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
+  user-select: none;
+  text-decoration: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--josefinFontFamily);
+  /* user-select: none; */
+  /* scrollbar-gutter: stable; */
 }
 
 :root {
-    --josefinFontFamily: 'Josefin Sans', sans-serif;
-    --borderRadius: 10px;
-    --padding: 250px;
-    --cardPadding: 20px;
-    --skinColor: #F8EDE3;
-    --lightGreenColor: #A7CFD2;
-    --purpleColor: #B2A4FF;
-    --paleGreenColor: #DDFFBB;
-    --redColor: #FFB4B4;
-    --pureWhiteColor: #FFFFFF;
-    --shadowColor: #E0E5EC;
+  --josefinFontFamily: "Josefin Sans", sans-serif;
+  --borderRadius: 10px;
+  --padding: 250px;
+  --cardPadding: 20px;
+  --skinColor: #f8ede3;
+  --lightGreenColor: #a7cfd2;
+  --purpleColor: #b2a4ff;
+  --paleGreenColor: #ddffbb;
+  --redColor: #ffb4b4;
+  --pureWhiteColor: #ffffff;
+  --shadowColor: #e0e5ec;
 }
 
 ::-webkit-scrollbar {
-    width: 0px;
-    border-radius: var(--borderRadius);
+  width: 0px;
+  border-radius: var(--borderRadius);
 }
-
 
 /* ::-webkit-scrollbar-track{
     background-color: red;
@@ -38,68 +37,67 @@
 }  */
 
 body {
-    width: 100%;
-    max-width: 100vw;
+  width: 100%;
+  max-width: 100vw;
 }
 
 #root {
-    width: 100%;
+  width: 100%;
 }
 
 a {
-    text-decoration: none;
-    color: black;
+  text-decoration: none;
+  color: black;
 }
 
 a:active {
-    color: black;
+  color: black;
 }
 
 a:focus {
-    color: black;
-    outline: none;
+  color: black;
+  outline: none;
 }
 
 .none {
-    display: none;
+  display: none;
 }
 
 .flex {
-    display: flex;
+  display: flex;
 }
 
 .displayNone {
-    display: none;
+  display: none;
 }
 
 .flexCenter {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 textarea {
-    resize: none;
+  resize: none;
 }
 
 @media only screen and (max-width: 1440px) {
-     :root {
-        --padding: 150px
-    }
+  :root {
+    --padding: 150px;
+  }
 }
 
 @media only screen and (max-width: 1190px) {
-     :root {
-        --padding: 100px
-    }
+  :root {
+    --padding: 100px;
+  }
 }
 
 @media only screen and (max-width: 1080px) {
-     :root {
-        --padding: 25px
-    }
+  :root {
+    --padding: 25px;
+  }
 }
-
 
 /* 
 @media only screen and (max-width: 675px) {

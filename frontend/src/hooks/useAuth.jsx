@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../cred/cred";
 import { logOut } from "../functions/authentication/authentication";
-import { getAuthToken } from "../api/endPoints";
+import { getAuthToken, registerUserStructure } from "../api/endPoints";
 
 const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -25,7 +25,13 @@ const useAuth = () => {
                 setAuthError(response.message);
                 await logOut("useAuth line 26");
               } else {
-                localStorage.setItem("uid", currUser.uid)
+                localStorage.setItem("uid", currUser.uid);
+                let data = {
+                  uid: currUser.uid,
+                  email: currUser.email,
+                };
+                currUser.photoURL ? (data.pic = currUser.photoURL) : "";
+                await registerUserStructure(data);
                 setUser(currUser);
                 setIsLoggedIn(true);
               }
@@ -34,6 +40,7 @@ const useAuth = () => {
             .catch(async (err) => {
               setUser(null);
               setIsLoggedIn(false);
+              console.log(err);
               await logOut("useAuth line 35");
             });
         }

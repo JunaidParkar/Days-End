@@ -9,11 +9,13 @@ import AlertBox from "../component/alertBox";
 import { getBlob, ref } from "firebase/storage";
 import { storage } from "../cred/cred";
 import Preloader from "../component/preloader";
+import useAuth from "../hooks/useAuth";
 
 const Profile = () => {
   const [myData, setMyData] = useState();
   const [loader, setLoader] = useState(true);
 
+  const { user, isLoggedIn, isLoading } = useAuth();
   const [isAlert, showAlert, closeAlert] = useAlert(false, "");
 
   useEffect(() => {
@@ -73,12 +75,19 @@ const Profile = () => {
                   </div>
                 </div>
                 <div className="flex interactionBtns">
-                  <div className="editProfile">
+                  <div
+                    className="editProfile"
+                    onClick={() => navigate("/udateProfile")}
+                  >
                     <p>Edit profile</p>
                   </div>
                   <div
                     className="addPoem editProfile"
-                    onClick={() => navigate("/uploadPost")}
+                    onClick={() =>
+                      user.isEmailVerified
+                        ? navigate("/uploadPost")
+                        : showAlert("Please verify your email first", false)
+                    }
                   >
                     <p>Add Poem</p>
                   </div>

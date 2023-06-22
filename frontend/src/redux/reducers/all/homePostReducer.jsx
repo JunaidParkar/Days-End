@@ -1,9 +1,9 @@
 // reducer.js
 let initialState = {};
 
-export const allPostsReducer = (state = initialState, action) => {
+export const storeAllPostReducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'STORE_POSTS':
+    case "STORE_POSTS":
       return { ...state, ...action.payload };
     default:
       return state;

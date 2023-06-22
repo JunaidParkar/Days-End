@@ -2,17 +2,10 @@ import { logOut } from "../functions/authentication/authentication";
 import { validateUser } from "../functions/common";
 import api from "./api";
 
-export const registerUserStructure = async (email, bio, handle, link) => {
+export const registerUserStructure = async (data) => {
   let response = { status: "", message: "" };
-  let structuredData = {
-    email: email,
-    bio: bio,
-    handle: handle,
-    link: link,
-  };
-  console.log(structuredData);
   await api
-    .post("/userRegisterSetup", structuredData)
+    .post("/userRegisterSetup", { data: data })
     .then(async (data) => {
       await validateUser(data.data, "userStructure validator")
         .then(() => {

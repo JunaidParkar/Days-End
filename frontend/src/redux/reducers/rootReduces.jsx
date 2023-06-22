@@ -1,12 +1,10 @@
-import { combineReducers } from 'redux';
-import { allPostsReducer } from './homePostReducer';
-import { myAllDataReducer } from './myDataReducer';
-import { authReducer } from './authReducer';
+import { combineReducers } from "redux";
+import { storeAllPostReducer } from "./all/homePostReducer";
 
 // Combine multiple reducers using combineReducers
 export const rootReducer = combineReducers({
-  appPost: allPostsReducer,
-  myData: myAllDataReducer,
-  authData: authReducer
+  allPost: storeAllPostReducer,
+  // myData: myAllDataReducer,
+  // authData: userDataReducer,
   // Add other reducers here if you have any
 });

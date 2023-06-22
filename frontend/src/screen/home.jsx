@@ -7,9 +7,8 @@ import Preloader from "../component/preloader";
 import useAlert from "../hooks/useAlert";
 // import { getAllPosts } from '../api/request'
 import { useDispatch, useSelector } from "react-redux";
-import { storeAllPosts } from "../redux/actions/homePageAction";
-import store from "../redux/store";
 import { getAllPost } from "../api/endPoints";
+import { storeAllPosts } from "../redux/actions/homePageAction";
 // import { signOutUser } from '../firebaseFunctions/authentication/auth'
 
 const Home = () => {
@@ -20,8 +19,8 @@ const Home = () => {
   const [posts, setPosts] = useState({});
   const [postLoading, setPostLoading] = useState(true);
   const dispatch = useDispatch();
-  const userData = useSelector((state) => state.authData);
-  const allPosts = useSelector((state) => state.appPost);
+  // const userData = useSelector((state) => state.authData);
+  const allPosts = useSelector((state) => state.allPost);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -29,8 +28,14 @@ const Home = () => {
     }
   }, [isLoggedIn]);
 
-  // console.log(allPosts)
-  console.log(posts);
+  useEffect(() => {
+    setPosts(allPosts);
+  }, [allPosts]);
+
+  console.log(allPosts);
+
+  // console.log(sele)
+  // console.log(posts);
   const getPosts = async () => {
     if (!isLoading) {
       if (hasMore) {
@@ -46,6 +51,7 @@ const Home = () => {
               setPosts((prevPosts) => {
                 return { ...prevPosts, ...respo.posts };
               });
+              dispatch(storeAllPosts(respo.posts));
               setlastPostId(respo.lastPost);
               setHasMore(true);
             }
@@ -94,7 +100,7 @@ const Home = () => {
   //         </>
   //     )
   // } else {
-  console.log(posts);
+  // console.log(posts);
   return (
     <>
       <div className="homeContainer">

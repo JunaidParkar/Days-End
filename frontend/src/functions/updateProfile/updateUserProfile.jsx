@@ -1,6 +1,7 @@
 import {
   deleteObject,
   getDownloadURL,
+  getMetadata,
   listAll,
   ref,
   uploadBytes,
@@ -10,24 +11,35 @@ import { getRandomNumberString } from "../common";
 import { updateProfile } from "firebase/auth";
 import { checkUserHandle, registerUserStructure } from "../../api/endPoints";
 
-export const updatePic = async (user, userData) => {
-  let response = { status: "", message: "" };
+const checkIfDirectoryExists = async (dirRef) => {
   try {
-    let dirPath = `${user.uid}/profilePic`;
-    let delRef = ref(storage, dirPath);
-    let dirData = await listAll(delRef);
+    await getMetadata(dirRef);
+    return true; // Directory exists
+  } catch (error) {
+    console.error(error);
+    if (error.code === "storage/object-not-found") {
+      return false; // Directory does not exist
+    } // Other errors are propagated
+  }
+};
 
-    if (dirData.items && dirData.items.length > 0) {
-      await Promise.all(dirData.items.map((item) => deleteObject(item)));
+export const updatePic = async (user, userData) => {
+  let response = { status: "", message: "", url: "" };
+  console.log(userData);
+
+  try {
+    if (user.photoURL) {
+      let dirRef = ref(storage, user.photoURL);
+      await deleteObject(dirRef);
     }
 
     let path = `${user.uid}/profilePic/${getRandomNumberString(
       10
-    )}.${userData.profilePic.name.split(".").pop()}`;
+    )}.${userData.profilePic.type.split("/").pop()}`;
     let picRef = ref(storage, path);
 
     const metadata = {
-      contentType: `image/${userData.profilePic.name.split(".").pop()}`,
+      contentType: userData.profilePic.type,
       customMetadata: {
         lattitude: "",
         longitude: "",
@@ -55,47 +67,46 @@ export const updatePic = async (user, userData) => {
     response = {
       status: 101,
       message: error.message || "Unknown error occurred",
+      url: "",
     };
   }
-
-  alert(response.message);
   return response;
 };
 
 export const updateProfileData = async (user, userData) => {
   let response = { status: "", message: "" };
-  if (user.displayName === userData.displayName.toLowerCase()) {
-    if (userData.profilePic) {
-      let pic = await updatePic(user, userData);
-      await registerUserStructure(
-        user.email,
-        userData.bio,
-        userData.displayName.toLowerCase(),
-        pic.status === 200 ? pic.url : ""
-      );
-      response = { status: pic.status, message: pic.message };
+  await updatePic(user, userData).then(async (respo) => {
+    if (respo.status === 200) {
+      if (user.displayName == userData.displayName.toLowerCase()) {
+        let data = {
+          bio: userData.bio,
+          handle: userData.displayName.toLowerCase(),
+          pic: respo.url,
+        };
+        await registerUserStructure(data).then((respp) => {
+          response = { status: respp.status, message: respp.message };
+        });
+      } else {
+        await checkUserHandle(userData.displayName).then(async (resp) => {
+          if (resp.status === 200) {
+            let data = {
+              bio: userData.bio,
+              handle: userData.displayName.toLowerCase(),
+              pic: respo.url,
+            };
+            await registerUserStructure(data);
+            await updateProfile(user, {
+              displayName: userData.displayName.toLowerCase(),
+            });
+            response = { status: 200, message: "success" };
+          } else {
+            response = { status: resp.status, message: resp.message };
+          }
+        });
+      }
+    } else {
+      response = { status: respo.status, message: respo.message };
     }
-  } else {
-    let pic = await updatePic(user, userData);
-    response = { status: pic.status, message: pic.message };
-    if (pic.status === 200) {
-      await checkUserHandle(userData.displayName).then(async (resp) => {
-        if (resp.status === 200) {
-          await registerUserStructure(
-            user.email,
-            userData.bio,
-            userData.displayName.toLowerCase(),
-            pic.status === 200 ? pic.url : ""
-          );
-          await updateProfile(user, {
-            displayName: userData.displayName.toLowerCase(),
-          });
-          response = { status: 200, message: "success" };
-        } else {
-          response = { status: resp.status, message: resp.message };
-        }
-      });
-    }
-  }
+  });
   return response;
 };

@@ -1,137 +1,141 @@
 .postCard {
-    width: calc((100% / 3) - 13.3333px);
-    aspect-ratio: 1/1;
+  width: calc((100% / 3) - 13.3333px);
+  aspect-ratio: 1/1;
 }
 
 .postCard,
 .searchCard {
-    /* background: white; */
-    overflow: hidden;
-    border-radius: var(--borderRadius);
-    box-shadow: var(--shadowColor) 0px 8px 24px;
-    padding: var(--cardPadding);
+  /* background: white; */
+  overflow: hidden;
+  border-radius: var(--borderRadius);
+  box-shadow: var(--shadowColor) 0px 8px 24px;
+  padding: var(--cardPadding);
 }
 
 .postCard.lightGreenColor,
 .searchCard.lightGreenColor,
 .poemDisplayContainer.lightGreenColor {
-    background: var(--lightGreenColor);
-    box-shadow: var(--lightGreenColor) 0px 8px 24px;
+  background: var(--lightGreenColor);
+  box-shadow: var(--lightGreenColor) 0px 8px 24px;
 }
 
 .postCard.skinColor,
 .searchCard.skinColor,
 .poemDisplayContainer.skinColor {
-    background: var(--skinColor);
-    box-shadow: var(--skinColor) 0px 8px 24px;
+  background: var(--skinColor);
+  box-shadow: var(--skinColor) 0px 8px 24px;
 }
 
 .postCard.purpleColor,
 .searchCard.purpleColor,
 .poemDisplayContainer.purpleColor {
-    background: var(--purpleColor);
-    box-shadow: var(--purpleColor) 0px 8px 24px;
+  background: var(--purpleColor);
+  box-shadow: var(--purpleColor) 0px 8px 24px;
 }
 
 .postCard.paleGreenColor,
 .searchCard.paleGreenColor,
 .poemDisplayContainer.paleGreenColor {
-    background-color: var(--paleGreenColor);
-    box-shadow: var(--paleGreenColor) 0px 8px 24px;
+  background-color: var(--paleGreenColor);
+  box-shadow: var(--paleGreenColor) 0px 8px 24px;
 }
 
 .postCard.lightGreenColor .postPoemSec .postPoemInteractionSec,
 .searchCard.lightGreenColor .overLay {
-    background: linear-gradient(to top, var(--lightGreenColor), transparent);
+  background: linear-gradient(to top, var(--lightGreenColor), transparent);
 }
 
 .postCard.skinColor .postPoemSec .postPoemInteractionSec,
 .searchCard.skinColor .overLay {
-    background: linear-gradient(to top, var(--skinColor), transparent);
+  background: linear-gradient(to top, var(--skinColor), transparent);
 }
 
 .postCard.purpleColor .postPoemSec .postPoemInteractionSec,
 .searchCard.purpleColor .overLay {
-    background: linear-gradient(to top, var(--purpleColor), transparent);
+  background: linear-gradient(to top, var(--purpleColor), transparent);
 }
 
 .postCard.paleGreenColor .postPoemSec .postPoemInteractionSec,
 .searchCard.paleGreenColor .overLay {
-    background: linear-gradient(to top, var(--paleGreenColor), transparent);
+  background: linear-gradient(to top, var(--paleGreenColor), transparent);
 }
 
 .postCard .postPoemHeading,
 .poemDisplayContainer .headerSec {
-    width: 100%;
-    height: 32%;
-    flex-direction: column;
-    justify-content: space-evenly;
-    border-bottom: 1.5px solid black;
-    cursor: pointer;
+  width: 100%;
+  height: 32%;
+  flex-direction: column;
+  justify-content: space-evenly;
+  border-bottom: 1.5px solid black;
+  cursor: pointer;
 }
 
 .postCard .postPoemHeading h4,
 .poemDisplayContainer .headerSec h4 {
-    width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 20px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-weight: 600;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
 }
 
 .postCard .postPoemHeading p,
 .poemDisplayContainer .headerSec p {
-    padding: 5px 10px;
-    width: fit-content;
-    max-width: 50%;
-    border-radius: var(--borderRadius);
-    font-weight: 300;
-    letter-spacing: 2px;
-    background: var(--pureWhiteColor);
-    font-size: 13px;
-    text-transform: uppercase;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  padding: 5px 10px;
+  width: fit-content;
+  max-width: 50%;
+  border-radius: var(--borderRadius);
+  font-weight: 300;
+  letter-spacing: 2px;
+  background: var(--pureWhiteColor);
+  font-size: 13px;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .postCard .postPoemSec {
-    width: 100%;
-    height: calc(100% - 32%);
-    position: relative;
+  width: 100%;
+  height: calc(100% - 32%);
+  position: relative;
 }
 
 .postCard .postPoemSec p {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-    line-height: 30px;
-    padding-top: 15px;
-    letter-spacing: 1px;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  line-height: 30px;
+  padding-top: 15px;
+  letter-spacing: 1px;
 }
 
 .postCard .postPoemSec .postPoemInteractionSec {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    align-items: end;
-    justify-content: start;
-    gap: 20px;
-    background: linear-gradient( to top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.5));
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  align-items: end;
+  justify-content: start;
+  gap: 20px;
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 1),
+    rgba(255, 255, 255, 0.5)
+  );
 }
 
 .postCard .postPoemSec .postPoemInteractionSec .postPoemShare,
 .postCard .postPoemSec .postPoemInteractionSec .postPoemLike,
 .poemDisplayContainer .actionCenter .opts .postPoemLike,
 .poemDisplayContainer .actionCenter .opts .postPoemShare {
-    width: 50px;
-    flex-direction: column;
+  width: 50px;
+  flex-direction: column;
 }
 
 .postCard .postPoemSec .postPoemInteractionSec .postPoemLike img,
@@ -142,45 +146,45 @@
 .poemDisplayContainer .actionCenter .opts .postPoemShare img,
 .poemDisplayContainer .actionCenter .opts .postPoemLike p,
 .poemDisplayContainer .actionCenter .opts .postPoemShare p {
-    width: 30px;
+  width: 30px;
 }
 
 .postCard .postPoemSec .postPoemInteractionSec .postPoemLike p,
 .postCard .postPoemSec .postPoemInteractionSec .postPoemShare p,
 .poemDisplayContainer .actionCenter .opts .postPoemLike p,
 .poemDisplayContainer .actionCenter .opts .postPoemShare p {
-    width: 50px;
-    font-size: 13px;
-    letter-spacing: 0;
-    line-height: 100%;
-    font-weight: 400;
-    vertical-align: middle;
-    text-align: center;
-    padding: 0;
-    padding-top: 10px;
+  width: 50px;
+  font-size: 13px;
+  letter-spacing: 0;
+  line-height: 100%;
+  font-weight: 400;
+  vertical-align: middle;
+  text-align: center;
+  padding: 0;
+  padding-top: 10px;
 }
 
 @media only screen and (max-width: 920px) {
-    .postCard {
-        width: calc((100% / 2) - 10px);
-    }
+  .postCard {
+    width: calc((100% / 2) - 10px);
+  }
 }
 
 @media only screen and (max-width: 720px) {
-    .postCard {
-        aspect-ratio: 1/1.5;
-    }
+  .postCard {
+    aspect-ratio: 1/1.5;
+  }
 }
 
 @media only screen and (max-width: 580px) {
-    .postCard {
-        width: 100%;
-        aspect-ratio: 1/1;
-    }
+  .postCard {
+    width: 100%;
+    aspect-ratio: 1/1;
+  }
 }
 
 @media only screen and (max-width: 480px) {
-    .postCard {
-        aspect-ratio: 1/1.5;
-    }
+  .postCard {
+    aspect-ratio: 1/1.5;
+  }
 }

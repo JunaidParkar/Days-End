@@ -9,6 +9,7 @@ import EmptyNavbar from "../component/emptyNavBar";
 import Preloader from "../component/preloader";
 import AlertBox from "../component/alertBox";
 import useAlert from "../hooks/useAlert";
+import { useNavigate } from "react-router-dom";
 
 const UpdateProfile = () => {
   const [isAlert, showAlert, closeAlert] = useAlert(false, "");
@@ -21,34 +22,54 @@ const UpdateProfile = () => {
   const { user, isLoggedIn, isEmailVerified, isLoading } = useAuth();
   const [loader, setLoader] = useState(false);
 
+  const navigate = useNavigate();
+
   let data = {
     displayName: "",
     photoURL: "",
   };
+  if (user) {
+    // console.log(
+    // user.photoURL
+    //   .split("/")
+    //   .pop()
+    //   .split(`${user.uid}%2FprofilePic%`)
+    //   .pop()
+    //   .split("?")[0]
+
+    // user.photoURL
+    // );
+    console.log(userData.profilePic);
+  }
 
   useEffect(() => {
-    const setPic = async () => {
+    const setUserDataFromUser = async () => {
       if (!isLoading) {
-        if (user) {
-          setLoader(true);
-          if (user.photoURL) {
-            let picRef = ref(storage, user.photoURL);
-            console.log(picRef);
-            if (picRef) {
-              let blobImage = await getBlob(picRef);
-            }
-            setUserData({ ...userData, ["profilePic"]: blobImage });
-          }
-          setLoader(false);
+        setLoader(true);
+
+        if (user.photoURL) {
+          let picRef = ref(storage, user.photoURL);
+          let blobImage = await getBlob(picRef);
+          console.clear();
+          console.error(blobImage.name, "bllb");
+          setUserData({ ...userData, profilePic: blobImage });
         }
+
+        setUserData((prevUserData) => ({
+          ...prevUserData,
+          displayName: user.displayName || "",
+          bio: "", // Add logic to fetch bio from Firestore or any other source
+        }));
+
+        setLoader(false);
       }
     };
-    setPic();
+    setUserDataFromUser();
   }, [user]);
 
   useEffect(() => {
     const updateBtn = () => {
-      if (userData.displayName.trim() != "" && userData.bio.trim() != "") {
+      if (userData.displayName.trim() !== "" && userData.bio.trim() !== "") {
         setDisableBtn(false);
       } else {
         setDisableBtn(true);
@@ -58,45 +79,39 @@ const UpdateProfile = () => {
   }, [userData]);
 
   const handleImage = async (e) => {
+    setLoader(true);
     await imageCompressor(e.target.files[0], 800).then((compressedFile) => {
-      setUserData({ ...userData, profilePic: compressedFile });
+      setUserData((prevUserData) => ({
+        ...prevUserData,
+        profilePic: compressedFile,
+      }));
     });
+    setLoader(false);
   };
 
   const handleUserdata = (e) => {
-    setUserData({ ...userData, [e.target.name]: e.target.value });
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   const uploadProfile = async (e) => {
     e.preventDefault();
     setLoader(true);
+
     await updateProfileData(user, userData)
       .then((resp) => {
         console.log(resp);
         showAlert(resp.message, false);
-        resp.status === 200 ? location.reload() : "";
-        location.reload();
+        if (resp.status === 200) {
+          navigate("/");
+        }
       })
       .catch((err) => console.log(err));
+
     setLoader(false);
   };
-
-  // let uu = !user ? "" : user.photoURL
-
-  // let aa = uu ? true : false
-
-  // if (aa) {
-  // if (photoURL) {
-  // const profilePicBlob = fetch(uu).then((response) => {console.log(response); return (response.blob())});
-  // const profilePicObjectURL = URL.createObjectURL(profilePicBlob);
-  // setProfilePicURL(profilePicObjectURL);
-  // console.log(profilePicObjectURL)
-  //   }
-  // }
-
-  // console.log(aa)
-
-  // console.log(!user ? "" : URL.createObjectURL(uu))
 
   return (
     <>
