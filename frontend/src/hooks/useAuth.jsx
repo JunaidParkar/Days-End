@@ -8,7 +8,6 @@ const useAuth = () => {
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [authError, setAuthError] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currUser) => {
@@ -22,16 +21,9 @@ const useAuth = () => {
               if (response.status !== 200) {
                 setUser(null);
                 setIsLoggedIn(false);
-                setAuthError(response.message);
                 await logOut("useAuth line 26");
               } else {
                 localStorage.setItem("uid", currUser.uid);
-                let data = {
-                  uid: currUser.uid,
-                  email: currUser.email,
-                };
-                currUser.photoURL ? (data.pic = currUser.photoURL) : "";
-                await registerUserStructure(data);
                 setUser(currUser);
                 setIsLoggedIn(true);
               }
@@ -57,7 +49,7 @@ const useAuth = () => {
     };
   }, []);
 
-  return { user, isLoggedIn, isLoading, authError };
+  return { user, isLoggedIn, isLoading };
 };
 
 export default useAuth;

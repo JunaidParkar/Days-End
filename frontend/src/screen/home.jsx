@@ -4,11 +4,13 @@ import UserPost from "../component/userPost";
 import useAuth from "../hooks/useAuth";
 import UserPostSkeleton from "../component/userPostSkeleton";
 import Preloader from "../component/preloader";
-import useAlert from "../hooks/useAlert";
+// import useAlert from "../hooks/useAlert";
 // import { getAllPosts } from '../api/request'
 import { useDispatch, useSelector } from "react-redux";
 import { getAllPost } from "../api/endPoints";
 import { storeAllPosts } from "../redux/actions/homePageAction";
+import AlertBox from "../component/alertBox";
+import useAlert from "../hooks/useAlert";
 // import { signOutUser } from '../firebaseFunctions/authentication/auth'
 
 const Home = () => {
@@ -119,11 +121,11 @@ const Home = () => {
           {postLoading ? <UserPostSkeleton /> : ""}
         </div>
       </div>
-      {isAlert.state ? (
+      {/* {isAlert.state ? (
         <AlertBox message={isAlert.log} closeAlert={closeAlert} />
       ) : (
         ""
-      )}
+      )} */}
     </>
   );
   // }

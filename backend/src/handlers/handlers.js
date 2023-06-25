@@ -35,6 +35,7 @@ const registerUserSetup = async (req, res) => {
   req.body.data.handle === "user" ? (req.body.data.handle = "") : "";
   req.body.data.bio === "user" ? (req.body.data.bio = "") : "";
   req.body.data.pic === "user" ? (req.body.data.pic = "") : "";
+  console.log(structureToSet);
   // let structureToSet = {
   //   createdAt: new Date().toISOString(),
   //   followers: 0,
@@ -273,18 +274,6 @@ const fetchAllPost = async (req, res) => {
 };
 
 const getMyAllData = async (req, res) => {
-  const requiredFields = ["uid"];
-  for (const field of requiredFields) {
-    if (!req.body[field]) {
-      return res.json({
-        status: 500,
-        message: `${
-          field.charAt(0).toUpperCase() + field.slice(1)
-        } not provided`,
-      });
-    }
-  }
-
   try {
     let userBasicData;
     let postData = {

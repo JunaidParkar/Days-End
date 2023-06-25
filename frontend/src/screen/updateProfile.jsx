@@ -40,6 +40,7 @@ const UpdateProfile = () => {
     // user.photoURL
     // );
     console.log(userData.profilePic);
+    console.log(user.photoURL);
   }
 
   useEffect(() => {
@@ -49,6 +50,12 @@ const UpdateProfile = () => {
 
         if (user.photoURL) {
           let picRef = ref(storage, user.photoURL);
+          let blobImage = await getBlob(picRef);
+          console.clear();
+          console.error(blobImage.name, "bllb");
+          setUserData({ ...userData, profilePic: blobImage });
+        } else {
+          let picRef = ref(storage, "account.png");
           let blobImage = await getBlob(picRef);
           console.clear();
           console.error(blobImage.name, "bllb");
@@ -99,6 +106,7 @@ const UpdateProfile = () => {
   const uploadProfile = async (e) => {
     e.preventDefault();
     setLoader(true);
+    console.log("heyyyyyy");
 
     await updateProfileData(user, userData)
       .then((resp) => {

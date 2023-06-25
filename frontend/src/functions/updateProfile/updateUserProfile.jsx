@@ -1,8 +1,8 @@
 import {
   deleteObject,
+  getBlob,
   getDownloadURL,
   getMetadata,
-  listAll,
   ref,
   uploadBytes,
 } from "firebase/storage";
@@ -24,89 +24,98 @@ const checkIfDirectoryExists = async (dirRef) => {
 };
 
 export const updatePic = async (user, userData) => {
-  let response = { status: "", message: "", url: "" };
-  console.log(userData);
-
   try {
-    if (user.photoURL) {
+    // let pDoc = doc();
+    let pRef = ref(storage, "account.png");
+    let pBlob = await getBlob(pRef);
+    let url = await getDownloadURL(pRef);
+    // let userProfilePic = await getDownloadURL(userData.profilePic);
+
+    if (user.photoURL && user.photoURL !== url) {
       let dirRef = ref(storage, user.photoURL);
       await deleteObject(dirRef);
     }
 
-    let path = `${user.uid}/profilePic/${getRandomNumberString(
-      10
-    )}.${userData.profilePic.type.split("/").pop()}`;
-    let picRef = ref(storage, path);
+    if (pBlob === userData.profilePic) {
+      await updateProfile(user, { photoURL: url });
+      return { status: 200, message: "success", url: url };
+    } else {
+      let path = `${user.uid}/profilePic/${getRandomNumberString(
+        10
+      )}.${userData.profilePic.type.split("/").pop()}`;
+      let picRef = ref(storage, path);
 
-    const metadata = {
-      contentType: userData.profilePic.type,
-      customMetadata: {
-        lattitude: "",
-        longitude: "",
-        userAgent: navigator.userAgent,
-      },
-    };
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          metadata.customMetadata.lattitude = position.coords.latitude;
-          metadata.customMetadata.longitude = position.coords.longitude;
+      const metadata = {
+        contentType: userData.profilePic.type,
+        customMetadata: {
+          latitude: "",
+          longitude: "",
+          userAgent: navigator.userAgent,
         },
-        () => {}
-      );
+      };
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            metadata.customMetadata.latitude = position.coords.latitude;
+            metadata.customMetadata.longitude = position.coords.longitude;
+          },
+          () => {}
+        );
+      }
+
+      await uploadBytes(picRef, userData.profilePic, metadata);
+      let newUrl = await getDownloadURL(picRef);
+      await updateProfile(user, { photoURL: newUrl });
+
+      return { status: 200, message: "success", url: newUrl };
     }
-
-    await uploadBytes(picRef, userData.profilePic, metadata);
-    let newUrl = await getDownloadURL(picRef);
-    await updateProfile(user, { photoURL: newUrl });
-
-    response = { status: 200, message: "success", url: newUrl };
   } catch (error) {
     console.error(error);
-    response = {
+    return {
       status: 101,
       message: error.message || "Unknown error occurred",
       url: "",
     };
   }
-  return response;
 };
 
 export const updateProfileData = async (user, userData) => {
-  let response = { status: "", message: "" };
-  await updatePic(user, userData).then(async (respo) => {
+  try {
+    const respo = await updatePic(user, userData);
     if (respo.status === 200) {
-      if (user.displayName == userData.displayName.toLowerCase()) {
+      if (user.displayName === userData.displayName.toLowerCase()) {
         let data = {
           bio: userData.bio,
           handle: userData.displayName.toLowerCase(),
           pic: respo.url,
         };
-        await registerUserStructure(data).then((respp) => {
-          response = { status: respp.status, message: respp.message };
-        });
+        await registerUserStructure(data);
       } else {
-        await checkUserHandle(userData.displayName).then(async (resp) => {
-          if (resp.status === 200) {
-            let data = {
-              bio: userData.bio,
-              handle: userData.displayName.toLowerCase(),
-              pic: respo.url,
-            };
-            await registerUserStructure(data);
-            await updateProfile(user, {
-              displayName: userData.displayName.toLowerCase(),
-            });
-            response = { status: 200, message: "success" };
-          } else {
-            response = { status: resp.status, message: resp.message };
-          }
-        });
+        const resp = await checkUserHandle(userData.displayName);
+        if (resp.status === 200) {
+          let data = {
+            bio: userData.bio,
+            handle: userData.displayName.toLowerCase(),
+            pic: respo.url,
+          };
+          await registerUserStructure(data);
+          await updateProfile(user, {
+            displayName: userData.displayName.toLowerCase(),
+          });
+        } else {
+          return { status: resp.status, message: resp.message };
+        }
       }
+      return { status: 200, message: "success" };
     } else {
-      response = { status: respo.status, message: respo.message };
+      return { status: respo.status, message: respo.message };
     }
-  });
-  return response;
+  } catch (error) {
+    console.error(error);
+    return {
+      status: 101,
+      message: error.message || "Unknown error occurred",
+    };
+  }
 };

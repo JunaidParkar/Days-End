@@ -14,8 +14,11 @@ import { useDispatch } from "react-redux";
 // import { loginUserDataInRedux } from "../../redux/actions/userDataAction";
 import Preloader from "../../component/preloader";
 import { loginUser } from "../../functions/authentication/authentication";
+import useAuth from "../../hooks/useAuth"
 
 const Login = () => {
+
+  const { user, isLoggedIn, isLoading } = useAuth();
   const [isAlert, showAlert, closeAlert] = useAlert(false, "");
 
   const [loginData, setLoginData] = useState({
@@ -59,7 +62,7 @@ const Login = () => {
 
   return (
     <>
-      {preloaderShow ? <Preloader /> : ""}
+      {preloaderShow || isLoading ? <Preloader /> : ""}
       <div className="flexCenter authContainer">
         <form
           method="post"

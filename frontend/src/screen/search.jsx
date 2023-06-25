@@ -14,10 +14,21 @@ const Search = () => {
     fetchAllUsers();
   }, []);
 
+  useEffect(() => {
+    if (allUsers) {
+      setSearchUsers((prev) => [...prev, allUsers]);
+    }
+    console.log(allUsers);
+  }, [allUsers]);
+
   const fetchAllUsers = async () => {
     await getAllUsers().then((resp) => {
       if (resp.status === 200) {
-        setSearchUsers([...resp.data]);
+        let users = [...resp.data];
+        let updatedUsers = users.filter(
+          (user) => user.uid !== localStorage.getItem("uid")
+        );
+        setSearchUsers(updatedUsers);
       } else {
         showAlert(resp.message, false);
       }
