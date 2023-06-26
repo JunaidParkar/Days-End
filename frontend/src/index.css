@@ -17,10 +17,14 @@
   --borderRadius: 10px;
   --padding: 250px;
   --cardPadding: 20px;
-  --skinColor: #f8ede3;
-  --lightGreenColor: #a7cfd2;
-  --purpleColor: #b2a4ff;
-  --paleGreenColor: #ddffbb;
+  --transSkinColor: rgba(248, 237, 227, 0.8);
+  --transLightGreenColor: rgba(167, 207, 210, 0.8);
+  --transPurpleColor: rgba(178, 164, 255, 0.8);
+  --transPaleGreenColor: rgba(221, 255, 187, 0.8);
+  --skinColor: rgba(248, 237, 227, 1);
+  --lightGreenColor: rgba(167, 207, 210, 1);
+  --purpleColor: rgba(178, 164, 255, 1);
+  --paleGreenColor: rgba(221, 255, 187, 1);
   --redColor: #ffb4b4;
   --pureWhiteColor: #ffffff;
   --shadowColor: #e0e5ec;

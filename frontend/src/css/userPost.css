@@ -41,23 +41,39 @@
 }
 
 .postCard.lightGreenColor .postPoemSec .postPoemInteractionSec,
-.searchCard.lightGreenColor .overLay {
-  background: linear-gradient(to top, var(--lightGreenColor), transparent);
+.searchCard.lightGreenColor .overLay,
+.poemDisplayContainer.lightGreenColor .actionCenter {
+  background: linear-gradient(
+    to top,
+    var(--lightGreenColor),
+    var(--transLightGreenColor)
+  );
 }
 
 .postCard.skinColor .postPoemSec .postPoemInteractionSec,
-.searchCard.skinColor .overLay {
-  background: linear-gradient(to top, var(--skinColor), transparent);
+.searchCard.skinColor .overLay,
+.poemDisplayContainer.skinColor .actionCenter {
+  background: linear-gradient(to top, var(--skinColor), var(--transSkinColor));
 }
 
 .postCard.purpleColor .postPoemSec .postPoemInteractionSec,
-.searchCard.purpleColor .overLay {
-  background: linear-gradient(to top, var(--purpleColor), transparent);
+.searchCard.purpleColor .overLay,
+.poemDisplayContainer.purpleColor .actionCenter {
+  background: linear-gradient(
+    to top,
+    var(--purpleColor),
+    var(--transPurpleColor)
+  );
 }
 
 .postCard.paleGreenColor .postPoemSec .postPoemInteractionSec,
-.searchCard.paleGreenColor .overLay {
-  background: linear-gradient(to top, var(--paleGreenColor), transparent);
+.searchCard.paleGreenColor .overLay,
+.poemDisplayContainer.paleGreenColor .actionCenter {
+  background: linear-gradient(
+    to top,
+    var(--paleGreenColor),
+    var(--transPaleGreenColor)
+  );
 }
 
 .postCard .postPoemHeading,

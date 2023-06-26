@@ -48,6 +48,7 @@ import "./css/addPoem.css";
 import "./css/userPostSkeleton.css";
 import "./css/updateProfile.css";
 import "./css/poem.css";
+import "./css/userSkeleton.css";
 
 const App = () => {
   const { user, isLoggedIn, isLoading } = useAuth();
@@ -112,6 +113,7 @@ const App = () => {
               <Route path="/udateProfile" element={<UpdateProfile />} />
               <Route path="/uploadPost" element={<AddPoem />} />
               <Route path="/post/:postID" element={<Poem />} />
+              <Route path="/post/edit/:postID" element={<Poem />} />
               <Route path="/auth/login" element={<Navigate to="/" />} />
               <Route path="/*" element={<PageNotFound />} />
             </Routes>

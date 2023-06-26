@@ -315,9 +315,11 @@ const getMyAllData = async (req, res) => {
 let getUsers = async (req, res) => {
   try {
     let userDatas = await firestoreAdmin.collection("users").get();
-    let dataSets = [];
+    let dataSets = {};
     userDatas.forEach((doc) => {
-      dataSets.push({ ...doc.data() });
+      if (doc.id != req.body.uid) {
+        dataSets[doc.id] = doc.data();
+      }
     });
     res.json({ status: 200, message: "success", data: dataSets });
   } catch (error) {

@@ -86,7 +86,7 @@ export const getAllPost = async (id) => {
 };
 
 export const getAllUsers = async () => {
-  let response = { status: "", message: "", data: "" };
+  let response = { status: "", message: "", data: {} };
   await api
     .post("/getUsers")
     .then(async (resp) => {

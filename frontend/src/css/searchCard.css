@@ -1,100 +1,98 @@
 .searchCard {
-    width: calc(50% - 10px);
+  width: calc(50% - 10px);
+  cursor: pointer;
 }
 
-.searchCard .searchCardHeader{
-    width: 100%;
-    height: 100px;
-    justify-content: start;
-    gap: 15px;
-    align-items: center;
+.searchCard .searchCardHeader {
+  width: 100%;
+  height: 100px;
+  justify-content: start;
+  gap: 15px;
+  align-items: center;
 }
 
 .searchCard .searchCardHeader .searchCardDP {
-    height: 100px;
-    width: 100px;
+  height: 100px;
+  width: 100px;
 }
 
 .searchCard .searchCardHeader .searchCardDP img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 
 .searchCard .searchCardHeader .searchCardInteraction {
-    flex-direction: column;
-    gap: 5px;
-    width: calc(100% - 115px);
+  flex-direction: column;
+  gap: 5px;
+  width: calc(100% - 115px);
 }
 
 .searchCard .searchCardHeader .searchCardInteraction h4 {
-    font-size: 20px;
-    font-weight: 400;
-    width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    letter-spacing: 2px;
+  font-size: 20px;
+  font-weight: 400;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 2px;
 }
 
 .searchCard .searchCardHeader .searchCardInteraction .interact {
-    gap: 10px;
-    align-items: center;
+  gap: 10px;
+  align-items: center;
 }
 
 .searchCard .searchCardHeader .searchCardInteraction .interact h5 {
-    font-size: 15px;
-    font-weight: 300;
-    letter-spacing: 1px;
+  font-size: 15px;
+  font-weight: 300;
+  letter-spacing: 1px;
 }
 
 .searchCard .searchCardHeader .searchCardInteraction .interact .followBtn {
-    padding: 5px 20px;
-    background: var(--redColor);
-    border-radius: var(--borderRadius);
+  padding: 5px 20px;
+  background: var(--redColor);
+  border-radius: var(--borderRadius);
 }
 
 .searchCard .searchProfileBio {
-    padding-top: 15px;
-    width: 100%;
-    letter-spacing: 1px;
-    line-height: 25px;
+  padding-top: 15px;
+  width: 100%;
+  letter-spacing: 1px;
+  line-height: 25px;
 }
-
 
 @media only screen and (max-width: 750px) {
-    .searchCard {
-        width: 100%;
-    }
+  .searchCard {
+    width: 100%;
+  }
 }
 
-
 @media only screen and (max-width: 450px) {
-    .searchCard .searchCardHeader{
-        height: 75px;
-        gap: 10px;
-    }
-    .searchCard .searchCardHeader .searchCardDP {
-        height: 75px;
-        width: 75px;
-    }
-    .searchCard .searchCardHeader .searchCardInteraction {
-        gap: 3px;
-        width: calc(100% - 80px);
-    }
-    .searchCard .searchCardHeader .searchCardInteraction h4 {
-        font-size: 16px;
-    }
-    .searchCard .searchCardHeader .searchCardInteraction .interact {
-        gap: 5px;
-    }
-    
-    .searchCard .searchCardHeader .searchCardInteraction .interact h5 {
-        font-size: 13px;
-    }
-    .searchCard .searchCardHeader .searchCardInteraction .interact .followBtn {
-        padding: 5px 15px;
-        background: var(--redColor);
-        border-radius: var(--borderRadius);
-    }
+  .searchCard .searchCardHeader {
+    height: 75px;
+    gap: 10px;
+  }
+  .searchCard .searchCardHeader .searchCardDP {
+    height: 75px;
+    width: 75px;
+  }
+  .searchCard .searchCardHeader .searchCardInteraction {
+    gap: 3px;
+    width: calc(100% - 80px);
+  }
+  .searchCard .searchCardHeader .searchCardInteraction h4 {
+    font-size: 16px;
+  }
+  .searchCard .searchCardHeader .searchCardInteraction .interact {
+    gap: 5px;
+  }
+  .searchCard .searchCardHeader .searchCardInteraction .interact h5 {
+    font-size: 13px;
+  }
+  .searchCard .searchCardHeader .searchCardInteraction .interact .followBtn {
+    padding: 5px 15px;
+    background: var(--redColor);
+    border-radius: var(--borderRadius);
+  }
 }

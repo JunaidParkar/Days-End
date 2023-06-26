@@ -1,4 +1,4 @@
-let initialState = [];
+let initialState = {};
 
 export const storeAllUserReducer = (state = initialState, action) => {
   switch (action.type) {
