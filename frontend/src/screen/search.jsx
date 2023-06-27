@@ -16,7 +16,7 @@ const Search = () => {
   const { user, isLoggedIn, isLoading } = useAuth();
   const [isAlert, showAlert, closeAlert] = useAlert(false, "");
 
-  const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const [isLoadingUser, setIsLoadingUser] = useState();
   const [searchUsers, setSearchUsers] = useState({});
 
   const dispatch = useDispatch();
@@ -24,7 +24,7 @@ const Search = () => {
 
   useEffect(() => {
     fetchAllUsers();
-  }, [isLoggedIn]);
+  }, [isLoading]);
 
   useEffect(() => {
     if (allSearchUsers) {
@@ -39,8 +39,6 @@ const Search = () => {
         let data = resp.data;
         await Promise.all(
           Object.keys(resp.data).map(async (doc) => {
-            // console.log(newData[doc].pic);
-            // console.log(doc);
             let oldUrl = resp.data[doc].pic;
             let blob = await getBlob(ref(storage, oldUrl));
             data[doc].pic = URL.createObjectURL(blob);
@@ -59,11 +57,6 @@ const Search = () => {
       <div className="searchContainer">
         <Navbar page="search" />
         <div className="flex searchContentContainer">
-          {/* {searchUsers.length > 0
-            ? searchUsers.map((user) => (
-                <SearchCard key={user.uid} data={user} />
-              ))
-            : ""} */}
           {Object.keys(searchUsers).length > 0
             ? Object.keys(searchUsers).map((key) => (
                 <SearchCard key={key} data={searchUsers[key]} />

@@ -21,32 +21,15 @@ const registerUserSetup = async (req, res) => {
     .collection("posts")
     .where("uid", "==", req.body.uid)
     .get();
-  // if (userQuerySnapshot.empty) {
-  //   return 0;
-  // } else {
-  //   return userQuerySnapshot.docs.length + 1;
-  // }
   let structureToSet = req.body.data;
   structureToSet.uid = req.body.uid;
-  structureToSet.createdAt = new Date().toISOString();
+  structureToSet.updatedAt = new Date().toISOString();
   structureToSet.followers = 0;
   structureToSet.following = 0;
   structureToSet.posts = postsQuery.empty ? 0 : postsQuery.docs.length;
   req.body.data.handle === "user" ? (req.body.data.handle = "") : "";
   req.body.data.bio === "user" ? (req.body.data.bio = "") : "";
   req.body.data.pic === "user" ? (req.body.data.pic = "") : "";
-  console.log(structureToSet);
-  // let structureToSet = {
-  //   createdAt: new Date().toISOString(),
-  //   followers: 0,
-  //   following: 0,
-  //   posts: postsQuery.empty ? 0 : postsQuery.docs.length,
-  //   uid: req.body.uid,
-  //   bio: req.body.bio,
-  //   handle: req.body.handle,
-  //   pic: req.body.link,
-  // };
-
   console.log(structureToSet);
   await firestoreAdmin
     .collection("users")
@@ -279,6 +262,7 @@ const getMyAllData = async (req, res) => {
     let postData = {
       myPosts: {},
     };
+    console.log("hello 1");
 
     const userQuerySnapshot = await firestoreAdmin
       .collection("users")
@@ -301,7 +285,7 @@ const getMyAllData = async (req, res) => {
         });
       }
     }
-
+    console.log("hello 2");
     res.json({
       status: 200,
       message: "",

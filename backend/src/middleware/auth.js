@@ -1,27 +1,34 @@
-const { verifyToken } = require('../functions/sessionFunctions');
+const { verifyToken } = require("../functions/sessionFunctions");
 
-const reqAuth = async(req, res, next) => {
-    let idToken;
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-        if (!req.body.uid) {
-            res.json({ status: 700, message: "UID not provided" })
-        }
-        idToken = req.headers.authorization.split('Bearer ')[1];
-    } else {
-        return res.json({ status: 700, message: "Unauthorized" });
+const reqAuth = async (req, res, next) => {
+  let idToken;
+  console.log("aut");
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer ")
+  ) {
+    if (!req.body.uid) {
+      res.json({ status: 700, message: "UID not provided" });
     }
+    idToken = req.headers.authorization.split("Bearer ")[1];
+  } else {
+    return res.json({ status: 700, message: "Unauthorized" });
+  }
 
-    await verifyToken(idToken, req.body.uid).then(data => {
-        if (data.stat === 200) {
-            return next()
-        } else {
-            res.json({ status: data.stat, message: data.message })
-        }
-    }).catch(error => {
-        res.json({ status: 700, message: error })
+  await verifyToken(idToken, req.body.uid)
+    .then((data) => {
+      if (data.stat === 200) {
+        console.log("ac");
+        return next();
+      } else {
+        res.json({ status: data.stat, message: data.message });
+      }
     })
+    .catch((error) => {
+      res.json({ status: 700, message: error });
+    });
 };
 
 module.exports = {
-    reqAuth
-}
+  reqAuth,
+};

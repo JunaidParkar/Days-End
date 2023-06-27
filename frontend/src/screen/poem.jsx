@@ -6,9 +6,12 @@ import PageNotFound from "./pageNotFound";
 import heart from "../assets/heart.png";
 import plane from "../assets/plane.png";
 import comment from "../assets/comment.png";
+import useAuth from "../hooks/useAuth";
 
-const Poem = () => {
+const Poem = (editable) => {
   const { postID } = useParams();
+
+  const { user, isLoggedIn, isLoading } = useAuth();
 
   const [poemData, setPoemData] = useState(null);
   const [loader, setLoader] = useState(true);
@@ -19,6 +22,7 @@ const Poem = () => {
   useEffect(() => {
     fetchPoemByID();
   }, [postID]);
+  console.log(poemData);
 
   const fetchPoemByID = async () => {
     setLoader(true);
@@ -36,7 +40,14 @@ const Poem = () => {
   };
 
   const renderPoem = () => {
-    return <p dangerouslySetInnerHTML={{ __html: realPoem }}></p>;
+    return editable ? (
+      <p
+        dangerouslySetInnerHTML={{ __html: realPoem }}
+        editable={user ? (user.uid == poemData.uid ? true : false) : ""}
+      ></p>
+    ) : (
+      ""
+    );
   };
 
   const generateColor = () => {
