@@ -14,10 +14,13 @@
   padding: 20px 0;
 }
 
-.poemDisplayContainer .poemSecCont p {
+.poemDisplayContainer .poemSecCont p,
+.poemDisplayContainer .poemSecCont textarea {
   line-height: 30px;
   font-weight: 500;
   margin-bottom: 150px;
+  background: transparent;
+  min-height: 100px;
 }
 
 .poemDisplayContainer .actionCenter {
@@ -45,6 +48,12 @@
 .poemDisplayContainer .actionCenter img,
 .poemDisplayContainer .actionCenter p {
   cursor: pointer;
+}
+
+.poemDisplayContainer .actionCenter input {
+  padding: calc(var(--cardPadding) - 2px) var(--cardPadding);
+  border-radius: var(--borderRadius);
+  background: var(--redColor);
 }
 
 @media only screen and (max-width: 1080px) {

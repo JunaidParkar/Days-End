@@ -36,9 +36,7 @@ const createAuthToken = async (dataInJson) => {
 
 const verifyToken = async (token, uid) => {
   try {
-    console.log("gtk 1");
     const data = await getTokens(uid);
-    console.log("gtk");
     let tokenList = token.split(".");
     let tokenPart0 = tokenList[0];
     let tokenPart1 = tokenList[1];

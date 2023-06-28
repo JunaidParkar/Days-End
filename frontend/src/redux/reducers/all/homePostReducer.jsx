@@ -1,5 +1,9 @@
 // reducer.js
-let initialState = {};
+let initialState = {
+  posts: {},
+  hasMore: true,
+  lastId: "",
+};
 
 export const storeAllPostReducer = (state = initialState, action) => {
   switch (action.type) {

@@ -112,7 +112,7 @@ const App = () => {
               <Route path="/profile" element={<Profile />} />
               <Route path="/udateProfile" element={<UpdateProfile />} />
               <Route path="/uploadPost" element={<AddPoem />} />
-              <Route path="/post/:postID" element={<Poem editable={false} />} />
+              <Route path="/post/:postID" element={<Poem editable={true} />} />
               <Route
                 path="/post/edit/:postID"
                 element={<Poem editable={true} />}

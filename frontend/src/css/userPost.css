@@ -87,7 +87,8 @@
 }
 
 .postCard .postPoemHeading h4,
-.poemDisplayContainer .headerSec h4 {
+.poemDisplayContainer .headerSec h4,
+.poemDisplayContainer .headerSec input {
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -96,6 +97,7 @@
   text-transform: uppercase;
   letter-spacing: 2px;
   font-weight: 600;
+  background: transparent;
 }
 
 .postCard .postPoemHeading p,

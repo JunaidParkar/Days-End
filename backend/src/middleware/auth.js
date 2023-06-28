@@ -2,7 +2,6 @@ const { verifyToken } = require("../functions/sessionFunctions");
 
 const reqAuth = async (req, res, next) => {
   let idToken;
-  console.log("aut");
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer ")
