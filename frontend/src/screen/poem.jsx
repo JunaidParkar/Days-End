@@ -1,7 +1,5 @@
-// eslint-disable-next-line react/no-danger-with-children
-
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getSpecificPost } from "../api/endPoints";
 import Preloader from "../component/preloader";
 import PageNotFound from "./pageNotFound";
@@ -9,8 +7,59 @@ import heart from "../assets/heart.png";
 import plane from "../assets/plane.png";
 import comment from "../assets/comment.png";
 import useAuth from "../hooks/useAuth";
+import { useDispatch } from "react-redux";
+import { storePoem } from "../redux/actions/poemAction";
+import edit from "../assets/edit.png";
 
-const Poem = (editable) => {
+const nonEditablePoem = (user, navigate, poemData, color) => {
+  return (
+    <>
+      <div className={`poemDisplayContainer ${color}`}>
+        <div className="flex headerSec">
+          <h4>{poemData.heading}</h4>
+          <p>{poemData.handle}</p>
+        </div>
+        <div className="poemSecCont">
+          <p
+            dangerouslySetInnerHTML={{
+              __html: poemData.poem.replace(/\n/g, "<br>"),
+            }}
+          />
+        </div>
+        <div className="flex actionCenter">
+          <div className=" flex opts">
+            <div className="flexCenter postPoemLike">
+              <img src={heart} alt="Like" />
+              <p>{poemData.like}</p>
+            </div>
+            <div className="flexCenter postPoemLike">
+              <img src={comment} alt="Like" />
+              <p>{poemData.comment}</p>
+            </div>
+            <div className="flexCenter postPoemShare">
+              <img src={plane} alt="Share" />
+              <p>Share</p>
+            </div>
+            {user.uid == poemData.uid ? (
+              <div
+                className="flexCenter postPoemShare"
+                onClick={() => navigate("/post/edit")}
+              >
+                <img src={edit} alt="Edit" />
+                <p>edit</p>
+              </div>
+            ) : (
+              ""
+            )}
+          </div>
+          <p>a project by junaid parkar</p>
+        </div>
+      </div>
+    </>
+  );
+};
+
+const Poem = () => {
   const { postID } = useParams();
 
   const { user, isLoggedIn, isLoading } = useAuth();
@@ -19,40 +68,29 @@ const Poem = (editable) => {
   const [loader, setLoader] = useState(true);
   const [isValid, setIsValid] = useState(true);
   const [poemColor, setPoemColor] = useState();
-  const [realPoem, setRealPoem] = useState("");
-  const [poem, setPoem] = useState();
+
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchPoemByID();
   }, [postID]);
-  console.log(poemData);
 
   const fetchPoemByID = async () => {
     setLoader(true);
     await getSpecificPost(postID).then((response) => {
       if (response.status === 200) {
+        console.log(response.data);
+        dispatch(storePoem({ ...response.data }));
         setIsValid(true);
         generateColor();
-        setRealPoem(response.data.poem.replace(/\n/g, "<br>"));
         setPoemData(response.data);
       } else {
         setIsValid(false);
       }
     });
     setLoader(false);
-  };
-
-  const renderPoem = () => {
-    return editable ? (
-      <p
-        // dangerouslySetInnerHTML={{ __html: realPoem }}
-        contentEditable={user ? (user.uid == poemData.uid ? true : false) : ""}
-        onChange={(e) => {}}
-        defaultValue={realPoem}
-      ></p>
-    ) : (
-      ""
-    );
   };
 
   const generateColor = () => {
@@ -66,85 +104,18 @@ const Poem = (editable) => {
     setPoemColor(colors[randomIndex]);
   };
 
-  const optIfNotEditable = () => {
-    return (
-      <>
-        <div className=" flex opts">
-          <div className="flexCenter postPoemLike">
-            <img src={heart} alt="Like" />
-            <p>{poemData.like}</p>
-          </div>
-          <div className="flexCenter postPoemLike">
-            <img src={comment} alt="Like" />
-            <p>{poemData.comment}</p>
-          </div>
-          <div className="flexCenter postPoemShare">
-            <img src={plane} alt="Share" />
-            <p>Share</p>
-          </div>
-        </div>
-        <p>a project by junaid parkar</p>
-      </>
-    );
-  };
-
-  const optionIfEditable = () => {
-    return (
-      <>
-        <input type="button" value="Save" disabled />
-      </>
-    );
-  };
-  console.log(realPoem);
-  const poemUI = () => {
-    useEffect(() => {
-      handleTextareaInput();
-    }, []);
-
-    // document.getElementById("tr").style.height = `${
-    //   document.getElementById("tr").scrollHeight
-    // }px`;
-    const handleTextareaInput = (event) => {
-      const textarea = document.getElementById("tr");
-      textarea.style.height = "auto"; // Reset the height to auto to recalculate scroll height
-      textarea.style.height = `${textarea.scrollHeight}px`; // Set the height based on scroll height
-      // setPoem(textarea.value);
-    };
-    return (
-      <>
-        <div className={`poemDisplayContainer ${poemColor}`}>
-          <div className="flex headerSec">
-            {editable ? (
-              <input type="text" defaultValue={poemData.heading} />
-            ) : (
-              <h4>{poemData.heading}</h4>
-            )}
-
-            <p>{poemData.handle}</p>
-          </div>
-          <div className="poemSecCont">
-            {/* {renderPoem()} */}
-            {editable ? (
-              <textarea
-                name=""
-                id="tr"
-                // rows="100"
-                defaultValue={poemData.poem}
-                onChange={(e) => handleTextareaInput(e)}
-              ></textarea>
-            ) : (
-              <p defaultValue={realPoem}></p>
-            )}
-          </div>
-          <div className="flex actionCenter">
-            {editable ? optionIfEditable() : optIfNotEditable()}
-          </div>
-        </div>
-      </>
-    );
-  };
-
-  return <>{loader ? <Preloader /> : isValid ? poemUI() : <PageNotFound />}</>;
+  return (
+    <>
+      {loader || isLoading ? (
+        <Preloader />
+      ) : isValid ? (
+        nonEditablePoem(user, navigate, poemData, poemColor)
+      ) : (
+        // "hello world"
+        <PageNotFound />
+      )}
+    </>
+  );
 };
 
 export default Poem;

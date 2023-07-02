@@ -49,6 +49,7 @@ import "./css/userPostSkeleton.css";
 import "./css/updateProfile.css";
 import "./css/poem.css";
 import "./css/userSkeleton.css";
+import PoemEditor from "./screen/poemEditor";
 
 const App = () => {
   const { user, isLoggedIn, isLoading } = useAuth();
@@ -112,11 +113,8 @@ const App = () => {
               <Route path="/profile" element={<Profile />} />
               <Route path="/udateProfile" element={<UpdateProfile />} />
               <Route path="/uploadPost" element={<AddPoem />} />
-              <Route path="/post/:postID" element={<Poem editable={true} />} />
-              <Route
-                path="/post/edit/:postID"
-                element={<Poem editable={true} />}
-              />
+              <Route path="/post/:postID" element={<Poem />} />
+              <Route path="/post/edit" element={<PoemEditor />} />
               <Route path="/auth/login" element={<Navigate to="/" />} />
               <Route path="/*" element={<PageNotFound />} />
             </Routes>

@@ -34,21 +34,23 @@ const Search = () => {
 
   const fetchAllUsers = async () => {
     setIsLoadingUser(true);
-    await getAllUsers().then(async (resp) => {
-      if (resp.status === 200) {
-        let data = resp.data;
-        await Promise.all(
-          Object.keys(resp.data).map(async (doc) => {
-            let oldUrl = resp.data[doc].pic;
-            let blob = await getBlob(ref(storage, oldUrl));
-            data[doc].pic = URL.createObjectURL(blob);
-          })
-        );
-        dispatch(storeAllUser(data));
-      } else {
-        showAlert(resp.message, false);
-      }
-    });
+    if (Object.keys(allSearchUsers).length == 0) {
+      await getAllUsers().then(async (resp) => {
+        if (resp.status === 200) {
+          let data = resp.data;
+          await Promise.all(
+            Object.keys(resp.data).map(async (doc) => {
+              let oldUrl = resp.data[doc].pic;
+              let blob = await getBlob(ref(storage, oldUrl));
+              data[doc].pic = URL.createObjectURL(blob);
+            })
+          );
+          dispatch(storeAllUser(data));
+        } else {
+          showAlert(resp.message, false);
+        }
+      });
+    }
     setIsLoadingUser(false);
   };
 
