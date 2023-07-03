@@ -10,6 +10,8 @@ const {
   getMyAllData,
   getUsers,
   getSpecificPost,
+  updatePost,
+  deletePost,
 } = require("./src/handlers/handlers");
 const {
   verifyToken,
@@ -32,15 +34,16 @@ app.post("/createToken", createTokenForAuthentication);
 app.post("/checkHandle", reqAuth, checkHandle);
 
 app.post("/userRegisterSetup", reqAuth, registerUserSetup);
-app.post("/userSetupDelete", deleteUserSetup);
+app.post("/userSetupDelete", reqAuth, deleteUserSetup);
 
 app.post("/getUsers", reqAuth, getUsers);
 app.post("/getAllPost", reqAuth, fetchAllPost);
 app.post("/getMyData", reqAuth, getMyAllData);
 app.post("/getSpecificPost", getSpecificPost);
 
-app.post("/uploadPost", createPost);
-app.post("/deletePost");
+app.post("/uploadPost", reqAuth, createPost);
+app.post("/updatePost", reqAuth, updatePost);
+app.post("/deletePost", reqAuth, deletePost);
 
 app.post("/jwt", async (req, res) => {
   let token = await createAuthToken(req.body);

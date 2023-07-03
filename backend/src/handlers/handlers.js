@@ -2,10 +2,10 @@ const { firestoreAdmin } = require("../firebase/config");
 const {
   createAuthToken,
   generateUniqueId,
+  updateCounts,
 } = require("../functions/sessionFunctions");
 
 const registerUserSetup = async (req, res) => {
-  console.log(req.body);
   let requiredFields = ["data"];
   for (let field of requiredFields) {
     if (!req.body[field]) {
@@ -30,7 +30,6 @@ const registerUserSetup = async (req, res) => {
   req.body.data.handle === "user" ? (req.body.data.handle = "") : "";
   req.body.data.bio === "user" ? (req.body.data.bio = "") : "";
   req.body.data.pic === "user" ? (req.body.data.pic = "") : "";
-  console.log(structureToSet);
   await firestoreAdmin
     .collection("users")
     .doc(req.body.uid)
@@ -125,9 +124,7 @@ const createPost = async (req, res) => {
       });
     } else {
       await firestoreAdmin.collection("posts").doc(postRef.id).set(postData);
-      await firestoreAdmin
-        .doc(`users/${req.body.uid}`)
-        .update({ posts: userRef.data().posts + 1 });
+      await updateCounts(req.body.uid);
       res.json({ status: 200, message: "Post uploaded" });
     }
   } catch (error) {
@@ -136,6 +133,47 @@ const createPost = async (req, res) => {
       message: "An error occurred while creating the post.",
       cd: error.message || error,
     });
+  }
+};
+
+const updatePost = async (req, res) => {
+  let requiredFields = ["postId", "uid", "poem", "heading"];
+
+  for (let field of requiredFields) {
+    if (!req.body[field]) {
+      return res.json({
+        status: 500,
+        message: `${
+          field.charAt(0).toUpperCase() + field.slice(1)
+        } not provided`,
+      });
+    }
+  }
+
+  try {
+    const postRef = firestoreAdmin
+      .collection("posts")
+      .where("postId", "==", req.body.postId);
+    const postSnapshot = await postRef.get();
+
+    if (postSnapshot.empty) {
+      return res.json({
+        status: 404,
+        message: "Post not found",
+      });
+    }
+
+    const postDoc = postSnapshot.docs[0]; // Assuming there is only one document with the given postId
+    const postData = {
+      heading: req.body.heading,
+      poem: req.body.poem,
+    };
+
+    await postDoc.ref.update(postData);
+
+    res.json({ status: 200, message: "Post updated" });
+  } catch (error) {
+    res.json({ status: 12, message: error });
   }
 };
 
@@ -161,23 +199,9 @@ const deletePost = async (req, res) => {
         doc.ref
           .delete()
           .then(async (e) => {
-            await firestoreAdmin
-              .doc(`users/${req.body.handle}`)
-              .get()
-              .then(async (data) => {
-                await firestoreAdmin
-                  .doc(`users/${req.body.handle}`)
-                  .update({ posts: data.data().posts - 1 })
-                  .then(() => {
-                    res.json({ status: 200, message: "Post deleted" });
-                  })
-                  .catch((err) => {
-                    res.json({ status: 12, message: err });
-                  });
-              })
-              .catch((err) => {
-                res.json({ status: 12, message: err });
-              });
+            await updateCounts(req.body.uid).then(() => {
+              res.json({ status: 200, message: "Successful" });
+            });
           })
           .catch((error) => {
             res.json({ statu: 12, message: error });
@@ -200,7 +224,6 @@ const createTokenForAuthentication = async (req, res) => {
     }
   }
   let resp = await createAuthToken(req.body.tokenData);
-  console.log(resp);
   res.json(resp);
 };
 
@@ -262,7 +285,6 @@ const getMyAllData = async (req, res) => {
     let postData = {
       myPosts: {},
     };
-    console.log("hello 1");
 
     const userQuerySnapshot = await firestoreAdmin
       .collection("users")
@@ -272,7 +294,6 @@ const getMyAllData = async (req, res) => {
       return res.json({ status: 500, message: "UID Incorrect", data: "" });
     } else {
       userBasicData = userQuerySnapshot.docs[0].data();
-      console.log(userBasicData);
       const postQuerySnapshot = await firestoreAdmin
         .collection("posts")
         .where("handle", "==", userBasicData.handle)
@@ -285,7 +306,6 @@ const getMyAllData = async (req, res) => {
         });
       }
     }
-    console.log("hello 2");
     res.json({
       status: 200,
       message: "",
@@ -356,4 +376,5 @@ module.exports = {
   getMyAllData,
   getUsers,
   getSpecificPost,
+  updatePost,
 };

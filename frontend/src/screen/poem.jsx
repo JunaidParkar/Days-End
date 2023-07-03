@@ -1,17 +1,55 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getSpecificPost } from "../api/endPoints";
+import { deletePost, getSpecificPost } from "../api/endPoints";
 import Preloader from "../component/preloader";
 import PageNotFound from "./pageNotFound";
 import heart from "../assets/heart.png";
 import plane from "../assets/plane.png";
 import comment from "../assets/comment.png";
+import trash from "../assets/delete.png";
 import useAuth from "../hooks/useAuth";
 import { useDispatch } from "react-redux";
 import { storePoem } from "../redux/actions/poemAction";
 import edit from "../assets/edit.png";
+import useAlert from "../hooks/useAlert";
+import AlertBox from "../component/alertBox";
 
-const nonEditablePoem = (user, navigate, poemData, color) => {
+const nonEditablePoem = (
+  user,
+  navigate,
+  poemData,
+  color,
+  isAlert,
+  showAlert,
+  closeAlert,
+  dispatch
+) => {
+  const editing = () => {
+    dispatch(storePoem({ ...poemData }));
+    navigate("/post/edit");
+  };
+
+  const deletePoem = async () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this post?"
+    );
+    if (confirmed) {
+      showAlert(
+        "Do not refresh the page deleting process is going on in background... wait until you were redirected to home page ro your profile..."
+      );
+      let data = {
+        postId: poemData.postId,
+        handle: user.displayName,
+      };
+      await deletePost(data).then((resp) => {
+        if (resp.status !== 200) {
+          showAlert(resp.message, false);
+        } else {
+          navigate("/profile");
+        }
+      });
+    }
+  };
   return (
     <>
       <div className={`poemDisplayContainer ${color}`}>
@@ -41,13 +79,22 @@ const nonEditablePoem = (user, navigate, poemData, color) => {
               <p>Share</p>
             </div>
             {user.uid == poemData.uid ? (
-              <div
-                className="flexCenter postPoemShare"
-                onClick={() => navigate("/post/edit")}
-              >
-                <img src={edit} alt="Edit" />
-                <p>edit</p>
-              </div>
+              <>
+                <div
+                  className="flexCenter postPoemShare"
+                  onClick={() => editing()}
+                >
+                  <img src={edit} alt="Edit" />
+                  <p>edit</p>
+                </div>
+                <div
+                  className="flexCenter postPoemShare"
+                  onClick={() => deletePoem()}
+                >
+                  <img src={trash} alt="Edit" />
+                  <p>delete</p>
+                </div>
+              </>
             ) : (
               ""
             )}
@@ -55,12 +102,18 @@ const nonEditablePoem = (user, navigate, poemData, color) => {
           <p>a project by junaid parkar</p>
         </div>
       </div>
+      {isAlert.state ? (
+        <AlertBox message={isAlert.log} closeAlert={closeAlert} />
+      ) : (
+        ""
+      )}
     </>
   );
 };
 
 const Poem = () => {
   const { postID } = useParams();
+  const [isAlert, showAlert, closeAlert] = useAlert(false, "");
 
   const { user, isLoggedIn, isLoading } = useAuth();
 
@@ -82,7 +135,6 @@ const Poem = () => {
     await getSpecificPost(postID).then((response) => {
       if (response.status === 200) {
         console.log(response.data);
-        dispatch(storePoem({ ...response.data }));
         setIsValid(true);
         generateColor();
         setPoemData(response.data);
@@ -109,7 +161,15 @@ const Poem = () => {
       {loader || isLoading ? (
         <Preloader />
       ) : isValid ? (
-        nonEditablePoem(user, navigate, poemData, poemColor)
+        nonEditablePoem(
+          user,
+          navigate,
+          poemData,
+          poemColor,
+          isAlert,
+          showAlert,
+          closeAlert
+        )
       ) : (
         // "hello world"
         <PageNotFound />

@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { submitTokens, getTokens } = require("../firebase/functions");
+const { firestoreAdmin } = require("../firebase/config");
 
 const generateToken = (length) => {
   let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -77,8 +78,30 @@ const generateUniqueId = () => {
   return uniqueId;
 };
 
+const updateCounts = async (uid) => {
+  let response = { status: "", message: "" };
+  try {
+    let postsQuery = await firestoreAdmin
+      .collection("posts")
+      .where("uid", "==", uid)
+      .get();
+
+    let updatedData = {
+      posts: postsQuery.empty ? 0 : postsQuery.docs.length,
+    };
+
+    await firestoreAdmin.collection("users").doc(uid).update(updatedData);
+
+    response = { status: 200, message: "successful" };
+  } catch (err) {
+    response = { status: 12, message: err };
+  }
+  return response;
+};
+
 module.exports = {
   createAuthToken,
   verifyToken,
   generateUniqueId,
+  updateCounts,
 };

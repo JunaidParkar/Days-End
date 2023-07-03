@@ -17,7 +17,6 @@ const reqAuth = async (req, res, next) => {
   await verifyToken(idToken, req.body.uid)
     .then((data) => {
       if (data.stat === 200) {
-        console.log("ac");
         return next();
       } else {
         res.json({ status: data.stat, message: data.message });

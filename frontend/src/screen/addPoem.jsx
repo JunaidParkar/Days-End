@@ -26,8 +26,8 @@ const AddPoem = () => {
   const submitPost = async (e) => {
     e.preventDefault();
     setLoader(true);
-    if (poemData.heading.trim() == "" || poemData.poem.trim() == "") {
-      showAlert("fields cannot be empty", false);
+    if (poemData.heading.trim() === "" || poemData.poem.trim() === "") {
+      showAlert("Fields cannot be empty", false);
     } else {
       let data = {
         uid: user.uid,
@@ -37,21 +37,25 @@ const AddPoem = () => {
         heading: poemData.heading,
         img: user.photoURL,
       };
-      await uploadPost(data).then((resp) => {
-        if (resp.status === 200) {
-          navigate("/");
-        } else {
-          showAlert(resp.message);
-        }
-      });
+      await uploadPost(data)
+        .then((resp) => {
+          if (resp.status === 200) {
+            navigate("/");
+          } else {
+            showAlert(resp.message);
+          }
+        })
+        .catch((error) => {
+          showAlert("An error occurred while adding the post.", false);
+        });
     }
     setLoader(false);
   };
 
   return (
     <>
-      {loader ? <Preloader /> : ""}
-      {isLoading ? <Preloader /> : ""}
+      {loader && <Preloader />}
+      {isLoading && <Preloader />}
       <div className="flexCenter addPoemContainer">
         <form
           method="post"
@@ -64,7 +68,6 @@ const AddPoem = () => {
           <input
             type="text"
             name="heading"
-            id=""
             placeholder="Enter the heading for your post"
             onChange={(e) => {
               handlePoemData(e);
@@ -73,7 +76,6 @@ const AddPoem = () => {
           />
           <textarea
             name="poem"
-            id=""
             cols="30"
             rows="10"
             placeholder="Enter your poem here..."
@@ -86,10 +88,8 @@ const AddPoem = () => {
           <input type="submit" value="Add Post" />
         </form>
       </div>
-      {isAlert.state ? (
+      {isAlert.state && (
         <AlertBox message={isAlert.log} closeAlert={closeAlert} />
-      ) : (
-        ""
       )}
     </>
   );

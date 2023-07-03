@@ -18,6 +18,10 @@ let response = [
     status: 200,
     meaning: "Request fulfilled succesfully",
   },
+  {
+    status: 404,
+    meaning: "Data not found",
+  },
 ];
 
 // let jwt = [{

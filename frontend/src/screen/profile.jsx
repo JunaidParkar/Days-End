@@ -10,6 +10,7 @@ import { getBlob, ref } from "firebase/storage";
 import { storage } from "../cred/cred";
 import Preloader from "../component/preloader";
 import useAuth from "../hooks/useAuth";
+import { sendEmailVerification } from "firebase/auth";
 
 const Profile = () => {
   const [myData, setMyData] = useState();
@@ -38,10 +39,23 @@ const Profile = () => {
       } else {
         showAlert(response.message, false);
       }
+      // };
     });
     setLoader(false);
   };
-  console.log(myData);
+
+  const sendVerification = async () => {
+    await sendEmailVerification(user)
+      .then(() => {
+        showAlert(
+          "Verify your E-Mail first... Link has been sent to your inbox... If already verified then just refresh the page..."
+        );
+      })
+      .catch((err) => {
+        showAlert(err, false);
+      });
+  };
+  console.log(user);
 
   const navigate = useNavigate();
   return (
@@ -84,9 +98,9 @@ const Profile = () => {
                   <div
                     className="addPoem editProfile"
                     onClick={() =>
-                      user.isEmailVerified
+                      user.emailVerified
                         ? navigate("/uploadPost")
-                        : showAlert("Please verify your email first", false)
+                        : sendVerification().then()
                     }
                   >
                     <p>Add Poem</p>
@@ -116,10 +130,8 @@ const Profile = () => {
           </div>
         </div>
       </div>
-      {isAlert.state ? (
-        <AlertBox message={isAlert.log} closeAlert={closeAlert} />
-      ) : (
-        ""
+      {isAlert.state && (
+        <AlertBox message={isAlert.log.toString()} closeAlert={closeAlert} />
       )}
     </>
   );

@@ -83,7 +83,12 @@ const Navbar = (props) => {
             className={status.profile ? "" : "displayNone"}
             alt="Your profile"
           />
-          <div className="flex logout" onClick={() => logOut()}>
+          <div
+            className="flex logout"
+            onClick={async () => {
+              logOut().then(() => navigate("/"));
+            }}
+          >
             <img src={logoutIcon} alt="" />
             <p>logout</p>
           </div>

@@ -134,12 +134,42 @@ export const uploadPost = async (data) => {
   return response;
 };
 
+export const updatePost = async (data) => {
+  let response = { status: "", message: "" };
+  await api
+    .post("/updatePost", data)
+    .then(async (respo) => {
+      await validateUser(respo.data).then(() => {
+        response = { ...respo.data };
+      });
+    })
+    .catch((err) => {
+      response = { status: 999, message: err.message || err };
+    });
+  return response;
+};
+
 export const getSpecificPost = async (id) => {
   let response = { status: "", message: "", data: "" };
   await api
     .post("/getSpecificPost", { postID: id })
     .then((respo) => {
       response = { ...respo.data };
+    })
+    .catch((err) => {
+      response = { status: 999, message: err.message || err, data: "" };
+    });
+  return response;
+};
+
+export const deletePost = async (data) => {
+  let response = { status: "", message: "" };
+  await api
+    .post("/deletePost", data)
+    .then(async (data) => {
+      await validateUser(data.data).then(() => {
+        response = { ...data.data };
+      });
     })
     .catch((err) => {
       response = { status: 999, message: err.message || err, data: "" };

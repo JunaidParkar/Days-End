@@ -1,25 +1,45 @@
 import React, { useEffect, useRef, useState } from "react";
 import useAuth from "../hooks/useAuth";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Preloader from "../component/preloader";
+import useAlert from "../hooks/useAlert";
+import AlertBox from "../component/alertBox";
+import { updatePost } from "../api/endPoints";
+import { removePoem, storePoem } from "../redux/actions/poemAction";
 
 const PoemEditor = () => {
   const { user, isLoggedIn, isLoading } = useAuth();
+  const [isAlert, showAlert, closeAlert] = useAlert(false, "");
 
   const textareaRef = useRef(null);
 
   const [poemData, setPoemData] = useState(null);
+  const [alertShown, setAlertShown] = useState(false);
   const [loader, setLoader] = useState(true);
   const [poemColor, setPoemColor] = useState();
+  const [isBtnDisabled, setIsBtnDisabled] = useState(true);
   const [newPoem, setNewPoem] = useState({
     heading: "",
     poem: "",
   });
 
+  const dispatch = useDispatch();
   const poem = useSelector((state) => state.poem);
 
+  if (!alertShown) {
+    showAlert(
+      "Do not try to refresh this page... Else your post may lead to an error...",
+      false
+    );
+    setAlertShown(true);
+  }
+
   const navigate = useNavigate();
+
+  if (poem == {}) {
+    navigate("/");
+  }
 
   useEffect(() => {
     setLoader(true);
@@ -39,6 +59,14 @@ const PoemEditor = () => {
     }
     setLoader(false);
   }, [user, poem]);
+
+  useEffect(() => {
+    if (newPoem.heading == "" || newPoem.poem == "") {
+      setIsBtnDisabled(true);
+    } else {
+      setIsBtnDisabled(false);
+    }
+  }, [newPoem]);
 
   useEffect(() => {
     handleTextareaInput();
@@ -67,34 +95,61 @@ const PoemEditor = () => {
     setNewPoem({ ...newPoem, [e.target.name]: e.target.value });
   };
 
+  const submitPost = async () => {
+    setLoader(true);
+    let updatedData = {
+      heading: newPoem.heading,
+      poem: newPoem.poem,
+      postId: poem.postId,
+    };
+    await updatePost(updatedData).then((respo) => {
+      if (respo.status !== 200) {
+        showAlert(respo.message, false);
+      } else {
+        dispatch(removePoem({}));
+        navigate("/profile");
+      }
+    });
+    setLoader(false);
+  };
+
   const poemCode = (pp) => {
     return (
-      <div className={`poemDisplayContainer ${poemColor}`}>
-        <div className="flex headerSec">
-          <input
-            type="text"
-            name="heading"
-            onChange={(e) => handleNewPoemData(e)}
-            defaultValue={pp.heading}
-            id=""
-          />
-          <p>{pp.handle}</p>
+      <>
+        <div className={`poemDisplayContainer ${poemColor}`}>
+          <div className="flex headerSec">
+            <input
+              type="text"
+              name="heading"
+              onChange={(e) => handleNewPoemData(e)}
+              defaultValue={pp.heading}
+              id=""
+            />
+            <p>{pp.handle}</p>
+          </div>
+          <div className="poemSecCont">
+            <textarea
+              name="poem"
+              id="tr"
+              style={{ width: "100%" }}
+              ref={textareaRef}
+              defaultValue={pp.poem}
+              onChange={(e) => handleNewPoemData(e)}
+            ></textarea>
+          </div>
+          <div className="flex actionCenter">
+            <input
+              type="button"
+              value="Save"
+              disabled={isBtnDisabled}
+              onClick={() => submitPost()}
+            />
+          </div>
         </div>
-        <div className="poemSecCont">
-          <textarea
-            name="poem"
-            id="tr"
-            ref={textareaRef}
-            defaultValue={pp.poem}
-            onChange={(e) => handleNewPoemData(e)}
-          ></textarea>
-        </div>
-        <div className="flex actionCenter">
-          <input type="button" value="Save" disabled />
-        </div>
-      </div>
+      </>
     );
   };
+
   return (
     <>
       {loader || isLoading ? (
@@ -103,6 +158,11 @@ const PoemEditor = () => {
         poemCode(poemData)
       ) : (
         <Preloader />
+      )}
+      {isAlert.state ? (
+        <AlertBox message={isAlert.log} closeAlert={closeAlert} />
+      ) : (
+        ""
       )}
     </>
   );
