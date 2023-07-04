@@ -263,16 +263,29 @@ const fetchAllPost = async (req, res) => {
     if (Object.keys(posts).length > 0) {
       lastFetchedId = snapshot.docs[snapshot.docs.length - 1].id;
     }
+
+    let likes = {};
+    let likeQuery = await firestoreAdmin
+      .collection("likes")
+      .where("sender", "==", req.body.uid)
+      .orderBy("status", "desc")
+      .get();
+    if (!likeQuery.empty) {
+      likeQuery.forEach((doc) => {
+        likes[doc.id] = doc.data();
+      });
+    }
     res.json({
       status: 200,
       message: "",
       posts: Object.keys(posts).length === 0 ? "no more data" : posts,
       lastPost: lastFetchedId,
+      likes: likes,
     });
   } catch (error) {
     res.json({
       status: 12,
-      message: "An error occurred while fetching posts.",
+      message: error,
       posts: "",
       lastPost: "",
     });
@@ -316,7 +329,7 @@ const getMyAllData = async (req, res) => {
   }
 };
 
-let getUsers = async (req, res) => {
+const getUsers = async (req, res) => {
   try {
     let userDatas = await firestoreAdmin.collection("users").get();
     let dataSets = {};
@@ -331,7 +344,7 @@ let getUsers = async (req, res) => {
   }
 };
 
-let getSpecificPost = async (req, res) => {
+const getSpecificPost = async (req, res) => {
   let requiredFields = ["postID"];
 
   for (let field of requiredFields) {
@@ -349,12 +362,24 @@ let getSpecificPost = async (req, res) => {
     .collection("posts")
     .where("postId", "==", req.body.postID)
     .get()
-    .then((response) => {
+    .then(async (response) => {
       if (response.docs.length > 0 && response.docs[0].exists) {
+        let likes = {};
+        let likeQuery = await firestoreAdmin
+          .collection("likes")
+          .where("sender", "==", req.body.uid)
+          .where("postId", "==", req.body.postID)
+          .get();
+        if (!likeQuery.empty) {
+          likeQuery.forEach((doc) => {
+            likes[doc.id] = doc.data();
+          });
+        }
         res.json({
           status: 200,
           message: "success",
           data: response.docs[0].data(),
+          liked: likes,
         });
       } else {
         res.json({ status: "41", message: "Post not available", data: "" });

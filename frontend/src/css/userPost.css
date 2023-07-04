@@ -154,6 +154,7 @@
 .poemDisplayContainer .actionCenter .opts .postPoemShare {
   width: 50px;
   flex-direction: column;
+  cursor: pointer;
 }
 
 .postCard .postPoemSec .postPoemInteractionSec .postPoemLike img,

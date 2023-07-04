@@ -4,6 +4,7 @@ import { deletePost, getSpecificPost } from "../api/endPoints";
 import Preloader from "../component/preloader";
 import PageNotFound from "./pageNotFound";
 import heart from "../assets/heart.png";
+import heartFilled from "../assets/heartFilled.png";
 import plane from "../assets/plane.png";
 import comment from "../assets/comment.png";
 import trash from "../assets/delete.png";
@@ -13,6 +14,7 @@ import { storePoem } from "../redux/actions/poemAction";
 import edit from "../assets/edit.png";
 import useAlert from "../hooks/useAlert";
 import AlertBox from "../component/alertBox";
+import { setLike } from "../functions/common";
 
 const nonEditablePoem = (
   user,
@@ -22,11 +24,19 @@ const nonEditablePoem = (
   isAlert,
   showAlert,
   closeAlert,
-  dispatch
+  dispatch,
+  setLoader,
+  liked
 ) => {
   const editing = () => {
     dispatch(storePoem({ ...poemData }));
     navigate("/post/edit");
+  };
+
+  const likePost = async () => {
+    setLoader(true);
+    await setLike(poemData.uid, poemData.img, poemData.postId);
+    setLoader(false);
   };
 
   const deletePoem = async () => {
@@ -50,6 +60,7 @@ const nonEditablePoem = (
       });
     }
   };
+  console.log(liked);
   return (
     <>
       <div className={`poemDisplayContainer ${color}`}>
@@ -66,8 +77,8 @@ const nonEditablePoem = (
         </div>
         <div className="flex actionCenter">
           <div className=" flex opts">
-            <div className="flexCenter postPoemLike">
-              <img src={heart} alt="Like" />
+            <div className="flexCenter postPoemLike" onClick={() => likePost()}>
+              <img src={liked ? heartFilled : heart} alt="Like" />
               <p>{poemData.like}</p>
             </div>
             <div className="flexCenter postPoemLike">
@@ -121,10 +132,22 @@ const Poem = () => {
   const [loader, setLoader] = useState(true);
   const [isValid, setIsValid] = useState(true);
   const [poemColor, setPoemColor] = useState();
+  const [liked, setLiked] = useState(false);
 
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   if (Object.keys(likes).length > 0) {
+  //     Object.keys(likes).forEach((l) => {
+  //       console.log(l);
+  //       if (likes[l].postId == postDatas.postId) {
+  //         setLiked(true);
+  //       }
+  //     });
+  //   }
+  // }, [likes]);
 
   useEffect(() => {
     fetchPoemByID();
@@ -138,6 +161,7 @@ const Poem = () => {
         setIsValid(true);
         generateColor();
         setPoemData(response.data);
+        setLiked(response.liked);
       } else {
         setIsValid(false);
       }
@@ -168,7 +192,10 @@ const Poem = () => {
           poemColor,
           isAlert,
           showAlert,
-          closeAlert
+          closeAlert,
+          dispatch,
+          setLoader,
+          liked
         )
       ) : (
         // "hello world"

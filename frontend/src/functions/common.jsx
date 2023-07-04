@@ -1,3 +1,4 @@
+import { sendInteraction } from "../api/endPoints";
 import { logOut } from "./authentication/authentication";
 
 export const getRandomNumberString = (digits) => {
@@ -23,5 +24,17 @@ export const validateUser = (data, by) => {
     } else {
       resolve();
     }
+  });
+};
+
+export const setLike = async (recipient, img, postId) => {
+  let data = {
+    type: "like",
+    recipient: recipient,
+    img: img,
+    postId: postId,
+  };
+  await sendInteraction(data).then(() => {
+    console.log("liked");
   });
 };

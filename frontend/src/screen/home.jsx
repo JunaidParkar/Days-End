@@ -21,10 +21,10 @@ const Home = () => {
   const allPostsData = useSelector((state) => state.allPost);
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn && user) {
       getPosts().then();
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, user]);
 
   const getPosts = async () => {
     if (!isLoading) {
@@ -39,6 +39,7 @@ const Home = () => {
                 posts: { ...allPostsData.posts, ...respo.posts },
                 hasMore: true,
                 lastId: respo.lastPost,
+                likes: { ...allPostsData.likes, ...respo.likes },
               };
               dispatch(storeAllPosts(data));
               setlastPostId(respo.lastPost);
@@ -109,7 +110,11 @@ const Home = () => {
           <div className="flex homeContentContainer">
             {Object.keys(allPostsData.posts).length > 0
               ? Object.keys(allPostsData.posts).map((key) => (
-                  <UserPost key={key} postDatas={allPostsData.posts[key]} />
+                  <UserPost
+                    key={key}
+                    postDatas={allPostsData.posts[key]}
+                    likes={allPostsData.likes}
+                  />
                 ))
               : ""}
             {postLoading ? <UserPostSkeleton /> : ""}

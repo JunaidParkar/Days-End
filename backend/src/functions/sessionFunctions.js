@@ -53,10 +53,11 @@ const verifyToken = async (token, uid) => {
       tokenPart6 === data.stat.token4
     ) {
       try {
-        const decoded = await jwt.verify(
+        const decoded = jwt.verify(
           `${tokenPart0}.${tokenPart5}.${tokenPart3}`,
           process.env.SECRET_KEY_TOKEN
         );
+        console.log(decoded);
         return { stat: 200, message: decoded };
       } catch (err) {
         return { stat: 700, message: err };

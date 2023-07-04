@@ -1,12 +1,28 @@
 import React, { useEffect, useState } from "react";
 import heart from "../assets/heart.png";
+import heartFilled from "../assets/heartFilled.png";
 import plane from "../assets/plane.png";
 import comment from "../assets/comment.png";
 import { useNavigate } from "react-router-dom";
+import Preloader from "./preloader";
+import { setLike } from "../functions/common";
 
-const UserPost = ({ postDatas }) => {
+const UserPost = ({ postDatas, likes }) => {
   const [poem, setPoem] = useState("");
   const [color, setColor] = useState("");
+  const [loader, setLoader] = useState(false);
+  const [liked, setLiked] = useState(false);
+
+  useEffect(() => {
+    if (Object.keys(likes).length > 0) {
+      Object.keys(likes).forEach((l) => {
+        console.log(l);
+        if (likes[l].postId == postDatas.postId) {
+          setLiked(true);
+        }
+      });
+    }
+  }, [likes]);
 
   const navigate = useNavigate();
 
@@ -37,8 +53,15 @@ const UserPost = ({ postDatas }) => {
     navigate(`/post/${postDatas.postId}`);
   };
 
+  const likePost = async () => {
+    setLoader(true);
+    await setLike(postDatas.uid, postDatas.img, postDatas.postId);
+    setLoader(false);
+  };
+
   return (
     <>
+      {loader ? <Preloader /> : ""}
       <div className={`postCard ${color}`}>
         <div
           className="flex postPoemHeading"
@@ -52,8 +75,11 @@ const UserPost = ({ postDatas }) => {
         <div className="postPoemSec">
           {renderPoem()}
           <div className="flex postPoemInteractionSec">
-            <div className="flexCenter postPoemLike">
-              <img src={heart} alt="Like" />
+            <div
+              className="flexCenter postPoemLike"
+              onClick={() => likePost().then()}
+            >
+              <img src={liked ? heartFilled : heart} alt="Like" />
               <p>{postDatas.like}</p>
             </div>
             <div className="flexCenter postPoemLike">

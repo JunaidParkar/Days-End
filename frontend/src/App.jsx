@@ -127,12 +127,11 @@ const App = () => {
       <>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Navigate to="/auth/login" />} />
             <Route path="/auth/login" element={<Login />} />
             <Route path="/auth/register" element={<Register />} />
             <Route path="/auth/resetPassword" element={<ResetPassword />} />
             <Route path="/auth/verifyEmail" element={<VerifyEmail />} />
-            <Route path="/*" element={<PageNotFound />} />
+            <Route path="/*" element={<Navigate to="/auth/login" />} />
           </Routes>
         </BrowserRouter>
       </>

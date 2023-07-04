@@ -3,6 +3,7 @@ let initialState = {
   posts: {},
   hasMore: true,
   lastId: "",
+  likes: "",
 };
 
 export const storeAllPostReducer = (state = initialState, action) => {

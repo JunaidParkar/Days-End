@@ -7,13 +7,9 @@ export const registerUserStructure = async (data) => {
   await api
     .post("/userRegisterSetup", { data: data })
     .then(async (data) => {
-      await validateUser(data.data, "userStructure validator")
-        .then(() => {
-          response = { status: data.data.status, message: data.data.message };
-        })
-        .catch(() => {
-          response = { status: 700, message: "Access denied" };
-        });
+      await validateUser(data.data, "userStructure validator").then(() => {
+        response = { status: data.data.status, message: data.data.message };
+      });
     })
     .catch((error) => {
       response = { status: 999, message: error };
@@ -26,14 +22,9 @@ export const checkUserHandle = async (handle) => {
   await api
     .post("/checkHandle", { handle: handle })
     .then(async (data) => {
-      await validateUser(data.data, "checkHandle validator")
-        .then(() => {
-          response = { status: data.data.status, message: data.data.message };
-        })
-        .catch(() => {
-          response = { status: 700, message: "Access denied" };
-          logOut("checkUserHandle in endpoint").then();
-        });
+      await validateUser(data.data, "checkHandle validator").then(() => {
+        response = { status: data.data.status, message: data.data.message };
+      });
     })
     .catch((error) => {
       response = { status: 999, message: error };
@@ -61,23 +52,25 @@ export const getAuthToken = async (data) => {
 };
 
 export const getAllPost = async (id) => {
-  let response = { status: "", message: "", posts: {}, lastPost: "" };
+  let response = {
+    status: "",
+    message: "",
+    posts: {},
+    lastPost: "",
+    likes: "",
+  };
   await api
     .post("/getAllPost", { lastId: id })
     .then(async (respo) => {
-      await validateUser(respo.data)
-        .then(() => {
-          response = {
-            status: respo.data.status,
-            message: respo.data.message,
-            posts: respo.data.posts,
-            lastPost: respo.data.lastPost,
-          };
-        })
-        .catch(() => {
-          response = { status: 700, message: "Access denied" };
-          logOut("getAllPost in endpoint").then();
-        });
+      await validateUser(respo.data).then(() => {
+        response = {
+          status: respo.data.status,
+          message: respo.data.message,
+          posts: respo.data.posts,
+          lastPost: respo.data.lastPost,
+          likes: respo.data.likes,
+        };
+      });
     })
     .catch((error) => {
       response = { status: 999, message: error, posts: {}, lastPost: "" };
@@ -150,14 +143,19 @@ export const updatePost = async (data) => {
 };
 
 export const getSpecificPost = async (id) => {
-  let response = { status: "", message: "", data: "" };
+  let response = { status: "", message: "", data: "", liked: "" };
   await api
     .post("/getSpecificPost", { postID: id })
     .then((respo) => {
       response = { ...respo.data };
     })
     .catch((err) => {
-      response = { status: 999, message: err.message || err, data: "" };
+      response = {
+        status: 999,
+        message: err.message || err,
+        data: "",
+        like: "",
+      };
     });
   return response;
 };
@@ -169,6 +167,21 @@ export const deletePost = async (data) => {
     .then(async (data) => {
       await validateUser(data.data).then(() => {
         response = { ...data.data };
+      });
+    })
+    .catch((err) => {
+      response = { status: 999, message: err.message || err, data: "" };
+    });
+  return response;
+};
+
+export const sendInteraction = async (data) => {
+  let response = { status: "", message: "" };
+  await api
+    .post("/setInteraction", data)
+    .then(async (resp) => {
+      await validateUser(data.data).then(() => {
+        response = { ...resp.data };
       });
     })
     .catch((err) => {
