@@ -3,6 +3,7 @@ const {
   createAuthToken,
   generateUniqueId,
   updateCounts,
+  isLiked,
 } = require("../functions/sessionFunctions");
 
 const registerUserSetup = async (req, res) => {
@@ -124,7 +125,7 @@ const createPost = async (req, res) => {
       });
     } else {
       await firestoreAdmin.collection("posts").doc(postRef.id).set(postData);
-      await updateCounts(req.body.uid);
+      await updateCounts({ uid: req.body.uid }, "postCount");
       res.json({ status: 200, message: "Post uploaded" });
     }
   } catch (error) {
@@ -236,17 +237,19 @@ const fetchAllPost = async (req, res) => {
         message: `${
           field.charAt(0).toUpperCase() + field.slice(1)
         } not provided`,
-        posts: "",
+        posts: {},
         lastPost: "",
       });
     }
   }
+
   try {
     let lastFetchedId;
     let query = firestoreAdmin
       .collection("posts")
       .orderBy("createdAt", "desc")
       .limit(10);
+
     if (req.body.lastId !== "no") {
       let lastFetchedPost = await firestoreAdmin
         .collection("posts")
@@ -254,8 +257,10 @@ const fetchAllPost = async (req, res) => {
         .get();
       query = query.startAfter(lastFetchedPost);
     }
+
     let snapshot = await query.get();
     let posts = {};
+
     snapshot.forEach((doc) => {
       let post = doc.data();
       posts[doc.id] = post;
@@ -263,29 +268,19 @@ const fetchAllPost = async (req, res) => {
     if (Object.keys(posts).length > 0) {
       lastFetchedId = snapshot.docs[snapshot.docs.length - 1].id;
     }
+    let updatedPosts = await isLiked(req.body.uid, posts);
 
-    let likes = {};
-    let likeQuery = await firestoreAdmin
-      .collection("likes")
-      .where("sender", "==", req.body.uid)
-      .orderBy("status", "desc")
-      .get();
-    if (!likeQuery.empty) {
-      likeQuery.forEach((doc) => {
-        likes[doc.id] = doc.data();
-      });
-    }
     res.json({
       status: 200,
-      message: "",
-      posts: Object.keys(posts).length === 0 ? "no more data" : posts,
+      message:
+        Object.keys(posts).length === 0 ? "finished" : updatedPosts.message,
+      posts: updatedPosts.status === 200 ? updatedPosts.posts : posts,
       lastPost: lastFetchedId,
-      likes: likes,
     });
   } catch (error) {
     res.json({
       status: 12,
-      message: error,
+      message: error.message,
       posts: "",
       lastPost: "",
     });
@@ -294,38 +289,43 @@ const fetchAllPost = async (req, res) => {
 
 const getMyAllData = async (req, res) => {
   try {
-    let userBasicData;
-    let postData = {
-      myPosts: {},
-    };
+    let userData = {};
+    let post = {};
 
-    const userQuerySnapshot = await firestoreAdmin
+    let userQuerySnapshot = await firestoreAdmin
       .collection("users")
       .where("uid", "==", req.body.uid)
       .get();
     if (userQuerySnapshot.empty) {
-      return res.json({ status: 500, message: "UID Incorrect", data: "" });
+      return res.json({
+        status: 500,
+        message: "Unable to fetch your information at the moment",
+        data: userData,
+        posts: post,
+      });
     } else {
-      userBasicData = userQuerySnapshot.docs[0].data();
-      const postQuerySnapshot = await firestoreAdmin
+      userData = userQuerySnapshot.docs[0].data();
+      let postQuerySnapshot = await firestoreAdmin
         .collection("posts")
-        .where("handle", "==", userBasicData.handle)
-        .where("uid", "==", userBasicData.uid)
+        .where("handle", "==", userData.handle)
+        .where("uid", "==", userData.uid)
         .orderBy("createdAt", "desc")
         .get();
       if (!postQuerySnapshot.empty) {
         postQuerySnapshot.forEach((doc) => {
-          postData.myPosts[doc.id] = doc.data();
+          post[doc.id] = doc.data();
         });
       }
+      let liked = await isLiked(req.body.uid, post);
+      res.json({
+        status: 200,
+        message: "Post ID in-correct",
+        data: userData,
+        post: liked.status === 200 ? liked.posts : post,
+      });
     }
-    res.json({
-      status: 200,
-      message: "",
-      data: { ...userBasicData, ...postData },
-    });
   } catch (error) {
-    return res.json({ status: 12, message: error.message, data: "" });
+    return res.json({ status: 12, message: error.message, data: {}, post: {} });
   }
 };
 
@@ -358,36 +358,38 @@ const getSpecificPost = async (req, res) => {
     }
   }
 
-  await firestoreAdmin
-    .collection("posts")
-    .where("postId", "==", req.body.postID)
-    .get()
-    .then(async (response) => {
-      if (response.docs.length > 0 && response.docs[0].exists) {
-        let likes = {};
-        let likeQuery = await firestoreAdmin
-          .collection("likes")
-          .where("sender", "==", req.body.uid)
-          .where("postId", "==", req.body.postID)
-          .get();
-        if (!likeQuery.empty) {
-          likeQuery.forEach((doc) => {
-            likes[doc.id] = doc.data();
-          });
-        }
-        res.json({
-          status: 200,
-          message: "success",
-          data: response.docs[0].data(),
-          liked: likes,
-        });
-      } else {
-        res.json({ status: "41", message: "Post not available", data: "" });
+  try {
+    let post = {};
+    let postQuery = await firestoreAdmin
+      .collection("posts")
+      .where("postId", "==", req.body.postID)
+      .get();
+
+    if (!postQuery.empty) {
+      post[postQuery.docs[0].id] = postQuery.docs[0].data();
+      let updatedPost;
+      if (req.body.uid) {
+        updatedPost = await isLiked(req.body.uid, post);
       }
-    })
-    .catch((err) => {
-      res.json({ status: 12, message: err.message || err.code, data: "" });
-    });
+      res.json({
+        status: 200,
+        message: "success",
+        post: req.body.uid
+          ? updatedPost.status === 200
+            ? updatedPost.posts
+            : post
+          : post,
+      });
+    } else {
+      res.json({
+        status: "41",
+        message: "Post not available",
+        post: post,
+      });
+    }
+  } catch (error) {
+    res.json({ status: 12, message: error.message || error.code, post: {} });
+  }
 };
 
 module.exports = {

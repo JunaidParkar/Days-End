@@ -6,19 +6,22 @@ import UserPostSkeleton from "../component/userPostSkeleton";
 import Preloader from "../component/preloader";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllPost } from "../api/endPoints";
-import { storeAllPosts } from "../redux/actions/homePageAction";
 import AlertBox from "../component/alertBox";
 import useAlert from "../hooks/useAlert";
+import { reduxStoreHomeAction } from "../redux/actions/homePageAction";
+import { reduxStoreAllPostAction } from "../redux/actions/allPostAction";
 
 const Home = () => {
   const { user, isLoggedIn, isLoading } = useAuth();
   const [isAlert, showAlert, closeAlert] = useAlert(false, "");
-  const [lastPostId, setlastPostId] = useState("no");
   const [loadingNext, setLoadingNext] = useState(false);
   const [postLoading, setPostLoading] = useState(true);
+
   const dispatch = useDispatch();
   const homeDivRef = useRef();
-  const allPostsData = useSelector((state) => state.allPost);
+
+  const homeData = useSelector((state) => state.home);
+  const allPosts = useSelector((state) => state.posts);
 
   useEffect(() => {
     if (isLoggedIn && user) {
@@ -28,24 +31,19 @@ const Home = () => {
 
   const getPosts = async () => {
     if (!isLoading) {
-      if (allPostsData.hasMore) {
+      if (homeData.hasMore) {
         setPostLoading(true);
-        await getAllPost(lastPostId).then((respo) => {
+        await getAllPost(homeData.lastId).then((respo) => {
           if (respo.status === 200) {
-            if (respo.posts === "no more data") {
-              dispatch(storeAllPosts({ hasMore: false }));
+            if (respo.message === "finished") {
+              dispatch(reduxStoreHomeAction({ hasMore: false }));
             } else {
-              let data = {
-                posts: { ...allPostsData.posts, ...respo.posts },
-                hasMore: true,
-                lastId: respo.lastPost,
-                likes: { ...allPostsData.likes, ...respo.likes },
-              };
-              dispatch(storeAllPosts(data));
-              setlastPostId(respo.lastPost);
+              dispatch(reduxStoreHomeAction({ lastId: respo.lastPost }));
+              dispatch(reduxStoreAllPostAction(respo.posts));
             }
           } else {
-            showAlert(respo.message, respo.status === 700 ? true : false);
+            console.log(`home ${respo.message}`);
+            showAlert(respo.message, false);
           }
         });
         setPostLoading(false);
@@ -66,22 +64,22 @@ const Home = () => {
   }, [loadingNext]);
 
   const scroller = async () => {
-    if (allPostsData.hasMore) {
+    if (allPosts.hasMore) {
+      // if (
+      //   window.innerHeight <
+      //   document.documentElement.scrollTop +
+      //     document.documentElement.clientHeight
+      // ) {
       if (
-        window.innerHeight <
         document.documentElement.scrollTop +
-          document.documentElement.clientHeight
+          document.documentElement.clientHeight >=
+        document.documentElement.scrollHeight - 1
       ) {
-        if (
-          document.documentElement.scrollTop +
-            document.documentElement.clientHeight >=
-          document.documentElement.scrollHeight - 1
-        ) {
-          console.log(loadingNext);
-          if (!loadingNext) {
-            setLoadingNext(true);
-          }
+        console.log(loadingNext);
+        if (!loadingNext) {
+          setLoadingNext(true);
         }
+        // }
       }
     }
   };
@@ -108,13 +106,9 @@ const Home = () => {
         <div className="homeContainer">
           <Navbar page="house" />
           <div className="flex homeContentContainer">
-            {Object.keys(allPostsData.posts).length > 0
-              ? Object.keys(allPostsData.posts).map((key) => (
-                  <UserPost
-                    key={key}
-                    postDatas={allPostsData.posts[key]}
-                    likes={allPostsData.likes}
-                  />
+            {Object.keys(allPosts).length > 0
+              ? Object.keys(allPosts).map((key) => (
+                  <UserPost key={key} postDatas={allPosts[key]} />
                 ))
               : ""}
             {postLoading ? <UserPostSkeleton /> : ""}
@@ -128,7 +122,11 @@ const Home = () => {
       )}
 
       {isAlert.state ? (
-        <AlertBox message={isAlert.log} closeAlert={closeAlert} />
+        <AlertBox
+          message={isAlert.log}
+          closeAlert={closeAlert}
+          logout={false}
+        />
       ) : (
         ""
       )}

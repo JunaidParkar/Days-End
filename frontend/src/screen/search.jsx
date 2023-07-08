@@ -71,7 +71,11 @@ const Search = () => {
         </div>
       </div>
       {isAlert.state ? (
-        <AlertBox message={isAlert.log} closeAlert={closeAlert} />
+        <AlertBox
+          message={isAlert.log}
+          closeAlert={closeAlert}
+          logout={false}
+        />
       ) : (
         ""
       )}

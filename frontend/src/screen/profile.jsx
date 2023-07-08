@@ -11,17 +11,39 @@ import { storage } from "../cred/cred";
 import Preloader from "../component/preloader";
 import useAuth from "../hooks/useAuth";
 import { sendEmailVerification } from "firebase/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { reduxStoreAllPostAction } from "../redux/actions/allPostAction";
+import { reduxStoreMyProfileAction } from "../redux/actions/myProfileAction";
 
 const Profile = () => {
-  const [myData, setMyData] = useState();
   const [loader, setLoader] = useState(true);
+  const [myPost, setMyPost] = useState({});
 
   const { user, isLoggedIn, isLoading } = useAuth();
   const [isAlert, showAlert, closeAlert] = useAlert(false, "");
 
+  const dispatch = useDispatch();
+  const myProfile = useSelector((state) => state.myProfile);
+  const allPosts = useSelector((state) => state.posts);
+
+  // useEffect(() => {
+  //   fetchAllmyProfiles();
+  // }, [user]);
+
   useEffect(() => {
-    fetchAllMyDatas();
-  }, []);
+    let myPostFiltered = {};
+    Object.keys(allPosts).forEach((key) => {
+      if (allPosts[key]["uid"] == user.uid) {
+        myPostFiltered[key] = allPosts[key];
+      }
+    });
+    if (Object.keys(myPostFiltered).length != myProfile["posts"]) {
+      fetchAllmyProfiles();
+    } else {
+      setMyPost({ ...myPostFiltered });
+    }
+    let myPostsAvailable = allPosts;
+  }, [allPosts]);
 
   const imageSetter = async (data) => {
     let picRef = ref(storage, data.pic);
@@ -29,13 +51,16 @@ const Profile = () => {
     return URL.createObjectURL(blob);
   };
 
-  const fetchAllMyDatas = async () => {
+  const fetchAllmyProfiles = async () => {
     setLoader(true);
     await getAllOfMyDatas().then(async (response) => {
       if (response.status === 200) {
         let datas = response.data;
-        let pic = await imageSetter(datas);
-        setMyData({ ...datas, ["pic"]: pic });
+        let myPosts = response.post;
+        let dataPic = await imageSetter(datas);
+        let updatedData = { ...datas, ["pic"]: dataPic };
+        dispatch(reduxStoreMyProfileAction(updatedData));
+        dispatch(reduxStoreAllPostAction({ ...allPosts, ...myPosts }));
       } else {
         showAlert(response.message, false);
       }
@@ -67,23 +92,28 @@ const Profile = () => {
         <div className="profileContentContainer">
           <div className="myProfileHeader">
             <div className="flex myProfileHeaderInteractionCenter">
-              <img src={myData ? myData.pic : noUser} alt="Profile Picture" />
+              <img
+                src={myProfile ? myProfile["pic"] : noUser}
+                alt="Profile Picture"
+              />
               <div className="flex interaction">
-                <h4>{myData ? myData.handle : ""}</h4>
+                <h4>{myProfile ? myProfile["handle"] : ""}</h4>
                 <div className="flex stats">
                   <div className="statCont">
-                    <p className="statValue">{myData ? myData.posts : ""}</p>
+                    <p className="statValue">
+                      {myProfile ? myProfile["posts"] : ""}
+                    </p>
                     <p className="statName">Posts</p>
                   </div>
                   <div className="statCont">
                     <p className="statValue">
-                      {myData ? myData.followers : ""}
+                      {myProfile ? myProfile["followers"] : ""}
                     </p>
                     <p className="statName">Followers</p>
                   </div>
                   <div className="statCont">
                     <p className="statValue">
-                      {myData ? myData.following : ""}
+                      {myProfile ? myProfile["following"] : ""}
                     </p>
                     <p className="statName">Following</p>
                   </div>
@@ -109,7 +139,7 @@ const Profile = () => {
               </div>
             </div>
             <div className="myBio">
-              <p>{myData ? myData.bio : ""}</p>
+              <p>{myProfile ? myProfile["bio"] : ""}</p>
             </div>
           </div>
 
@@ -123,15 +153,21 @@ const Profile = () => {
             <UserPost />
             <UserPost />
           <UserPost /> */}
-            {myData &&
-              Object.keys(myData.myPosts).map((postId) => (
-                <UserPost key={postId} postDatas={myData.myPosts[postId]} />
+            {myProfile &&
+              Object.keys(myPost).map((postId) => (
+                <UserPost key={postId} postDatas={myPost[postId]} />
               ))}
           </div>
         </div>
       </div>
-      {isAlert.state && (
-        <AlertBox message={isAlert.log.toString()} closeAlert={closeAlert} />
+      {isAlert.state ? (
+        <AlertBox
+          message={isAlert.log}
+          closeAlert={closeAlert}
+          logout={false}
+        />
+      ) : (
+        ""
       )}
     </>
   );

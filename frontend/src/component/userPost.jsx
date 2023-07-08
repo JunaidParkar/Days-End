@@ -7,22 +7,10 @@ import { useNavigate } from "react-router-dom";
 import Preloader from "./preloader";
 import { setLike } from "../functions/common";
 
-const UserPost = ({ postDatas, likes }) => {
+const UserPost = ({ postDatas }) => {
   const [poem, setPoem] = useState("");
   const [color, setColor] = useState("");
   const [loader, setLoader] = useState(false);
-  const [liked, setLiked] = useState(false);
-
-  useEffect(() => {
-    if (Object.keys(likes).length > 0) {
-      Object.keys(likes).forEach((l) => {
-        console.log(l);
-        if (likes[l].postId == postDatas.postId) {
-          setLiked(true);
-        }
-      });
-    }
-  }, [likes]);
 
   const navigate = useNavigate();
 
@@ -79,7 +67,7 @@ const UserPost = ({ postDatas, likes }) => {
               className="flexCenter postPoemLike"
               onClick={() => likePost().then()}
             >
-              <img src={liked ? heartFilled : heart} alt="Like" />
+              <img src={postDatas["liked"] ? heartFilled : heart} alt="Like" />
               <p>{postDatas.like}</p>
             </div>
             <div className="flexCenter postPoemLike">

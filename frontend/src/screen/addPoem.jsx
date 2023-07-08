@@ -88,8 +88,14 @@ const AddPoem = () => {
           <input type="submit" value="Add Post" />
         </form>
       </div>
-      {isAlert.state && (
-        <AlertBox message={isAlert.log} closeAlert={closeAlert} />
+      {isAlert.state ? (
+        <AlertBox
+          message={isAlert.log}
+          closeAlert={closeAlert}
+          logout={false}
+        />
+      ) : (
+        ""
       )}
     </>
   );

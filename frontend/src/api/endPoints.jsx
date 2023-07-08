@@ -57,7 +57,6 @@ export const getAllPost = async (id) => {
     message: "",
     posts: {},
     lastPost: "",
-    likes: "",
   };
   await api
     .post("/getAllPost", { lastId: id })
@@ -68,12 +67,16 @@ export const getAllPost = async (id) => {
           message: respo.data.message,
           posts: respo.data.posts,
           lastPost: respo.data.lastPost,
-          likes: respo.data.likes,
         };
       });
     })
     .catch((error) => {
-      response = { status: 999, message: error, posts: {}, lastPost: "" };
+      response = {
+        status: 999,
+        message: error.message,
+        posts: {},
+        lastPost: "",
+      };
     });
   return response;
 };
@@ -98,7 +101,7 @@ export const getAllUsers = async () => {
 };
 
 export const getAllOfMyDatas = async () => {
-  let response = { status: "", message: "", data: "" };
+  let response = { status: "", message: "", data: "", post: {} };
   await api
     .post("/getMyData")
     .then(async (respo) => {
@@ -107,7 +110,12 @@ export const getAllOfMyDatas = async () => {
       });
     })
     .catch((err) => {
-      response = { status: 999, message: err.message || err, data: "" };
+      response = {
+        status: 999,
+        message: err.message || err,
+        data: "",
+        post: {},
+      };
     });
   return response;
 };
@@ -180,7 +188,8 @@ export const sendInteraction = async (data) => {
   await api
     .post("/setInteraction", data)
     .then(async (resp) => {
-      await validateUser(data.data).then(() => {
+      await validateUser(resp.data).then(() => {
+        console.log(resp.data);
         response = { ...resp.data };
       });
     })

@@ -1,14 +1,12 @@
 // reducer.js
 let initialState = {
-  posts: {},
   hasMore: true,
-  lastId: "",
-  likes: "",
+  lastId: "no",
 };
 
-export const storeAllPostReducer = (state = initialState, action) => {
+export const reduxStoreHomeReducer = (state = initialState, action) => {
   switch (action.type) {
-    case "STORE_POSTS":
+    case "STORE_HOME":
       return { ...state, ...action.payload };
     default:
       return state;

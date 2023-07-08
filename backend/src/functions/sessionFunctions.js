@@ -79,24 +79,63 @@ const generateUniqueId = () => {
   return uniqueId;
 };
 
-const updateCounts = async (uid) => {
+const updateCounts = async (data, type) => {
   let response = { status: "", message: "" };
   try {
-    let postsQuery = await firestoreAdmin
-      .collection("posts")
-      .where("uid", "==", uid)
-      .get();
+    if (type == "postCount") {
+      let postsQuery = await firestoreAdmin
+        .collection("posts")
+        .where("uid", "==", data.uid)
+        .get();
 
-    let updatedData = {
-      posts: postsQuery.empty ? 0 : postsQuery.docs.length,
-    };
-
-    await firestoreAdmin.collection("users").doc(uid).update(updatedData);
-
+      let updatedData = {
+        posts: postsQuery.empty ? 0 : postsQuery.docs.length,
+      };
+      await firestoreAdmin.collection("users").doc(uid).update(updatedData);
+    } else if (type == "likeCount") {
+      let postConfig = firestoreAdmin
+        .collection("posts")
+        .where("postId", "==", data.postId);
+      let postSnapshot = await postConfig.get();
+      let postDocRef = postSnapshot.docs[0].ref;
+      let likeCount = postSnapshot.docs[0].get("like") + 1;
+      postDocRef.update({ like: likeCount });
+    }
     response = { status: 200, message: "successful" };
   } catch (err) {
     response = { status: 12, message: err };
   }
+  return response;
+};
+
+const isLiked = async (uid, post) => {
+  let response = { status: "", message: "", posts: {} };
+
+  try {
+    if (Object.keys(post).length > 0) {
+      const likeQueries = Object.keys(post).map(async (key) => {
+        const querySnapshot = await firestoreAdmin
+          .collection("likes")
+          .where("sender", "==", uid)
+          .where("postId", "==", post[key]["postId"])
+          .get();
+
+        if (!querySnapshot.empty) {
+          post[key]["liked"] = true;
+        } else {
+          post[key]["liked"] = false;
+        }
+      });
+
+      await Promise.all(likeQueries);
+      response = { status: 200, message: "successful", posts: { ...post } };
+    } else {
+      response = { status: 200, message: "successful", posts: { ...post } };
+    }
+  } catch (error) {
+    response = { status: 12, message: error.message, posts: { ...post } };
+  }
+
   return response;
 };
 
@@ -105,4 +144,5 @@ module.exports = {
   verifyToken,
   generateUniqueId,
   updateCounts,
+  isLiked,
 };

@@ -1,4 +1,4 @@
-export const storeAllPosts = (posts) => ({
-  type: "STORE_POSTS",
-  payload: posts,
+export const reduxStoreHomeAction = (data) => ({
+  type: "STORE_HOME",
+  payload: data,
 });

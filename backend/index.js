@@ -17,6 +17,7 @@ const {
   verifyToken,
   createAuthToken,
   generateUniqueId,
+  updateCounts,
 } = require("./src/functions/sessionFunctions");
 const cors = require("cors");
 const { reqAuth } = require("./src/middleware/auth");
@@ -40,7 +41,7 @@ app.post("/userSetupDelete", reqAuth, deleteUserSetup);
 
 app.post("/getUsers", reqAuth, getUsers);
 
-app.post("/getAllPost", reqAuth, fetchAllPost);
+app.post("/getAllPost", fetchAllPost);
 
 app.post("/getMyData", reqAuth, getMyAllData);
 
@@ -83,7 +84,18 @@ app.post("/setInteraction", reqAuth, async (req, res) => {
       };
       let ref = firestoreAdmin.collection("likes").doc();
       await firestoreAdmin.collection("likes").doc(ref.id).set(data);
-      res.json({ status: 200, message: "Successful" });
+      let likeUpdate = await updateCounts(
+        { postId: req.body.postId },
+        "likeCount"
+      );
+      if (likeUpdate.status == 12) {
+        res.json({
+          status: 200,
+          message: `Successfull but ${likeUpdate.message}`,
+        });
+      } else {
+        res.json({ status: 200, message: "Successful" });
+      }
     } else if (req.body.type == "comment") {
       let requiredFields = ["comment", "postId"];
       for (let field of requiredFields) {
@@ -99,6 +111,7 @@ app.post("/setInteraction", reqAuth, async (req, res) => {
     }
   } catch (err) {
     res.json({ status: 12, message: err });
+    console.log(err);
   }
 });
 app.post("/updatePost", reqAuth, updatePost);
