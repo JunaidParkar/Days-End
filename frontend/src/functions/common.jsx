@@ -34,7 +34,5 @@ export const setLike = async (recipient, img, postId) => {
     img: img,
     postId: postId,
   };
-  await sendInteraction(data).then(() => {
-    console.log("liked");
-  });
+  await sendInteraction(data).then(() => {});
 };

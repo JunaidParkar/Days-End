@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { getBlob, ref } from "firebase/storage";
-import { storage } from "../cred/cred";
 
 const SearchCard = (props) => {
   const [image, setImage] = useState(
@@ -11,14 +9,7 @@ const SearchCard = (props) => {
   useEffect(() => {
     generateColor();
     setImage(props.data.pic);
-    // getImage();
   }, []);
-
-  // const getImage = async () => {
-  //   let imageRef = ref(storage, props.data.pic);
-  //   let blob = await getBlob(imageRef);
-  //   setImage(URL.createObjectURL(blob));
-  // };
 
   const generateColor = () => {
     let colors = [

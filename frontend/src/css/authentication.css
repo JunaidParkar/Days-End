@@ -1,30 +1,30 @@
 .authContainer {
-    width: 100%;
-    height: 100vh;
-    background: var(--pureWhiteColor);
-    position: relative;
-    padding: 0 var(--padding);
+  width: 100%;
+  height: 100vh;
+  background: var(--pureWhiteColor);
+  position: relative;
+  padding: 0 var(--padding);
 }
 
 .authContainer form {
-    width: 50%;
-    flex-direction: column;
-    gap: 30px;
+  width: 50%;
+  flex-direction: column;
+  gap: 30px;
 }
 
 .authContainer form h3 {
-    font-size: 35px;
-    width: 100%;
-    text-align: center;
-    text-transform: capitalize;
-    letter-spacing: 2px;
-    margin-bottom: 50px;
+  font-size: 35px;
+  width: 100%;
+  text-align: center;
+  text-transform: capitalize;
+  letter-spacing: 2px;
+  margin-bottom: 50px;
 }
 
 .authContainer form .handlers {
-    width: 100%;
-    justify-content: space-between;
-    align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .authContainer form input,
@@ -33,91 +33,86 @@
 .addPoemContainer form textarea,
 .updateProfileContainer form input,
 .updateProfileContainer form textarea {
-    padding: 20px 25px;
-    box-shadow: var(--shadowColor) 0px 8px 24px;
-    border-radius: var(--borderRadius);
-    font-size: 15px;
-    letter-spacing: 2px;
-    width: 100%;
+  padding: 20px 25px;
+  box-shadow: var(--shadowColor) 0px 8px 24px;
+  border-radius: var(--borderRadius);
+  font-size: 15px;
+  letter-spacing: 2px;
+  width: 100%;
 }
 
-
-/* .authContainer form .handlers input {
-    width: 40%;
-} */
-
-.authContainer form input[type=submit],
-.authContainer form .handlers input[type=submit],
-.addPoemContainer form input[type=submit],
-.updateProfileContainer form input[type=submit] {
-    width: 40%;
-    cursor: pointer;
-    background: var(--redColor);
-    text-transform: uppercase;
+.authContainer form input[type="submit"],
+.authContainer form .handlers input[type="submit"],
+.addPoemContainer form input[type="submit"],
+.updateProfileContainer form input[type="submit"] {
+  width: 40%;
+  cursor: pointer;
+  background: var(--redColor);
+  text-transform: uppercase;
 }
 
-.authContainer form input[type=submit]:disabled,
-.authContainer form .handlers input[type=submit]:disabled,
-.addPoemContainer form input[type=submit]:disabled,
-.updateProfileContainer form input[type=submit]:disabled {
-    cursor: no-drop;
+.authContainer form input[type="submit"]:disabled,
+.authContainer form .handlers input[type="submit"]:disabled,
+.addPoemContainer form input[type="submit"]:disabled,
+.updateProfileContainer form input[type="submit"]:disabled {
+  cursor: no-drop;
 }
 
 .authContainer form a,
 .authContainer form .handlers a {
-    letter-spacing: 2px;
+  letter-spacing: 2px;
 }
 
 .redirectAuthPage {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    letter-spacing: 2px;
-    padding: 20px 25px;
-    background: var(--redColor);
-    border-radius: var(--borderRadius);
-    text-transform: uppercase;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  letter-spacing: 2px;
+  padding: 20px 25px;
+  background: var(--redColor);
+  border-radius: var(--borderRadius);
+  text-transform: uppercase;
 }
 
 @media only screen and (max-width: 990px) {
-    .authContainer form {
-        width: 75%;
-    }
+  .authContainer form {
+    width: 75%;
+  }
 }
 
 @media only screen and (max-width: 600px) {
-    .authContainer form {
-        width: 100%;
-    }
+  .authContainer form {
+    width: 100%;
+  }
 }
 
 @media only screen and (max-width: 540px) {
-    .redirectAuthPage,
-    .authContainer form input,
-    .authContainer form .handlers input,
-    .addPoemContainer form input,
-    .addPoemContainer form textarea,
-    .updateProfileContainer form input,
-    .updateProfileContainer form textarea {
-        font-size: 15px;
-        padding: 15px 20px;
-    }
+  .redirectAuthPage,
+  .authContainer form input,
+  .authContainer form .handlers input,
+  .addPoemContainer form input,
+  .addPoemContainer form textarea,
+  .updateProfileContainer form input,
+  .updateProfileContainer form textarea {
+    font-size: 15px;
+    padding: 15px 20px;
+  }
 }
 
 @media only screen and (max-width: 370px) {
-    .authContainer form input[type=submit],
-    .authContainer form .handlers input[type=submit],
-    .addPoemContainer form input[type=submit],
-    .updateProfileContainer form input[type=submit] {
-        width: 55%;
-    }
-    .authContainer form a,
-    .authContainer form .handlers a {
-        font-size: 15px;
-        width: 40%;
-    }
-    .authContainer form h3 {
-        margin-bottom: 25px;
-        font-size: 25px;
-    }
+  .authContainer form input[type="submit"],
+  .authContainer form .handlers input[type="submit"],
+  .addPoemContainer form input[type="submit"],
+  .updateProfileContainer form input[type="submit"] {
+    width: 55%;
+  }
+  .authContainer form a,
+  .authContainer form .handlers a {
+    font-size: 15px;
+    width: 40%;
+  }
+  .authContainer form h3 {
+    margin-bottom: 25px;
+    font-size: 25px;
+  }
 }

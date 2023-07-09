@@ -24,25 +24,6 @@ const UpdateProfile = () => {
 
   const navigate = useNavigate();
 
-  let data = {
-    displayName: "",
-    photoURL: "",
-  };
-  if (user) {
-    // console.log(
-    // user.photoURL
-    //   .split("/")
-    //   .pop()
-    //   .split(`${user.uid}%2FprofilePic%`)
-    //   .pop()
-    //   .split("?")[0]
-
-    // user.photoURL
-    // );
-    console.log(userData.profilePic);
-    console.log(user.photoURL);
-  }
-
   useEffect(() => {
     const setUserDataFromUser = async () => {
       if (!isLoading) {
@@ -51,21 +32,17 @@ const UpdateProfile = () => {
         if (user.photoURL) {
           let picRef = ref(storage, user.photoURL);
           let blobImage = await getBlob(picRef);
-          console.clear();
-          console.error(blobImage.name, "bllb");
           setUserData({ ...userData, profilePic: blobImage });
         } else {
           let picRef = ref(storage, "account.png");
           let blobImage = await getBlob(picRef);
-          console.clear();
-          console.error(blobImage.name, "bllb");
           setUserData({ ...userData, profilePic: blobImage });
         }
 
         setUserData((prevUserData) => ({
           ...prevUserData,
           displayName: user.displayName || "",
-          bio: "", // Add logic to fetch bio from Firestore or any other source
+          bio: "",
         }));
 
         setLoader(false);
@@ -106,17 +83,15 @@ const UpdateProfile = () => {
   const uploadProfile = async (e) => {
     e.preventDefault();
     setLoader(true);
-    console.log("heyyyyyy");
 
     await updateProfileData(user, userData)
       .then((resp) => {
-        console.log(resp);
         showAlert(resp.message, false);
         if (resp.status === 200) {
           navigate("/");
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {});
 
     setLoader(false);
   };

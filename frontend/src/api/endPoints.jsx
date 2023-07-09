@@ -47,7 +47,6 @@ export const getAuthToken = async (data) => {
     .catch((error) => {
       response = { status: 99, message: error };
     });
-  console.log(response);
   return response;
 };
 
@@ -151,7 +150,7 @@ export const updatePost = async (data) => {
 };
 
 export const getSpecificPost = async (id) => {
-  let response = { status: "", message: "", data: "", liked: "" };
+  let response = { status: "", message: "", post: {} };
   await api
     .post("/getSpecificPost", { postID: id })
     .then((respo) => {
@@ -161,8 +160,7 @@ export const getSpecificPost = async (id) => {
       response = {
         status: 999,
         message: err.message || err,
-        data: "",
-        like: "",
+        post: {},
       };
     });
   return response;
@@ -189,7 +187,6 @@ export const sendInteraction = async (data) => {
     .post("/setInteraction", data)
     .then(async (resp) => {
       await validateUser(resp.data).then(() => {
-        console.log(resp.data);
         response = { ...resp.data };
       });
     })

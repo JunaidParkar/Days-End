@@ -3,7 +3,7 @@ import heart from "../assets/heart.png";
 import heartFilled from "../assets/heartFilled.png";
 import plane from "../assets/plane.png";
 import comment from "../assets/comment.png";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Preloader from "./preloader";
 import { setLike } from "../functions/common";
 
@@ -11,6 +11,8 @@ const UserPost = ({ postDatas }) => {
   const [poem, setPoem] = useState("");
   const [color, setColor] = useState("");
   const [loader, setLoader] = useState(false);
+
+  const id = useLocation;
 
   const navigate = useNavigate();
 
@@ -38,7 +40,9 @@ const UserPost = ({ postDatas }) => {
   };
 
   const showPost = () => {
-    navigate(`/post/${postDatas.postId}`);
+    navigate(`/post/${postDatas.postId}`, {
+      state: { postId: postDatas.postId },
+    });
   };
 
   const likePost = async () => {

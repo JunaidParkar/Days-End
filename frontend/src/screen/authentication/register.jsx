@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AlertBox from "../../component/alertBox";
-// import { registerNewUser, signOutUser } from '../../firebaseFunctions/authentication/auth'
 import useAlert from "../../hooks/useAlert";
 import { createUser } from "../../functions/authentication/authentication";
 import useAuth from "../../hooks/useAuth";
@@ -58,7 +57,6 @@ const Register = () => {
           registerData.password.trim()
         )
           .then((resp) => {
-            console.log(resp);
             if (resp.status !== 200) {
               showAlert(resp.message, false);
             }

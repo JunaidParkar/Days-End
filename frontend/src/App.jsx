@@ -1,12 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 // import routers
 
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-
-// import redux
-
-import { useDispatch, useSelector } from "react-redux";
 
 // import screens
 
@@ -22,16 +18,15 @@ import VerifyEmail from "./screen/authentication/verifyEmail";
 import PageNotFound from "./screen/pageNotFound";
 import UpdateProfile from "./screen/updateProfile";
 import Poem from "./screen/poem";
+import PoemEditor from "./screen/poemEditor";
 
 // import custom hooks
 
 import useAuth from "./hooks/useAuth";
-import useAlert from "./hooks/useAlert";
 
 // import components
 
 import Preloader from "./component/preloader";
-import AlertBox from "./component/alertBox";
 
 // import css
 
@@ -49,13 +44,9 @@ import "./css/userPostSkeleton.css";
 import "./css/updateProfile.css";
 import "./css/poem.css";
 import "./css/userSkeleton.css";
-import PoemEditor from "./screen/poemEditor";
 
 const App = () => {
   const { user, isLoggedIn, isLoading } = useAuth();
-
-  console.log(user);
-  console.log(isLoggedIn);
 
   if (window.innerWidth < 280) {
     return (
@@ -76,9 +67,6 @@ const App = () => {
         </div>
       </>
     );
-  } else {
-    // Code to execute if window width is greater than or equal to 280 pixels
-    console.log("Window width is greater than or equal to 280 pixels");
   }
 
   if (isLoading) {
@@ -114,7 +102,7 @@ const App = () => {
               <Route path="/udateProfile" element={<UpdateProfile />} />
               <Route path="/uploadPost" element={<AddPoem />} />
               <Route path="/post/:postID" element={<Poem />} />
-              <Route path="/post/edit" element={<PoemEditor />} />
+              <Route path="/post/edit/:postId" element={<PoemEditor />} />
               <Route path="/auth/login" element={<Navigate to="/" />} />
               <Route path="/*" element={<PageNotFound />} />
             </Routes>
@@ -131,13 +119,13 @@ const App = () => {
             <Route path="/auth/register" element={<Register />} />
             <Route path="/auth/resetPassword" element={<ResetPassword />} />
             <Route path="/auth/verifyEmail" element={<VerifyEmail />} />
+            <Route path="/post/:postID" element={<Poem />} />
             <Route path="/*" element={<Navigate to="/auth/login" />} />
           </Routes>
         </BrowserRouter>
       </>
     );
   }
-  // }
 };
 
 export default App;

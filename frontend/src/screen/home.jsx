@@ -42,7 +42,6 @@ const Home = () => {
               dispatch(reduxStoreAllPostAction(respo.posts));
             }
           } else {
-            console.log(`home ${respo.message}`);
             showAlert(respo.message, false);
           }
         });
@@ -65,21 +64,14 @@ const Home = () => {
 
   const scroller = async () => {
     if (allPosts.hasMore) {
-      // if (
-      //   window.innerHeight <
-      //   document.documentElement.scrollTop +
-      //     document.documentElement.clientHeight
-      // ) {
       if (
         document.documentElement.scrollTop +
           document.documentElement.clientHeight >=
         document.documentElement.scrollHeight - 1
       ) {
-        console.log(loadingNext);
         if (!loadingNext) {
           setLoadingNext(true);
         }
-        // }
       }
     }
   };

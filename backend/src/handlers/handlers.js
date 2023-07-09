@@ -164,7 +164,7 @@ const updatePost = async (req, res) => {
       });
     }
 
-    const postDoc = postSnapshot.docs[0]; // Assuming there is only one document with the given postId
+    const postDoc = postSnapshot.docs[0];
     const postData = {
       heading: req.body.heading,
       poem: req.body.poem,

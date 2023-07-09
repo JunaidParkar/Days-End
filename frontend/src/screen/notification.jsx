@@ -1,16 +1,14 @@
-import React from 'react'
-import Navbar from '../component/navbar'
-import Preloader from '../component/preloader'
+import React from "react";
+import Navbar from "../component/navbar";
 
 const Notify = () => {
-    return (
-        <>
-            {/* <Preloader /> */}
-            <div className="notificationContainer">
-                <Navbar page="notification" />
-            </div>
-        </>
-    )
-}
+  return (
+    <>
+      <div className="notificationContainer">
+        <Navbar page="notification" />
+      </div>
+    </>
+  );
+};
 
-export default Notify
+export default Notify;

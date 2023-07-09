@@ -9,8 +9,7 @@ import plane from "../assets/plane.png";
 import comment from "../assets/comment.png";
 import trash from "../assets/delete.png";
 import useAuth from "../hooks/useAuth";
-import { useDispatch } from "react-redux";
-import { storePoem } from "../redux/actions/poemAction";
+import { useDispatch, useSelector } from "react-redux";
 import edit from "../assets/edit.png";
 import useAlert from "../hooks/useAlert";
 import AlertBox from "../component/alertBox";
@@ -20,17 +19,14 @@ const nonEditablePoem = (
   user,
   navigate,
   poemData,
-  color,
+  poemColor,
   isAlert,
   showAlert,
   closeAlert,
-  dispatch,
-  setLoader,
-  liked
+  setLoader
 ) => {
   const editing = () => {
-    dispatch(storePoem({ ...poemData }));
-    navigate("/post/edit");
+    navigate(`/post/edit/${poemData.postId}`);
   };
 
   const likePost = async () => {
@@ -60,10 +56,9 @@ const nonEditablePoem = (
       });
     }
   };
-  console.log(liked);
   return (
     <>
-      <div className={`poemDisplayContainer ${color}`}>
+      <div className={`poemDisplayContainer ${poemColor}`}>
         <div className="flex headerSec">
           <h4>{poemData.heading}</h4>
           <p>{poemData.handle}</p>
@@ -78,7 +73,7 @@ const nonEditablePoem = (
         <div className="flex actionCenter">
           <div className=" flex opts">
             <div className="flexCenter postPoemLike" onClick={() => likePost()}>
-              <img src={liked ? heartFilled : heart} alt="Like" />
+              <img src={poemData.liked ? heartFilled : heart} alt="Like" />
               <p>{poemData.like}</p>
             </div>
             <div className="flexCenter postPoemLike">
@@ -89,23 +84,27 @@ const nonEditablePoem = (
               <img src={plane} alt="Share" />
               <p>Share</p>
             </div>
-            {user.uid == poemData.uid ? (
-              <>
-                <div
-                  className="flexCenter postPoemShare"
-                  onClick={() => editing()}
-                >
-                  <img src={edit} alt="Edit" />
-                  <p>edit</p>
-                </div>
-                <div
-                  className="flexCenter postPoemShare"
-                  onClick={() => deletePoem()}
-                >
-                  <img src={trash} alt="Edit" />
-                  <p>delete</p>
-                </div>
-              </>
+            {user ? (
+              user.uid == poemData.uid ? (
+                <>
+                  <div
+                    className="flexCenter postPoemShare"
+                    onClick={() => editing()}
+                  >
+                    <img src={edit} alt="Edit" />
+                    <p>edit</p>
+                  </div>
+                  <div
+                    className="flexCenter postPoemShare"
+                    onClick={() => deletePoem()}
+                  >
+                    <img src={trash} alt="Edit" />
+                    <p>delete</p>
+                  </div>
+                </>
+              ) : (
+                ""
+              )
             ) : (
               ""
             )}
@@ -136,22 +135,10 @@ const Poem = () => {
   const [loader, setLoader] = useState(true);
   const [isValid, setIsValid] = useState(true);
   const [poemColor, setPoemColor] = useState();
-  const [liked, setLiked] = useState(false);
 
-  const dispatch = useDispatch();
+  const poemFromRedux = useSelector((state) => state.posts);
 
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   if (Object.keys(likes).length > 0) {
-  //     Object.keys(likes).forEach((l) => {
-  //       console.log(l);
-  //       if (likes[l].postId == postDatas.postId) {
-  //         setLiked(true);
-  //       }
-  //     });
-  //   }
-  // }, [likes]);
 
   useEffect(() => {
     fetchPoemByID();
@@ -159,17 +146,24 @@ const Poem = () => {
 
   const fetchPoemByID = async () => {
     setLoader(true);
-    await getSpecificPost(postID).then((response) => {
-      if (response.status === 200) {
-        console.log(response.data);
-        setIsValid(true);
-        generateColor();
-        setPoemData(response.data);
-        setLiked(response.liked);
-      } else {
-        setIsValid(false);
-      }
-    });
+    if (Object.keys(poemFromRedux).length > 0) {
+      let obj = Object.entries(poemFromRedux).find(
+        ([key, value]) => value.postId === postID
+      );
+      generateColor();
+      setPoemData(obj[1]);
+    } else {
+      await getSpecificPost(postID).then((response) => {
+        if (response.status === 200) {
+          Object.keys(response.post).forEach((key) => {
+            setPoemData(response.post[key]);
+          });
+          generateColor();
+        } else {
+          setIsValid(false);
+        }
+      });
+    }
     setLoader(false);
   };
 
@@ -197,12 +191,9 @@ const Poem = () => {
           isAlert,
           showAlert,
           closeAlert,
-          dispatch,
-          setLoader,
-          liked
+          setLoader
         )
       ) : (
-        // "hello world"
         <PageNotFound />
       )}
     </>

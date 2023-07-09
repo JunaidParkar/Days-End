@@ -6,7 +6,7 @@ import Preloader from "../component/preloader";
 import useAlert from "../hooks/useAlert";
 import AlertBox from "../component/alertBox";
 import { updatePost } from "../api/endPoints";
-import { removePoem, storePoem } from "../redux/actions/poemAction";
+import { removePoem } from "../redux/actions/poemAction";
 
 const PoemEditor = () => {
   const { user, isLoggedIn, isLoading } = useAuth();
@@ -71,12 +71,11 @@ const PoemEditor = () => {
   useEffect(() => {
     handleTextareaInput();
   }, [newPoem]);
-  console.log(newPoem);
 
   const handleTextareaInput = () => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = "auto"; // Reset the height to auto to recalculate scroll height
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Set the height based on scroll height
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   };
 

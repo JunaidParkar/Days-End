@@ -11,25 +11,11 @@ import { getRandomNumberString } from "../common";
 import { updateProfile } from "firebase/auth";
 import { checkUserHandle, registerUserStructure } from "../../api/endPoints";
 
-const checkIfDirectoryExists = async (dirRef) => {
-  try {
-    await getMetadata(dirRef);
-    return true; // Directory exists
-  } catch (error) {
-    console.error(error);
-    if (error.code === "storage/object-not-found") {
-      return false; // Directory does not exist
-    } // Other errors are propagated
-  }
-};
-
 export const updatePic = async (user, userData) => {
   try {
-    // let pDoc = doc();
     let pRef = ref(storage, "account.png");
     let pBlob = await getBlob(pRef);
     let url = await getDownloadURL(pRef);
-    // let userProfilePic = await getDownloadURL(userData.profilePic);
 
     if (user.photoURL && user.photoURL !== url) {
       let dirRef = ref(storage, user.photoURL);
@@ -71,7 +57,6 @@ export const updatePic = async (user, userData) => {
       return { status: 200, message: "success", url: newUrl };
     }
   } catch (error) {
-    console.error(error);
     return {
       status: 101,
       message: error.message || "Unknown error occurred",
@@ -112,7 +97,6 @@ export const updateProfileData = async (user, userData) => {
       return { status: respo.status, message: respo.message };
     }
   } catch (error) {
-    console.error(error);
     return {
       status: 101,
       message: error.message || "Unknown error occurred",

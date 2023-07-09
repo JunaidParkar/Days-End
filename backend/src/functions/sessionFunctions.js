@@ -57,7 +57,6 @@ const verifyToken = async (token, uid) => {
           `${tokenPart0}.${tokenPart5}.${tokenPart3}`,
           process.env.SECRET_KEY_TOKEN
         );
-        console.log(decoded);
         return { stat: 200, message: decoded };
       } catch (err) {
         return { stat: 700, message: err };

@@ -8,10 +8,8 @@ import { auth } from "../../cred/cred";
 
 export const createUser = async (email, password) => {
   let response = { status: "", message: "" };
-  console.log(email, password);
   await createUserWithEmailAndPassword(auth, email, password)
     .then(async (data) => {
-      console.log(data);
       response = { status: 200, message: "done" };
     })
     .catch((createUserError) => {
@@ -33,14 +31,11 @@ export const loginUser = async (email, password) => {
   return response;
 };
 
-export const logOut = (by) => {
-  console.log(by);
+export const logOut = () => {
   return new Promise((resolve, reject) => {
     signOut(auth)
       .then(() => {
         localStorage.clear();
-        // window.location.href = window.location.origin;
-        //   location.reload()
         resolve();
       })
       .catch((error) => {

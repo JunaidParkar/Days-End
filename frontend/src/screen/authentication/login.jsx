@@ -1,17 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import useAlert from "../../hooks/useAlert";
-// import { loginUser, signOutUser } from '../../firebaseFunctions/authentication/auth';
 import AlertBox from "../../component/alertBox";
-import {
-  browserSessionPersistence,
-  onAuthStateChanged,
-  setPersistence,
-} from "firebase/auth";
-import { auth } from "../../cred/cred";
-import { useDispatch } from "react-redux";
-// import { getMyData } from "../../redux/actions/myDataAction";
-// import { loginUserDataInRedux } from "../../redux/actions/userDataAction";
 import Preloader from "../../component/preloader";
 import { loginUser } from "../../functions/authentication/authentication";
 import useAuth from "../../hooks/useAuth";

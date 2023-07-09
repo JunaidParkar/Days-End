@@ -14,9 +14,7 @@ const {
   deletePost,
 } = require("./src/handlers/handlers");
 const {
-  verifyToken,
   createAuthToken,
-  generateUniqueId,
   updateCounts,
 } = require("./src/functions/sessionFunctions");
 const cors = require("cors");
@@ -111,7 +109,6 @@ app.post("/setInteraction", reqAuth, async (req, res) => {
     }
   } catch (err) {
     res.json({ status: 12, message: err });
-    console.log(err);
   }
 });
 app.post("/updatePost", reqAuth, updatePost);
@@ -122,8 +119,6 @@ app.post("/jwt", async (req, res) => {
   res.json(token);
 });
 app.post("/verify", async (req, res) => {
-  // let resu = await verifyToken(req.body.token, req.body.uid);
-  // res.json({ data: resu });
   res.json({ key: process.env.SECRET_KEY_TOKEN });
 });
 

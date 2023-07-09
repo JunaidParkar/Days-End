@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../cred/cred";
 import { logOut } from "../functions/authentication/authentication";
-import { getAuthToken, registerUserStructure } from "../api/endPoints";
+import { getAuthToken } from "../api/endPoints";
 
 const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -27,12 +27,10 @@ const useAuth = () => {
                 setUser(currUser);
                 setIsLoggedIn(true);
               }
-              console.warn(response);
             })
             .catch(async (err) => {
               setUser(null);
               setIsLoggedIn(false);
-              console.log(err);
               await logOut("useAuth line 35");
             });
         }

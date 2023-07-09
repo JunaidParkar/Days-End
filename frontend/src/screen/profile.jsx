@@ -17,6 +17,7 @@ import { reduxStoreMyProfileAction } from "../redux/actions/myProfileAction";
 
 const Profile = () => {
   const [loader, setLoader] = useState(true);
+  const [myData, setMyData] = useState({});
   const [myPost, setMyPost] = useState({});
 
   const { user, isLoggedIn, isLoading } = useAuth();
@@ -26,24 +27,36 @@ const Profile = () => {
   const myProfile = useSelector((state) => state.myProfile);
   const allPosts = useSelector((state) => state.posts);
 
-  // useEffect(() => {
-  //   fetchAllmyProfiles();
-  // }, [user]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    let myPostFiltered = {};
-    Object.keys(allPosts).forEach((key) => {
-      if (allPosts[key]["uid"] == user.uid) {
-        myPostFiltered[key] = allPosts[key];
+    const fst = async () => {
+      setLoader(true);
+      if (user) {
+        if (
+          Object.keys(myProfile).length === 0 ||
+          Object.keys(allPosts).length === 0
+        ) {
+          await fetchAllmyProfileData();
+        } else {
+          let myPostFiltered = {};
+          Object.keys(allPosts).forEach((key) => {
+            if (user.uid == allPosts[key]["uid"]) {
+              myPostFiltered[key] = allPosts[key];
+            }
+          });
+          if (Object.keys(myPostFiltered).length == myProfile["posts"]) {
+            setMyData({ ...myProfile });
+            setMyPost({ ...myPostFiltered });
+          } else {
+            await fetchAllmyProfileData();
+          }
+        }
       }
-    });
-    if (Object.keys(myPostFiltered).length != myProfile["posts"]) {
-      fetchAllmyProfiles();
-    } else {
-      setMyPost({ ...myPostFiltered });
-    }
-    let myPostsAvailable = allPosts;
-  }, [allPosts]);
+      setLoader(false);
+    };
+    fst();
+  }, [user]);
 
   const imageSetter = async (data) => {
     let picRef = ref(storage, data.pic);
@@ -51,7 +64,7 @@ const Profile = () => {
     return URL.createObjectURL(blob);
   };
 
-  const fetchAllmyProfiles = async () => {
+  const fetchAllmyProfileData = async () => {
     setLoader(true);
     await getAllOfMyDatas().then(async (response) => {
       if (response.status === 200) {
@@ -59,12 +72,13 @@ const Profile = () => {
         let myPosts = response.post;
         let dataPic = await imageSetter(datas);
         let updatedData = { ...datas, ["pic"]: dataPic };
-        dispatch(reduxStoreMyProfileAction(updatedData));
+        dispatch(reduxStoreMyProfileAction({ ...updatedData }));
         dispatch(reduxStoreAllPostAction({ ...allPosts, ...myPosts }));
+        setMyData({ ...updatedData });
+        setMyPost({ ...myPosts });
       } else {
         showAlert(response.message, false);
       }
-      // };
     });
     setLoader(false);
   };
@@ -80,86 +94,69 @@ const Profile = () => {
         showAlert(err, false);
       });
   };
-  console.log(user);
 
-  const navigate = useNavigate();
   return (
     <>
-      {loader ? <Preloader /> : ""}
-
-      <div className="profileContainer">
-        <Navbar page="profile" />
-        <div className="profileContentContainer">
-          <div className="myProfileHeader">
-            <div className="flex myProfileHeaderInteractionCenter">
-              <img
-                src={myProfile ? myProfile["pic"] : noUser}
-                alt="Profile Picture"
-              />
-              <div className="flex interaction">
-                <h4>{myProfile ? myProfile["handle"] : ""}</h4>
-                <div className="flex stats">
-                  <div className="statCont">
-                    <p className="statValue">
-                      {myProfile ? myProfile["posts"] : ""}
-                    </p>
-                    <p className="statName">Posts</p>
+      {loader ? (
+        <Preloader />
+      ) : (
+        <div className="profileContainer">
+          <Navbar page="profile" />
+          <div className="profileContentContainer">
+            <div className="myProfileHeader">
+              <div className="flex myProfileHeaderInteractionCenter">
+                <img src={myData["pic"]} alt="Profile Picture" />
+                <div className="flex interaction">
+                  <h4>{myData["handle"]}</h4>
+                  <div className="flex stats">
+                    <div className="statCont">
+                      <p className="statValue">{myData["posts"]}</p>
+                      <p className="statName">Posts</p>
+                    </div>
+                    <div className="statCont">
+                      <p className="statValue">{myData["followers"]}</p>
+                      <p className="statName">Followers</p>
+                    </div>
+                    <div className="statCont">
+                      <p className="statValue">{myData["following"]}</p>
+                      <p className="statName">Following</p>
+                    </div>
                   </div>
-                  <div className="statCont">
-                    <p className="statValue">
-                      {myProfile ? myProfile["followers"] : ""}
-                    </p>
-                    <p className="statName">Followers</p>
-                  </div>
-                  <div className="statCont">
-                    <p className="statValue">
-                      {myProfile ? myProfile["following"] : ""}
-                    </p>
-                    <p className="statName">Following</p>
-                  </div>
-                </div>
-                <div className="flex interactionBtns">
-                  <div
-                    className="editProfile"
-                    onClick={() => navigate("/udateProfile")}
-                  >
-                    <p>Edit profile</p>
-                  </div>
-                  <div
-                    className="addPoem editProfile"
-                    onClick={() =>
-                      user.emailVerified
-                        ? navigate("/uploadPost")
-                        : sendVerification().then()
-                    }
-                  >
-                    <p>Add Poem</p>
+                  <div className="flex interactionBtns">
+                    <div
+                      className="editProfile"
+                      onClick={() => navigate("/udateProfile")}
+                    >
+                      <p>Edit profile</p>
+                    </div>
+                    <div
+                      className="addPoem editProfile"
+                      onClick={() =>
+                        user.emailVerified
+                          ? navigate("/uploadPost")
+                          : sendVerification().then()
+                      }
+                    >
+                      <p>Add Poem</p>
+                    </div>
                   </div>
                 </div>
               </div>
+              <div className="myBio">
+                <p>{myData["bio"]}</p>
+              </div>
             </div>
-            <div className="myBio">
-              <p>{myProfile ? myProfile["bio"] : ""}</p>
-            </div>
-          </div>
 
-          <div className="flex postsContainer">
-            {/* <UserPost />
-            <UserPost />
-            <UserPost />
-            <UserPost />
-            <UserPost />
-            <UserPost />
-            <UserPost />
-            <UserPost />
-          <UserPost /> */}
-            {myProfile &&
-              Object.keys(myPost).map((postId) => (
-                <UserPost key={postId} postDatas={myPost[postId]} />
-              ))}
+            <div className="flex postsContainer">
+              {myPost &&
+                Object.keys(myPost).map((postId) => (
+                  <UserPost key={postId} postDatas={myPost[postId]} />
+                ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
       {isAlert.state ? (
         <AlertBox
           message={isAlert.log}

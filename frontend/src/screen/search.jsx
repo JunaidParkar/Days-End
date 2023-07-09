@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../component/navbar";
-import noUser from "../assets/noUser.jpg";
 import SearchCard from "../component/searchCard";
 import { getAllUsers } from "../api/endPoints";
 import useAlert from "../hooks/useAlert";

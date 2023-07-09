@@ -9,9 +9,6 @@ import userOutline from "../assets/user.png";
 import userFilled from "../assets/userFilled.png";
 import logoutIcon from "../assets/logout.png";
 import { useNavigate } from "react-router-dom";
-// import { signOutUser } from '../firebaseFunctions/authentication/auth'
-import useAuth from "../hooks/useAuth";
-import { useDispatch } from "react-redux";
 import { logOut } from "../functions/authentication/authentication";
 
 const Navbar = (props) => {
@@ -21,7 +18,6 @@ const Navbar = (props) => {
     notification: false,
     profile: false,
   });
-  const dispatch = useDispatch();
 
   useEffect(() => {
     const use = () => {

@@ -5,7 +5,6 @@
 
 .postCard,
 .searchCard {
-  /* background: white; */
   overflow: hidden;
   border-radius: var(--borderRadius);
   box-shadow: var(--shadowColor) 0px 8px 24px;
